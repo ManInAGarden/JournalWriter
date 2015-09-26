@@ -1,0 +1,104 @@
+﻿<Window x:Class="JournalWriter.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Über SJournal" Height="495" Width="640" Background="Black" Icon="/JournalWriter;component/Images/bookmark.png" IsEnabled="False" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="33*" />
+            <ColumnDefinition Width="66*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="233*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <FlowDocumentReader Grid.Column="1" HorizontalAlignment="Stretch" Margin="5" Name="documentViewer1" VerticalAlignment="Stretch" Foreground="SkyBlue" Background="Black">
+            <FlowDocument Background="Black">
+                <Paragraph>
+                    Über SJournal
+                </Paragraph>
+                <Paragraph FontSize="12">
+                    Mit SJournal kann man
+                    Notizen für jeden Tag ablegen. Damit wird es einfach sich an Dinge aus der Vergangenheit zu erinnern. Dazu legt SJournal für jeden Tag einen
+                    neuen Eintrag an, den der Awneder mit Text füllen kann.
+                </Paragraph>
+                <Paragraph FontSize="12">
+                    Der Text wird in einer normalen Textbox eingegeben, zur besseren Lesbarkeit aber in einem sog. Flow-Document-Reader dargestellt. Die Darstellung des Textes
+                    kann durch spezielle Textinhalte beeinflusst werden.
+                </Paragraph>
+                <Paragraph FontSize="12">
+                    Wie man die Darstellung im Einzelnen beeinflussen kann wird im Folgenden erklärt:
+                </Paragraph>
+                <List>
+                    <ListItem>
+                        <Paragraph FontSize="12">
+                            Kursiver Text:<LineBreak />
+                            Für kursiven Text schließt man einen Teil des Textes einfach zwischen *-chen ein. So wird *kursiv* zu
+                            <Italic>kursiv</Italic>.
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph FontSize="12">
+                            Fetter Text:
+                            <LineBreak />
+                            Für fetten Text schließt man einen Teil des Textes einfach zwischen jweils zwei *-chen ein. So wird **fett** zu
+                            <Bold>kursiv</Bold> .
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph FontSize="12">
+                            Unterstrichener Text:
+                            <LineBreak />
+                            Für unterstrichenen Text schließt man einen Teil des Textes einfach zwischen zwei Unterstrichen (_) ein. So wird _unterstrichen_ zu
+                            <Underline>unterstrichen</Underline> .
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph FontSize="12">
+                            Überschriften:<LineBreak/>
+                            Überschriften entstehen wenn man auf eine Textzeile direkt eine Textzeile mit mindestens drei =-Zeichen oder Bindestrichen folgen lässt. Dabei sind mit Gleichheitszeichen 
+                            unterstrichene Zeilen größere bzw. höherrangige Überschriften als solche die mit Minuszeichen unterstrichen wurden.
+                            <LineBreak/>
+                            Beispiel:
+                            <LineBreak/>
+                            Dies ist eine Überschrift
+                            <LineBreak/>
+                            =================
+                            <LineBreak/>
+                            wird zu
+                            <LineBreak/>
+                            <Span FontSize="14" FontWeight="Bold">Dies ist eine Überschrift</Span>
+                            <LineBreak/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph FontSize="12">
+                            Zitatblöcke:
+                            <LineBreak/>
+                            Beginnt man einen Absatz mit einem >-Zeichen gefolgt von einem Leerzeichen, so wird daraus ein eingerückter, kursive gedruckter Zitatblock.
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph FontSize="12">
+                            Literalblöcke:
+                            <LineBreak/>
+                            Beginnt man einen Absatz mit einem Tabulatoreichen so wird daraus ein eingerückter, linksbündiger Absatz der in einer Schriftart mit Buchstaben gleicher Breite
+                            dargestellt wird. Alle Lehrraumzeichen (Tabulator und einzelne Lehrzeichen) bleiben darin erhalten.
+                        </Paragraph>
+                    </ListItem>
+                </List>
+            </FlowDocument>
+        </FlowDocumentReader>
+        <StackPanel Background="Black">
+        <Label Margin="5" Name="label1" FontSize="14" Foreground="SkyBlue" >
+            SJournal
+        </Label>
+        <Label Margin="5" Foreground="SkyBlue">
+            (c) Heinrich Speich 2013
+        </Label>
+            
+        <Label Margin="5" Name="versionLabel" Foreground="SkyBlue">
+            Version 0.0.0.1
+        </Label>
+        </StackPanel>
+    </Grid>
+</Window>

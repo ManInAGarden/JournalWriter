@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="JournalWriter.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="FileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">JournalData.xml</Value>
+    </Setting>
+    <Setting Name="ReaderFont" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Calibri</Value>
+    </Setting>
+    <Setting Name="ReaderFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">16</Value>
+    </Setting>
+    <Setting Name="ReaderHeadline1FontSize" Type="System.String" Scope="User">
+      <Value Profile="(Default)">22</Value>
+    </Setting>
+    <Setting Name="ReadlerHeadline2FontSize" Type="System.String" Scope="User">
+      <Value Profile="(Default)">18</Value>
+    </Setting>
+    <Setting Name="JournalPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">c:\Users\tiger\JournalStore</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

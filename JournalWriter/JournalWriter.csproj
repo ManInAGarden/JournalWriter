@@ -103,6 +103,9 @@
     <Compile Include="AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FlowDocumentTestWindow.xaml.cs">
+      <DependentUpon>FlowDocumentTestWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LogicalTreeHelperHelper.cs" />
     <Compile Include="MarkdownToXaml.cs" />
     <Compile Include="SessionCommands.cs" />
@@ -110,6 +113,10 @@
       <DependentUpon>ShowSourceWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlowDocumentTestWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -193,6 +200,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Knob Message.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Ringer.jpg" />
+    <Content Include="JournalWriterHelpMarkup.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

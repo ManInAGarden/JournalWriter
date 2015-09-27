@@ -623,6 +623,7 @@ namespace JournalWriter
             mdwn.DocumentNormalFontSize = Properties.Settings.Default.ReaderFontSize.ToString();
             mdwn.DocumentHeadline1FontSize = Properties.Settings.Default.ReaderHeadline1FontSize.ToString();
             mdwn.DocumentHeadLine2FontSize = Properties.Settings.Default.ReadlerHeadline2FontSize.ToString();
+
         }
 
       

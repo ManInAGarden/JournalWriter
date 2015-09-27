@@ -1,0 +1,123 @@
+﻿Über SJournal
+===
+
+Mit SJournal kann man
+Notizen für jeden Tag ablegen. Damit wird es einfach sich an Dinge aus der Vergangenheit zu erinnern. Dazu legt SJournal für jeden Tag einen
+neuen Eintrag an, den der Anweder mit Text füllen kann.
+
+Der Text wird in einer normalen Textbox eingegeben, zur besseren Lesbarkeit aber in einem sog. Flow-Document-Reader dargestellt. Die Darstellung des Textes
+kann durch spezielle Textinhalte beeinflusst werden. Um den Text zu bearbeiten klickt man einfach Doppelt in das Textfenster auf der rechten Seite. Dies "verwandelt" sind dann
+in einen Eingabebereich für Texte.
+
+Wie man die Darstellung im Einzelnen beeinflussen kann wird im Folgenden erklärt:
+
+Markup in SJournal
+---
+
+Überschriften schreibt man indem an eine Zeile Text mit mindestens drei Gleichheitsteichen oder Minuszeichen (Bindestriche) unterstreicht.
+
+Das sieht dann so aus:
+
+	Überschrift 1. Ordnung
+	===
+
+wird
+
+Überschrift 1. Ordnung
+===
+
+
+und aus 
+
+	Überschrift 2. Ordnung
+	---
+
+wird dies hier.
+
+Überschrift 2. Ordnung
+---
+
+Normalen Fließtext schreibt man einfach so runter. Man beginnt ganz links und schreibt seinen Text ohne Zeilenschaltungen einzufügen. Nur wenn man einen neuen Absatz beginnen möchte fügt man zwei Zeilenschaltungen ein. So entsteht auch im Texteditor der Eindruck von Absätzen.
+
+So hier beginnt nun ein neuer Absatz. Geht doch!
+
+Will man im Fließtext kursiven, fetten oder unterstrichenen Text haben geschieht dies indem man den Text in bestimmte steuernde Zeichen einschließt. Beispiele:
+
+	*kursiv* - In Sternchen eingeschlossen
+	**fett** - in Sternchenpaare eingeschlossen
+	_unterstrichen_ - in Unterstrichzeichen eingeschlossen
+
+Sieht so aus: *kursiv*, **fett**, _unterstrichen_
+
+
+Zitate
+---
+
+Häufig möchte man Zitate anbringen. Dies geschieht einfach indem man die Zeile mit einen Größer-Zeichen beginnt. Das sieht dann so aus
+
+	>Der Krug geht zum Brunnen bis er bricht.
+
+Und so sieht das im Text beim Lesen aus.
+
+>Der Student geht zur Mensa bis er bricht.
+
+Listen
+---
+
+Listen kommen häufig vor wenn man etwas protokollieren möchte. Da gibt es zunächst Listen mit sog. Spiegelstrichen oder auf neudeutsch (Bullet-Listen)
+
+Dafür schreibt man einfach ein kleines Sternchen vor jeden Punkt der Liste
+
+	&#42; Erster Punkt
+	&#42; Zweiter Punkt
+	&#42; Dritter Punkt
+
+wird zu 
+
+* Erster Punkt
+* Zweiter Punkt
+* Dritter Punkt
+
+Mit einem kleine o (Ohhhh) anstelle des Sternchens wird daraus eine Liste mit Kreisen als Spiegelstrich. Das sieht dann so aus
+
+o Erster Punkt
+o Zweiter Punkt
+o Dritter Punkt
+
+Nummerierte Liste erhält man indem man anstelle der Sternchen einfach eine Ziffer gefolgt von einem Punkt hinschreibt. So wird aus
+
+	:1. Erster Punkt (den Doppelpunkt am Anfang habe ich nur eingefügt damit nicht auch dies hier als Liste
+	 erkannt und formatiert wird. D.h. den muss man weglassen)
+	:2. Zweiter Punkt
+	:3. Dritter Punkt
+
+dies hier
+
+1. Erster Punkt
+2. Zweiter Punkt
+3. Dritter Punkt
+
+Wenn man keine Lust hat wirklich zu zählen kann man hier auch einfach immer 0. schreiben. Der JournalWriter übernimmt ohnehin das Zählen.
+
+	:0. Erster Punkt
+	:0. Zweiter Punkt
+	:0. Dritter Punkt
+
+wird zu 
+
+0. Erster Punkt
+0. Zweiter Punkt
+0. Dritter Punkt
+
+
+Schreibt man kleine oder große Buchstabem vor die Listenpunkte erhält man eine nummerierte Liste mit den großen oder den kleinen Buchstaben des Alphabets.
+	
+a. Erster Punkt
+b. Zweiter Punkt
+c. Dritter Punkt
+
+oder auch:
+
+A. Erster Punkt
+B. Zweiter Punkt
+C. Dritter Punkt

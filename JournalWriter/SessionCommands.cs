@@ -16,6 +16,7 @@ namespace JournalWriter
         public static RoutedUICommand About { get; private set; }
         public static RoutedUICommand ShowSource { get; private set; }
         public static RoutedUICommand ShowTabs{get; private set;}
+        public static RoutedUICommand GotoLine { get; set; }
 
         static SessionCommands()
         {
@@ -44,6 +45,13 @@ namespace JournalWriter
                 new InputGestureCollection  
                 { 
                     new KeyGesture(Key.T, ModifierKeys.Control, "Ctr+T")
+                }
+              );
+
+            GotoLine = new RoutedUICommand("_Gehezu Zeile", "GotoLine", typeof(SessionCommands),
+                new InputGestureCollection
+                {
+                    new KeyGesture(Key.G, ModifierKeys.Alt, "Alt+G")
                 }
               );
 

@@ -106,6 +106,9 @@
     <Compile Include="FlowDocumentTestWindow.xaml.cs">
       <DependentUpon>FlowDocumentTestWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GotoLineEntryWindow.xaml.cs">
+      <DependentUpon>GotoLineEntryWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LogicalTreeHelperHelper.cs" />
     <Compile Include="MarkdownToXaml.cs" />
     <Compile Include="SessionCommands.cs" />
@@ -117,6 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FlowDocumentTestWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GotoLineEntryWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

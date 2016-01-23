@@ -29,7 +29,8 @@ namespace JournalWriter
         public TreeViewItem CurrentTiToFill = null;
         private bool m_haveChange = false;
         private DispatcherTimer clockDT = new DispatcherTimer(),
-            autoSaveDT = new DispatcherTimer();
+            autoSaveDT = new DispatcherTimer(),
+            wordCountDT = new DispatcherTimer();
         MarkdownToXaml mdwn = new MarkdownToXaml();
        
 
@@ -82,6 +83,19 @@ namespace JournalWriter
             autoSaveDT.Tick += new EventHandler(autoSaveDT_Tick);
             autoSaveDT.Interval = new TimeSpan(0, 10, 0);
             autoSaveDT.Start();
+
+            wordCountDT.Tick += new EventHandler(wordCountDT_Tick);
+            wordCountDT.Interval = new TimeSpan(0, 0, 5);
+            wordCountDT.Start();
+        }
+
+        private void wordCountDT_Tick(object sender, EventArgs e)
+        {
+            if (!firstTB.IsVisible)
+                return;
+
+            int wc = CountWords(firstTB.Text);
+            wordCountStatusBarItem.Content = wc.ToString();
         }
 
 
@@ -294,6 +308,67 @@ namespace JournalWriter
         }
 
         /// <summary>
+        /// Kann GotoLine ausgeführt werden?
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GotoLine_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = firstTB.IsVisible;
+        }
+
+        /// <summary>
+        /// Gehezu Zeile ausführen, also die Box zur Erfassung der Zeilennummer öffnen usw.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GotoLine_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            GotoLineEntryWindow goew = new GotoLineEntryWindow();
+            goew.Owner = this;
+
+            if (goew.ShowDialog()==true)
+            {
+                int linenum = goew.LineNumber;
+
+                firstTB.CaretIndex = CalcStartOfLineIdx(firstTB, linenum);
+            }
+        }
+
+        /// <summary>
+        /// Den Caret Index brechnen der dem Beginn der übergebenen
+        /// Zeilennummer entspricht
+        /// </summary>
+        /// <param name="firstTB">Die Textbox mit dem Text</param>
+        /// <param name="linenum">Die Zeilennummer</param>
+        /// <returns></returns>
+        private int CalcStartOfLineIdx(TextBox firstTB, int linenum)
+        {
+            int lc = 1,
+                idx = 0;
+
+            foreach (char c in firstTB.Text)
+            {
+                switch (c)
+                {
+                    case '\n':
+                        lc++;
+                        break;
+                }
+
+                idx++;
+
+                if (lc >= linenum)
+                    break;
+            }
+
+            if (idx > firstTB.Text.Length-1)
+                idx = firstTB.Text.Length-1;
+
+            return idx;
+        }
+
+        /// <summary>
         /// Kann ShowTabs ausgeführt werden?
         /// </summary>
         /// <param name="sender"></param>
@@ -309,10 +384,8 @@ namespace JournalWriter
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ShowTabs_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            
-            firstTB.Text = ToggleTabs(firstTB.Text);
-            
+        {    
+            firstTB.Text = ToggleTabs(firstTB.Text);   
         }
 
         private string ToggleTabs(string ins)
@@ -628,7 +701,11 @@ namespace JournalWriter
 
       
 
-
+        /// <summary>
+        /// Evetn-Handler: Das selektierte Element im TreeView hat sich geändert.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void dateTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeViewItem selItem = dateTreeView.SelectedItem as TreeViewItem;
@@ -639,7 +716,6 @@ namespace JournalWriter
             if (!selItem.Name.StartsWith("D_"))
                 return;
 
-           
 
             CurrentTiToFill = selItem;
 
@@ -685,7 +761,9 @@ namespace JournalWriter
             if (tpt != null)
             {
                 TextRange beginning = new TextRange(firstDV.Document.ContentStart, tpt);
-                int inspos = GetRawTextCharacterPosition(CurrentTiToFill.Tag as string, beginning.Text.Length, CountReturns(beginning.Text));
+                int inspos = GetRawTextCharacterPosition(CurrentTiToFill.Tag as string, 
+                    beginning.Text.Length, 
+                    CountReturns(beginning.Text));
 
                 ShowTextBox(inspos);
 
@@ -871,7 +949,11 @@ namespace JournalWriter
 
 
 
-
+        /// <summary>
+        /// Die Anzahl der Wörter zurückgeben
+        /// </summary>
+        /// <param name="text">Text der die zu zählenden Wörter enthält</param>
+        /// <returns>Anzahl Wörter im Text</returns>
         private int CountWords(string text)
         {
             int answ = 0;
@@ -879,7 +961,7 @@ namespace JournalWriter
 
             foreach (char c in text)
             {
-                if (char.IsWhiteSpace(c))
+                if ((char.IsWhiteSpace(c)) )
                 {
                     if (countMe)
                     {
@@ -916,7 +998,6 @@ namespace JournalWriter
             if (caretPos < 0)
             {
                 firstTB.CaretIndex = firstTB.Text.Length;
-                //firstTB.ScrollToEnd();
             }
             else
             {
@@ -950,10 +1031,6 @@ namespace JournalWriter
             if (!(((e.Key==Key.S) || (e.Key == Key.T)) && ((Keyboard.Modifiers & ModifierKeys.Control)==ModifierKeys.Control)))
                 HaveChange = true;
 
-            //if (((e.Key == Key.T) && ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)))
-            //{
-            //    firstTB.Text = ToggleTabs(firstTB.Text);
-            //}
         }
 
 
@@ -979,6 +1056,18 @@ namespace JournalWriter
 
         }
 
+        private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            //Wenn wir nicht gerade editieren, dann lassen wir einfach die alte Zahl stehen
+            //denn die wurde ja bei der Selektion des TV-Items erneuert.
+            if (firstTB.IsVisible)
+            {
+                int wc = 0;
+                wc = CountWords(firstTB.Text);
+                wordCountStatusBarItem.Content = wc.ToString();
+            }
+        }
+
         /// <summary>
         /// Der Anwender dreht im Textfenster am Mausrad. Den Font vergrößern bzw verkleinern
         /// </summary>
@@ -995,10 +1084,7 @@ namespace JournalWriter
                 firstTB.FontSize += 1.0;
             else if (e.Delta < 0 && (firstTB.FontSize > 8))
                 firstTB.FontSize -= 1.0;
-            
-            
-            
-            
+                  
         }
 
         

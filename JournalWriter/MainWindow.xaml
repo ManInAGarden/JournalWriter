@@ -26,10 +26,9 @@
         </EventTrigger>
 
     </Window.Triggers>
-        
+
     <Window.Resources>
-        
-        <SolidColorBrush x:Key="TransparentBackground" Color="Black" />
+        <SolidColorBrush x:Key="TransparentBackground" Color="#FF252525" />
         <SolidColorBrush x:Key="ForegroundOnTransparentBackground" Color="SkyBlue" />
         <SolidColorBrush x:Key="BorderOnTransparentBackground" Color="SkyBlue" />
         <FontFamily x:Key="ReadableTextFontFamily">Consolas</FontFamily>
@@ -48,6 +47,7 @@
         <CommandBinding Command="cmds:SessionCommands.About" Executed="About_Executed" CanExecute="About_CanExecute"/>
         <CommandBinding Command="cmds:SessionCommands.ShowSource" Executed="ShowSource_Executed" CanExecute="ShowSource_CanExecute"/>
         <CommandBinding Command="cmds:SessionCommands.ShowTabs" Executed="ShowTabs_Executed" CanExecute="ShowTabs_CanExecute"/>
+        <CommandBinding Command="cmds:SessionCommands.GotoLine" Executed="GotoLine_Executed" CanExecute="GotoLine_CanExecute"/>
     </Window.CommandBindings>
     
     <Grid Background="{StaticResource TransparentBackground}">
@@ -69,8 +69,7 @@
                 <MenuItem Command="cmds:SessionCommands.Exit" Header="Beenden" />
             </MenuItem>
             <MenuItem Header="Bearbeiten">
-                <MenuItem Header="Neuer Tag" IsEnabled="False"/>
-                <MenuItem Header="Neuer Tag aus Datei" IsEnabled="False"/>
+                <MenuItem Command="cmds:SessionCommands.GotoLine" Header="Gehe zu Zeile"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.ShowSource" Header="Quelltext (Flow Document) zeigen"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.ShowTabs" Header="TAB Anzeige ein/aus"></MenuItem>
             </MenuItem>
@@ -99,15 +98,15 @@
         </GridSplitter>
 
         <FlowDocumentReader Grid.Column="2" Grid.Row="1" Name="firstDV" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" Background="{StaticResource TransparentBackground}" Foreground="{StaticResource ForegroundOnTransparentBackground}" Visibility="Visible" ToolTip="Hier doppelt klicken um Text zu bearbeiten" FontFamily="{StaticResource ReadableTextFontFamily}" MouseDoubleClick="firstDV_MouseDoubleClick" IsTwoPageViewEnabled="True" FontSize="{StaticResource ReadableFontSize}" SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="dateTreeView_MouseMove"/>
-        <TextBox Grid.Column="2" Grid.Row="1" Name="firstTB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" Background="{StaticResource TransparentBackground}" Foreground="{StaticResource ForegroundOnTransparentBackground}" AcceptsReturn="True" AcceptsTab="True" Visibility="Hidden" TextWrapping="Wrap" LostFocus="firstTB_LostFocus" KeyUp="firstTB_KeyUp" FontFamily="{StaticResource ReadableTextFontFamily}" FontSize="{StaticResource ReadableFontSize}" SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="dateTreeView_MouseMove" GotFocus="firstTB_GotFocus" MouseWheel="firstTB_MouseWheel" CaretBrush="#FFFF00BE"></TextBox>
+        <TextBox Grid.Column="2" Grid.Row="1" Name="firstTB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" Background="{StaticResource TransparentBackground}" Foreground="{StaticResource ForegroundOnTransparentBackground}" AcceptsReturn="True" AcceptsTab="True" Visibility="Hidden" TextWrapping="Wrap" LostFocus="firstTB_LostFocus" KeyUp="firstTB_KeyUp" FontFamily="{StaticResource ReadableTextFontFamily}" FontSize="{StaticResource ReadableFontSize}" SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="dateTreeView_MouseMove" GotFocus="firstTB_GotFocus" MouseWheel="firstTB_MouseWheel" CaretBrush="#FFF0DC16"></TextBox>
 
 
-        <StatusBar Grid.ColumnSpan="3" Grid.Row="2" HorizontalAlignment="Center" Name="mainStatusBar" VerticalAlignment="Stretch" Background="Black">
+        <StatusBar Grid.ColumnSpan="3" Grid.Row="2" HorizontalAlignment="Center" Name="mainStatusBar" VerticalAlignment="Stretch" Background="{DynamicResource TransparentBackground}">
             <Border BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8">
                 <StatusBarItem Name="dateTimeStatusbarItem" Content="01.01.2013 00:00" BorderBrush="{StaticResource BorderOnTransparentBackground}"  Foreground="{StaticResource ForegroundOnTransparentBackground}"  FontFamily="{StaticResource ReadableTextFontFamily}" ToolTip="Aktuelles Datum und Uhrzeit" />
             </Border>
             <Border BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8" >
-                <StatusBarItem Name="wordCountStatusBarItem" Content="0" Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" ToolTip="Anzahl der Wörter im ausgewählten Tagesjournal" />
+                <StatusBarItem Name="wordCountStatusBarItem" Content="0" Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" ToolTip="Anzahl der Wörter im ausgewählten Tagesjournal" MouseDown="wordCountStatusBarItem_MouseDown" />
             </Border>
             <Border BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8" >
                 <StatusBarItem Name="changeIndicator" Content="S" FontWeight="Bold"  Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" Visibility="Collapsed" ToolTip="Signal für &quot;Speichern erforderlich&quot;" />

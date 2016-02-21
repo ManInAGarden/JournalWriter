@@ -24,7 +24,10 @@ namespace JournalWriter
         public string DocumentFontFamily { set; get; }
         public string DocumentNormalFontSize { set; get; }
         public string DocumentHeadline1FontSize { set; get; }
-        public string DocumentHeadLine2FontSize { set; get; }
+        public string DocumentHeadline2FontSize { set; get; }
+        public string DocumentHeadline3FontSize { set; get; }
+        public string DocumentHeadline4FontSize { set; get; }
+        public string DocumentHeadline5FontSize { set; get; }
 
         public Dictionary<string, Regex> Regexes { get; set; }
        
@@ -56,16 +59,26 @@ namespace JournalWriter
             
             //single underline text
             AddRex(rxs, "singleUnderlineRex", @"(?<start>(\s|\n|\?|\.|,|;|!))_(?<test>[^_]+)_(?<ende>(\s|\n|\?|\.|,|;|!))");
+
             
-            //first level title
-            AddRex(rxs, "headline1", @"^(?<test>.*)",       //Zeilenanfang gefolgt von beliebigem Zeugs außer einem Zeilenende
+            //first level # title
+            AddRex(rxs, "headline1", @"^\#+\s+(?<test>.*)[\n]");
+            //second level alternative title
+            AddRex(rxs, "alt-headline1", @"^(?<test>.*)",   //Zeilenanfang gefolgt von beliebigem Zeugs außer einem Zeilenende
                                      @"[\n][=]{3,}",        //Zeilenende gefolgt von mindestens 3 Gleicheitszeichen
                                      @"$");                 //Und dann noch ein Zeilenende"
 
-            //second level title
-            AddRex(rxs, "headline2", @"^(?<test>.*)",       //Zeilenanfang gefolgt von beliebigem Zeugs außer einem Zeilenende
+            //second level ##-Titles
+            AddRex(rxs, "headline2", @"^\#{2}\s+(?<test>.*)[\n]");
+            //second level alternative title
+            AddRex(rxs, "alt-headline2", @"^(?<test>.*)",   //Zeilenanfang gefolgt von beliebigem Zeugs außer einem Zeilenende
                                      @"[\n][-]{3,}",        //Zeilenende gefolgt von mindestens 3 Minuszeichen
                                      @"$");                 //Und dann noch ein Zeilenende
+
+            //und alle weiteren Titelebenen die aber nur mit der #-Methode definiert sind
+            AddRex(rxs, "headline3", @"^\#{3}\s+(?<test>.*)[\n]");
+            AddRex(rxs, "headline4", @"^\#{4}\s+(?<test>.*)[\n]");
+            AddRex(rxs, "headline5", @"^\#{5}\s+(?<test>.*)[\n]");
 
             //bullet list
             AddRex(rxs, "bulletListRex", @"(?<test>(^\s*\*\s.+\n)+)");  //Zeilenanfang gefolgt von mindestens einem Listenelement dann egal was
@@ -97,6 +110,7 @@ namespace JournalWriter
                 @")");                                  //closing braces for test capture
             AddRex(rxs, "capitalLetteredRex", @"^[\s]*[A-Z]+\.\s(?<test>.*)$");   //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem Stern und einem Leerzeichen
 
+           
             //quotations
             AddRex(rxs, "quoteRex", @"(?<test>",            //Wrap whole match in {test}
                 @"(",
@@ -106,10 +120,16 @@ namespace JournalWriter
                 @"\n*",                                     //blanks
                 @")+)");
 
-            //programm code
+            //coding starting and ending with a line of exactly three backticks (`)
+            AddRex(rxs, "backtickCodingRex",
+                @"^```[\n]+",
+                @"(?<test>(.+\n)*)",
+                @"```$");
+
+            //programm code with TAB method
             AddRex(rxs, "codingRex", @"(?<test>",           //Wrap whole match in {test}
                 @"(",
-                @"^([ ]{3}|\t)",                            //at least three spaces or a tab character at the start of a line
+                @"^([ ]{3}|\t)",                            //at exactly three spaces or a tab character at the start of a line
                 @".+\n",                                    //rest of the first line
                 @"(.+\n)*",                                 //subsequent consecutive lines
                 @"\n *",
@@ -154,6 +174,10 @@ namespace JournalWriter
             answ = answ.Replace("<", "&lt;");
             answ = answ.Replace(">", "&gt;");
 
+            //Programmcode im Text
+            answ = Regexes["backtickCodingRex"].Replace(answ, new MatchEvaluator(CodingEvaluator));
+            answ = Regexes["codingRex"].Replace(answ, new MatchEvaluator(CodingEvaluator));
+
             //Listen erkennen
             //answ = bulletRex.Replace(answ, "&#42; ${test}"); alt und nicht mehr gebraucht. Ersetzt durch die beiden nächsten regexps
             answ = Regexes["bulletListRex"].Replace(answ, string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
@@ -196,21 +220,41 @@ namespace JournalWriter
             answ = Regexes["italicRex"].Replace(answ, "${start}<Italic>${test}</Italic>${ende}");
             answ = Regexes["singleUnderlineRex"].Replace(answ, "${start}<Underline>${test}</Underline>${ende}");
 
-            //Titel 1. u. 2. Ordnung
+            //Titel
+            answ = Regexes["headline5"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
+               DocumentHeadline5FontSize,
+               "${test}",
+               DocumentFontFamily));
+            answ = Regexes["headline4"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
+               DocumentHeadline4FontSize,
+               "${test}",
+               DocumentFontFamily));
+            answ = Regexes["headline3"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
+               DocumentHeadline3FontSize,
+               "${test}",
+               DocumentFontFamily));
+            answ = Regexes["headline2"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
+               DocumentHeadline2FontSize,
+               "${test}",
+               DocumentFontFamily));
             answ = Regexes["headline1"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
+                DocumentHeadline1FontSize,
+                "${test}",
+                DocumentFontFamily));
+            answ = Regexes["alt-headline1"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
                 DocumentHeadline1FontSize, 
                 "${test}", 
                 DocumentFontFamily));
-            answ = Regexes["headline2"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
-                DocumentHeadLine2FontSize, 
+            answ = Regexes["alt-headline2"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
+                DocumentHeadline2FontSize, 
                 "${test}",
                 DocumentFontFamily));
+
+            
 
             //Zitate
             answ = Regexes["quoteRex"].Replace(answ, new MatchEvaluator(BlockQuoteEvaluator));
 
-            //Programmcode im Text
-            answ = Regexes["codingRex"].Replace(answ, new MatchEvaluator(CodingEvaluator));
             
             //dies hier am Schluss - wandelt die normalen Absätze um
             answ = Regexes["paraRex"].Replace(answ, new MatchEvaluator(ParagraphEvaluator));
@@ -244,6 +288,9 @@ namespace JournalWriter
             bq = Regex.Replace(bq, @"\n\n", "", RegexOptions.Multiline);
             bq = Regex.Replace(bq, @"\n", "<LineBreak />", RegexOptions.Multiline);
 
+            bq = Regex.Replace(bq, @"#", "&#35;", RegexOptions.Multiline); //Dies hier muss als erste Zeichenersetzung gemacht werden!!!!
+            bq = Regex.Replace(bq, @"\*", "&#42;", RegexOptions.Multiline);
+            bq = Regex.Replace(bq, @"_", "&#95;", RegexOptions.Multiline);
             return string.Format("<Paragraph xml:space=\"preserve\" TextAlignment=\"Left\" Margin=\"50,0,0,0\" FontSize=\"{1}\" FontFamily=\"Consolas\">{0}</Paragraph>\n\n", bq, DocumentNormalFontSize);
         }
 
@@ -277,9 +324,15 @@ namespace JournalWriter
             if(DocumentNormalFontSize == null)
                 DocumentNormalFontSize = "12pt";
             if (DocumentHeadline1FontSize == null)
-                DocumentHeadline1FontSize = "16pt";
-            if (DocumentHeadLine2FontSize == null)
-                DocumentHeadLine2FontSize = "14pt";
+                DocumentHeadline1FontSize = "26pt";
+            if (DocumentHeadline2FontSize == null)
+                DocumentHeadline2FontSize = "24pt";
+            if (DocumentHeadline3FontSize == null)
+                DocumentHeadline3FontSize = "22pt";
+            if (DocumentHeadline4FontSize == null)
+                DocumentHeadline4FontSize = "20pt";
+            if (DocumentHeadline5FontSize == null)
+                DocumentHeadline5FontSize = "18pt";
 
             FlowDocument doc = null;
             try

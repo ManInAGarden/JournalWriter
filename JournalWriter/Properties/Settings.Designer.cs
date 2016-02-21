@@ -61,7 +61,7 @@ namespace JournalWriter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("22")]
+        [global::System.Configuration.DefaultSettingValueAttribute("26")]
         public string ReaderHeadline1FontSize {
             get {
                 return ((string)(this["ReaderHeadline1FontSize"]));
@@ -73,13 +73,13 @@ namespace JournalWriter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("18")]
-        public string ReadlerHeadline2FontSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("24")]
+        public string ReaderHeadline2FontSize {
             get {
-                return ((string)(this["ReadlerHeadline2FontSize"]));
+                return ((string)(this["ReaderHeadline2FontSize"]));
             }
             set {
-                this["ReadlerHeadline2FontSize"] = value;
+                this["ReaderHeadline2FontSize"] = value;
             }
         }
         
@@ -92,6 +92,42 @@ namespace JournalWriter.Properties {
             }
             set {
                 this["JournalPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("22")]
+        public string ReaderHeadline3FontSize {
+            get {
+                return ((string)(this["ReaderHeadline3FontSize"]));
+            }
+            set {
+                this["ReaderHeadline3FontSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public string ReaderHeadline4FontSize {
+            get {
+                return ((string)(this["ReaderHeadline4FontSize"]));
+            }
+            set {
+                this["ReaderHeadline4FontSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("18")]
+        public string ReaderHeadline5FontSize {
+            get {
+                return ((string)(this["ReaderHeadline5FontSize"]));
+            }
+            set {
+                this["ReaderHeadline5FontSize"] = value;
             }
         }
     }

@@ -12,13 +12,22 @@
       <Value Profile="(Default)">16</Value>
     </Setting>
     <Setting Name="ReaderHeadline1FontSize" Type="System.String" Scope="User">
-      <Value Profile="(Default)">22</Value>
+      <Value Profile="(Default)">26</Value>
     </Setting>
-    <Setting Name="ReadlerHeadline2FontSize" Type="System.String" Scope="User">
-      <Value Profile="(Default)">18</Value>
+    <Setting Name="ReaderHeadline2FontSize" Type="System.String" Scope="User">
+      <Value Profile="(Default)">24</Value>
     </Setting>
     <Setting Name="JournalPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">c:\Users\tiger\JournalStore</Value>
+    </Setting>
+    <Setting Name="ReaderHeadline3FontSize" Type="System.String" Scope="User">
+      <Value Profile="(Default)">22</Value>
+    </Setting>
+    <Setting Name="ReaderHeadline4FontSize" Type="System.String" Scope="User">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
+    <Setting Name="ReaderHeadline5FontSize" Type="System.String" Scope="User">
+      <Value Profile="(Default)">18</Value>
     </Setting>
   </Settings>
 </SettingsFile>

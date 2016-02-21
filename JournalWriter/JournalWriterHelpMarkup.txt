@@ -18,8 +18,10 @@ Markup in SJournal
 
 Das sieht dann so aus:
 
-	Überschrift 1. Ordnung
-	===
+```
+Überschrift 1. Ordnung
+===
+```
 
 wird
 
@@ -29,13 +31,54 @@ wird
 
 und aus 
 
-	Überschrift 2. Ordnung
-	---
+```
+Überschrift 2. Ordnung
+---
+```
 
 wird dies hier.
 
 Überschrift 2. Ordnung
 ---
+
+Man kann für Überschriften aber auch mit vorangestellten #-Zeichen arbeiten. Dabei bestimmt die Anzahl der #-Zeichen in welcher Ordnung sich die Überschrift befinden.
+Also
+
+```
+# Überschrift 1. Ordnung
+```
+
+und
+
+```
+# Überschrift 2. Ordnung werden zu:
+```
+
+# Überschrift 1. Ordnung
+
+
+und
+
+
+## Überschrift 2. Ordnung
+
+Damit kann man auch Überschriften bis zur 5. Ordnung anlegen. Also mit:
+
+
+```
+### 3. Ordnung
+#### 4. Ordnung
+##### 5. Ordnung
+```
+
+erhält man diese Überschriften:
+
+### 3. Ordnung
+
+#### 4. Ordnung
+
+##### 5. Ordnung
+
 
 Normalen Fließtext schreibt man einfach so runter. Man beginnt ganz links und schreibt seinen Text ohne Zeilenschaltungen einzufügen. Nur wenn man einen neuen Absatz beginnen möchte fügt man zwei Zeilenschaltungen ein. So entsteht auch im Texteditor der Eindruck von Absätzen.
 
@@ -43,9 +86,11 @@ So hier beginnt nun ein neuer Absatz. Geht doch!
 
 Will man im Fließtext kursiven, fetten oder unterstrichenen Text haben geschieht dies indem man den Text in bestimmte steuernde Zeichen einschließt. Beispiele:
 
+```
 	*kursiv* - In Sternchen eingeschlossen
 	**fett** - in Sternchenpaare eingeschlossen
 	_unterstrichen_ - in Unterstrichzeichen eingeschlossen
+```
 
 Sieht so aus: *kursiv*, **fett**, _unterstrichen_
 
@@ -61,6 +106,45 @@ Und so sieht das im Text beim Lesen aus.
 
 >Der Student geht zur Mensa bis er bricht.
 
+
+Code-Blöcke
+---
+
+Ein Code-Block wird von der Formatierung ausgeschlossen und eingerückt mit einem Zeichensatz dargestellt bei dem alle Zeichen gleich breit sind.
+Um dies zu erreichen gibt es zwei Möglichkeiten.
+
+Triple-Backtick-Zeilen am Ende und am Anfang des Code-Blocks.
+
+&#96;&#96;&#96;
+FOR I = 0 TO 10
+  PRINT I
+NEXT
+&#96;&#96;&#96;
+
+*Die Backtick-Zeichen (&#96;) sind rechts neben dem ß und mit Shift zu erreichen*
+
+Dies wird dann zu:
+
+```
+FOR I=0 TO 10
+ 	PRINT I
+NEXT
+```
+
+Eine andere Methode benutzt TAB-Zeichen oder mindestens drei Leerzeichen zu Beginn jeder Zeile des Code Blocks. Dies benutzt man so:
+
+[TAB]FOR I = 0 TO 10
+[TAB]  PRINT I
+[TAB]NEXT
+
+Ergebnis:
+
+	FOR I = 0 TO 10
+	  PRINT I
+	NEXT
+
+**Achtung: Diese Methode ist viel schwieriger zu benutzen weil man TABS im Editor nicht sieht** Man kann zur Kontrolle TAB-Zeichen mit der Tastenkombination Ctr+T sichtbar machen und wieder unsichtbar schalten. Das hilft ein bisschen, dennoch ist die TAB-Methode nicht sehr empfehlenswert.
+
 Listen
 ---
 
@@ -68,9 +152,11 @@ Listen kommen häufig vor wenn man etwas protokollieren möchte. Da gibt es zun�
 
 Dafür schreibt man einfach ein kleines Sternchen vor jeden Punkt der Liste
 
-	&#42; Erster Punkt
-	&#42; Zweiter Punkt
-	&#42; Dritter Punkt
+```
+* Erster Punkt
+* Zweiter Punkt
+* Dritter Punkt
+```
 
 wird zu 
 
@@ -86,10 +172,11 @@ o Dritter Punkt
 
 Nummerierte Liste erhält man indem man anstelle der Sternchen einfach eine Ziffer gefolgt von einem Punkt hinschreibt. So wird aus
 
-	:1. Erster Punkt (den Doppelpunkt am Anfang habe ich nur eingefügt damit nicht auch dies hier als Liste
-	 erkannt und formatiert wird. D.h. den muss man weglassen)
-	:2. Zweiter Punkt
-	:3. Dritter Punkt
+```
+:1. Erster Punkt (den Doppelpunkt am Anfang habe ich nur eingefügt damit nicht auch dies hier als Liste erkannt und formatiert wird. D.h. den muss man weglassen)
+:2. Zweiter Punkt
+:3. Dritter Punkt
+```
 
 dies hier
 
@@ -99,9 +186,11 @@ dies hier
 
 Wenn man keine Lust hat wirklich zu zählen kann man hier auch einfach immer 0. schreiben. Der JournalWriter übernimmt ohnehin das Zählen.
 
-	:0. Erster Punkt
-	:0. Zweiter Punkt
-	:0. Dritter Punkt
+```
+:0. Erster Punkt
+:0. Zweiter Punkt
+:0. Dritter Punkt
+```
 
 wird zu 
 

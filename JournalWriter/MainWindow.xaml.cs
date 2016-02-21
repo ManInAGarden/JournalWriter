@@ -695,8 +695,10 @@ namespace JournalWriter
             mdwn.DocumentFontFamily = Properties.Settings.Default.ReaderFont;
             mdwn.DocumentNormalFontSize = Properties.Settings.Default.ReaderFontSize.ToString();
             mdwn.DocumentHeadline1FontSize = Properties.Settings.Default.ReaderHeadline1FontSize.ToString();
-            mdwn.DocumentHeadLine2FontSize = Properties.Settings.Default.ReadlerHeadline2FontSize.ToString();
-
+            mdwn.DocumentHeadline2FontSize = Properties.Settings.Default.ReaderHeadline2FontSize.ToString();
+            mdwn.DocumentHeadline3FontSize = Properties.Settings.Default.ReaderHeadline3FontSize.ToString();
+            mdwn.DocumentHeadline4FontSize = Properties.Settings.Default.ReaderHeadline4FontSize.ToString();
+            mdwn.DocumentHeadline5FontSize = Properties.Settings.Default.ReaderHeadline5FontSize.ToString();
         }
 
       

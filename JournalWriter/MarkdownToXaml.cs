@@ -28,6 +28,9 @@ namespace JournalWriter
         public string DocumentHeadline3FontSize { set; get; }
         public string DocumentHeadline4FontSize { set; get; }
         public string DocumentHeadline5FontSize { set; get; }
+        public string CodingFontSize { set; get; }
+        public string CodingFontFamily { set; get; }
+
 
         public Dictionary<string, Regex> Regexes { get; set; }
        
@@ -36,126 +39,127 @@ namespace JournalWriter
 
         public MarkdownToXaml()
         {
-            Regexes = new Dictionary<string, Regex>();
-            AddTheRexes(Regexes);
+            //Regexes = new Dictionary<string, Regex>();
+            //AddTheRexes(Regexes);
         }
+
 
         /// <summary>
         /// Add all regular expressions to the dict of regular expressions for later use
         /// </summary>
         /// <param name="regexes">Dictionary to be filled</param>
-        private void AddTheRexes(Dictionary<string, Regex> rxs)
-        {
-            rxs.Clear();
-            
-            //bold text
-            AddRex(rxs, "boldRex",
-                @"(?<start>(\s|\n|\?|\.|,|;|!))\*\*",   //Zeilenschaltung oder Whitespace oder Worttrennzeichen mit Aufzeichnung gefolgt von 2 Strenchen
-                @"(?<test>[^*]+)",                      //Was zwischen den Sternchen ist
-                @"\*\*(?<ende>(\s|\n|\?|\.|,|;|!))");   //gefolgt von 2 Sternchen und einer Zeilenschaltung oder einem Whitespace das wir aufzeichnen"
-            
-            //italic text
-            AddRex(rxs, "italicRex", @"(?<start>(\s|\n|\?|\.|,|;|!))\*(?<test>[^*]+)\*(?<ende>(\s|\n|\?|\.|,|;|!))");
-            
-            //single underline text
-            AddRex(rxs, "singleUnderlineRex", @"(?<start>(\s|\n|\?|\.|,|;|!))_(?<test>[^_]+)_(?<ende>(\s|\n|\?|\.|,|;|!))");
+        //private void AddTheRexes(Dictionary<string, Regex> rxs)
+        //{
+        //    rxs.Clear();
 
-            
-            //first level # title
-            AddRex(rxs, "headline1", @"^\#+\s+(?<test>.*)[\n]");
-            //second level alternative title
-            AddRex(rxs, "alt-headline1", @"^(?<test>.*)",   //Zeilenanfang gefolgt von beliebigem Zeugs außer einem Zeilenende
-                                     @"[\n][=]{3,}",        //Zeilenende gefolgt von mindestens 3 Gleicheitszeichen
-                                     @"$");                 //Und dann noch ein Zeilenende"
+        //    //bold text
+        //    AddRex(rxs, "boldRex",
+        //        @"(?<start>(\s|\n|\?|\.|,|;|!))\*\*",   //Zeilenschaltung oder Whitespace oder Worttrennzeichen mit Aufzeichnung gefolgt von 2 Strenchen
+        //        @"(?<test>[^*]+)",                      //Was zwischen den Sternchen ist
+        //        @"\*\*(?<ende>(\s|\n|\?|\.|,|;|!))");   //gefolgt von 2 Sternchen und einer Zeilenschaltung oder einem Whitespace das wir aufzeichnen"
 
-            //second level ##-Titles
-            AddRex(rxs, "headline2", @"^\#{2}\s+(?<test>.*)[\n]");
-            //second level alternative title
-            AddRex(rxs, "alt-headline2", @"^(?<test>.*)",   //Zeilenanfang gefolgt von beliebigem Zeugs außer einem Zeilenende
-                                     @"[\n][-]{3,}",        //Zeilenende gefolgt von mindestens 3 Minuszeichen
-                                     @"$");                 //Und dann noch ein Zeilenende
+        //    //italic text
+        //    AddRex(rxs, "italicRex", @"(?<start>(\s|\n|\?|\.|,|;|!))\*(?<test>[^*]+)\*(?<ende>(\s|\n|\?|\.|,|;|!))");
 
-            //und alle weiteren Titelebenen die aber nur mit der #-Methode definiert sind
-            AddRex(rxs, "headline3", @"^\#{3}\s+(?<test>.*)[\n]");
-            AddRex(rxs, "headline4", @"^\#{4}\s+(?<test>.*)[\n]");
-            AddRex(rxs, "headline5", @"^\#{5}\s+(?<test>.*)[\n]");
-
-            //bullet list
-            AddRex(rxs, "bulletListRex", @"(?<test>(^\s*\*\s.+\n)+)");  //Zeilenanfang gefolgt von mindestens einem Listenelement dann egal was
-            AddRex(rxs, "bulletRex", @"^\s*\*\s(?<test>.*)$");          //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem Stern und einem Leerzeichen
-                                                                        //bullet list
-            //bullet list with circles
-            AddRex(rxs, "circBulletListRex", @"(?<test>(^\s*[o]\s.+\n)+)");  //Zeilenanfang gefolgt von mindestens einem Listenelement dann egal was
-            AddRex(rxs, "circBulletRex", @"^\s*[o]\s(?<test>.*)$");          //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem kleinen o und einem Leerzeichen
-
-            //numbered list
-            AddRex(rxs, "numberedListRex", 
-                @"(?<test>",                            //wwap everything into test
-                @"(^[\s]*[0-9]+\.\s.*\n)+",             //definition for single list entry
-                @")");                                  //closing braces for test capture
-            AddRex(rxs, "numberedRex", @"^[\s]*[0-9]+\.\s(?<test>.*)$");   //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem Stern und einem Leerzeichen
-
-            //numbered list with letters
-            AddRex(rxs, "letteredListRex",
-                @"(?<test>",                            //wwap everything into test
-                @"(^[\s]*[a-z]+\.\s.*\n)+",             //definition for single list entry
-                @")");                                  //closing braces for test capture
-            AddRex(rxs, "letteredRex", @"^[\s]*[a-z]+\.\s(?<test>.*)$");   //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem Stern und einem Leerzeichen
+        //    //single underline text
+        //    AddRex(rxs, "singleUnderlineRex", @"(?<start>(\s|\n|\?|\.|,|;|!))_(?<test>[^_]+)_(?<ende>(\s|\n|\?|\.|,|;|!))");
 
 
-            //numbered list with capital letters
-            AddRex(rxs, "capitalLetteredListRex",
-                @"(?<test>",                            //wwap everything into test
-                @"(^[\s]*[A-Z]+\.\s.*\n)+",             //definition for single list entry
-                @")");                                  //closing braces for test capture
-            AddRex(rxs, "capitalLetteredRex", @"^[\s]*[A-Z]+\.\s(?<test>.*)$");   //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem Stern und einem Leerzeichen
+        //    //first level # title
+        //    AddRex(rxs, "headline1", @"^\#+\s+(?<test>.*)[\n]");
+        //    //second level alternative title
+        //    AddRex(rxs, "alt-headline1", @"^(?<test>.*)",   //Zeilenanfang gefolgt von beliebigem Zeugs außer einem Zeilenende
+        //                             @"[\n][=]{3,}",        //Zeilenende gefolgt von mindestens 3 Gleicheitszeichen
+        //                             @"$");                 //Und dann noch ein Zeilenende"
 
-           
-            //quotations
-            AddRex(rxs, "quoteRex", @"(?<test>",            //Wrap whole match in {test}
-                @"(",
-                @"^[ ]*&gt;[ ]?",                           //'>' at the start of a line
-                @".+\n",                                    //rest of the first line
-                @"(.+\n)*",                                 //subsequent consecutive lines
-                @"\n*",                                     //blanks
-                @")+)");
+        //    //second level ##-Titles
+        //    AddRex(rxs, "headline2", @"^\#{2}\s+(?<test>.*)[\n]");
+        //    //second level alternative title
+        //    AddRex(rxs, "alt-headline2", @"^(?<test>.*)",   //Zeilenanfang gefolgt von beliebigem Zeugs außer einem Zeilenende
+        //                             @"[\n][-]{3,}",        //Zeilenende gefolgt von mindestens 3 Minuszeichen
+        //                             @"$");                 //Und dann noch ein Zeilenende
 
-            //coding starting and ending with a line of exactly three backticks (`)
-            AddRex(rxs, "backtickCodingRex",
-                @"^```[\n]+",
-                @"(?<test>(.+\n)*)",
-                @"```$");
+        //    //und alle weiteren Titelebenen die aber nur mit der #-Methode definiert sind
+        //    AddRex(rxs, "headline3", @"^\#{3}\s+(?<test>.*)[\n]");
+        //    AddRex(rxs, "headline4", @"^\#{4}\s+(?<test>.*)[\n]");
+        //    AddRex(rxs, "headline5", @"^\#{5}\s+(?<test>.*)[\n]");
 
-            //programm code with TAB method
-            AddRex(rxs, "codingRex", @"(?<test>",           //Wrap whole match in {test}
-                @"(",
-                @"^([ ]{3}|\t)",                            //at exactly three spaces or a tab character at the start of a line
-                @".+\n",                                    //rest of the first line
-                @"(.+\n)*",                                 //subsequent consecutive lines
-                @"\n *",
-                @")+)");
+        //    //bullet list
+        //    AddRex(rxs, "bulletListRex", @"(?<test>(^\s*\*\s.+\n)+)");  //Zeilenanfang gefolgt von mindestens einem Listenelement dann egal was
+        //    AddRex(rxs, "bulletRex", @"^\s*\*\s(?<test>.*)$");          //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem Stern und einem Leerzeichen
+        //                                                                //bullet list
+        //    //bullet list with circles
+        //    AddRex(rxs, "circBulletListRex", @"(?<test>(^\s*[o]\s.+\n)+)");  //Zeilenanfang gefolgt von mindestens einem Listenelement dann egal was
+        //    AddRex(rxs, "circBulletRex", @"^\s*[o]\s(?<test>.*)$");          //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem kleinen o und einem Leerzeichen
 
-            //paragraphs
-            AddRex(rxs, "paraRex", 
-                @"(?<test>",                                //Wrap whole match in {test}
-                    @"(",                                        //opening brace for wrap
-                       @"^(?!<Paragraph)+",                         //nothing in front of first line that does not start with <Paragraph>
-                       @"(.+\n)+",                                  //subsequent consecutive lines
-                       @"\n+",                                      //at least one newline
-                    @")",                                        //closing brace for wrap
-                @")");                                      //closing brace for <test> contents
-        }
+        //    //numbered list
+        //    AddRex(rxs, "numberedListRex", 
+        //        @"(?<test>",                            //wwap everything into test
+        //        @"(^[\s]*[0-9]+\.\s.*\n)+",             //definition for single list entry
+        //        @")");                                  //closing braces for test capture
+        //    AddRex(rxs, "numberedRex", @"^[\s]*[0-9]+\.\s(?<test>.*)$");   //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem Stern und einem Leerzeichen
+
+        //    //numbered list with letters
+        //    AddRex(rxs, "letteredListRex",
+        //        @"(?<test>",                            //wwap everything into test
+        //        @"(^[\s]*[a-z]+\.\s.*\n)+",             //definition for single list entry
+        //        @")");                                  //closing braces for test capture
+        //    AddRex(rxs, "letteredRex", @"^[\s]*[a-z]+\.\s(?<test>.*)$");   //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem Stern und einem Leerzeichen
 
 
-        private void AddRex(Dictionary<string, Regex> rx, string name, params string[] parts)
-        {
-            string complete = "";
+        //    //numbered list with capital letters
+        //    AddRex(rxs, "capitalLetteredListRex",
+        //        @"(?<test>",                            //wwap everything into test
+        //        @"(^[\s]*[A-Z]+\.\s.*\n)+",             //definition for single list entry
+        //        @")");                                  //closing braces for test capture
+        //    AddRex(rxs, "capitalLetteredRex", @"^[\s]*[A-Z]+\.\s(?<test>.*)$");   //Zeilenanfang gefolgt von beliebigen Leerzeichen und einem Stern und einem Leerzeichen
 
-            foreach (string part in parts)
-                complete += part;
 
-            rx.Add(name, new Regex(complete, standardOptions));
-        }
+        //    //quotations
+        //    AddRex(rxs, "quoteRex", @"(?<test>",            //Wrap whole match in {test}
+        //        @"(",
+        //        @"^[ ]*&gt;[ ]?",                           //'>' at the start of a line
+        //        @".+\n",                                    //rest of the first line
+        //        @"(.+\n)*",                                 //subsequent consecutive lines
+        //        @"\n*",                                     //blanks
+        //        @")+)");
+
+        //    //coding starting and ending with a line of exactly three backticks (`)
+        //    AddRex(rxs, "backtickCodingRex",
+        //        @"^```[\n]+",
+        //        @"(?<test>(.+\n)*)",
+        //        @"```$");
+
+        //    //programm code with TAB method
+        //    AddRex(rxs, "codingRex", @"(?<test>",           //Wrap whole match in {test}
+        //        @"(",
+        //        @"^([ ]{3}|\t)",                            //at exactly three spaces or a tab character at the start of a line
+        //        @".+\n",                                    //rest of the first line
+        //        @"(.+\n)*",                                 //subsequent consecutive lines
+        //        @"\n *",
+        //        @")+)");
+
+        //    //paragraphs
+        //    AddRex(rxs, "paraRex", 
+        //        @"(?<test>",                                //Wrap whole match in {test}
+        //            @"(",                                        //opening brace for wrap
+        //               @"^(?!<Paragraph)+",                         //nothing in front of first line that does not start with <Paragraph>
+        //               @"(.+\n)+",                                  //subsequent consecutive lines
+        //               @"\n+",                                      //at least one newline
+        //            @")",                                        //closing brace for wrap
+        //        @")");                                      //closing brace for <test> contents
+        //}
+
+
+        //private void AddRex(Dictionary<string, Regex> rx, string name, params string[] parts)
+        //{
+        //    string complete = "";
+
+        //    foreach (string part in parts)
+        //        complete += part;
+
+        //    rx.Add(name, new Regex(complete, standardOptions));
+        //}
 
         /// <summary>
         /// Das FlowDocument aus dem Markup-Text aufbauen
@@ -163,6 +167,36 @@ namespace JournalWriter
         /// <param name="text">Text in Markup-Form</param>
         /// <returns>Test als FlowDocument formatiert</returns>
         public string FormatDocument(string text)
+        {
+            MarkDownLexicalAnalyzer ana = new MarkDownLexicalAnalyzer(text + "\n\n");
+
+            List<DocLexElement> lex = ana.GetDocLexList();
+           
+
+
+            FlowDocGenerator fdg = new FlowDocGenerator();
+            fdg.DocumentFontFamily = DocumentFontFamily;
+            fdg.DocumentNormalFontSize = DocumentNormalFontSize;
+            fdg.DocumentHeadline1FontSize = DocumentHeadline1FontSize;
+            fdg.DocumentHeadline2FontSize = DocumentHeadline2FontSize;
+            fdg.DocumentHeadline3FontSize = DocumentHeadline3FontSize;
+            fdg.DocumentHeadline4FontSize = DocumentHeadline4FontSize;
+            fdg.DocumentHeadline5FontSize = DocumentHeadline5FontSize;
+            fdg.CodingFontSize = CodingFontSize;
+            fdg.CodingFontFamily = CodingFontFamily;
+
+            return fdg.ProduceDoc(lex);
+
+        }
+
+
+
+        /// <summary>
+        /// Das FlowDocument aus dem Markup-Text aufbauen
+        /// </summary>
+        /// <param name="text">Text in Markup-Form</param>
+        /// <returns>Test als FlowDocument formatiert</returns>
+        public string OldFormatDocument(string text)
         {
             
             const string start = "<FlowDocument xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\""
@@ -242,20 +276,20 @@ namespace JournalWriter
                 "${test}",
                 DocumentFontFamily));
             answ = Regexes["alt-headline1"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
-                DocumentHeadline1FontSize, 
-                "${test}", 
+                DocumentHeadline1FontSize,
+                "${test}",
                 DocumentFontFamily));
             answ = Regexes["alt-headline2"].Replace(answ, string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
-                DocumentHeadline2FontSize, 
+                DocumentHeadline2FontSize,
                 "${test}",
                 DocumentFontFamily));
 
-            
+
 
             //Zitate
             answ = Regexes["quoteRex"].Replace(answ, new MatchEvaluator(BlockQuoteEvaluator));
 
-            
+
             //dies hier am Schluss - wandelt die normalen Absätze um
             answ = Regexes["paraRex"].Replace(answ, new MatchEvaluator(ParagraphEvaluator));
 
@@ -333,6 +367,10 @@ namespace JournalWriter
                 DocumentHeadline4FontSize = "20pt";
             if (DocumentHeadline5FontSize == null)
                 DocumentHeadline5FontSize = "18pt";
+            if (CodingFontFamily == null)
+                CodingFontFamily = "Lucida Sans";
+            if (CodingFontSize == null)
+                CodingFontSize = "12";
 
             FlowDocument doc = null;
             try
@@ -355,6 +393,10 @@ namespace JournalWriter
             return doc;
         }
 
+
+      
+
+       
         private FlowDocument LoadXaml(string text)
         {
             return System.Windows.Markup.XamlReader.Parse(text) as FlowDocument;

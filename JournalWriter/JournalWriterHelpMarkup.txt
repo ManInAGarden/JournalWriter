@@ -100,7 +100,9 @@ Zitate
 
 Häufig möchte man Zitate anbringen. Dies geschieht einfach indem man die Zeile mit einen Größer-Zeichen beginnt. Das sieht dann so aus
 
-	>Der Krug geht zum Brunnen bis er bricht.
+```
+>Der Krug geht zum Brunnen bis er bricht.
+```
 
 Und so sieht das im Text beim Lesen aus.
 
@@ -115,13 +117,13 @@ Um dies zu erreichen gibt es zwei Möglichkeiten.
 
 Triple-Backtick-Zeilen am Ende und am Anfang des Code-Blocks.
 
-&#96;&#96;&#96;
+'''
 FOR I = 0 TO 10
   PRINT I
 NEXT
-&#96;&#96;&#96;
+'''
 
-*Die Backtick-Zeichen (&#96;) sind rechts neben dem ß und mit Shift zu erreichen*
+*Die Backtick-Zeichen sind rechts neben dem ß und mit Shift zu erreichen*
 
 Dies wird dann zu:
 
@@ -160,9 +162,11 @@ Dafür schreibt man einfach ein kleines Sternchen vor jeden Punkt der Liste
 
 wird zu 
 
+```
 * Erster Punkt
 * Zweiter Punkt
 * Dritter Punkt
+```
 
 Mit einem kleine o (Ohhhh) anstelle des Sternchens wird daraus eine Liste mit Kreisen als Spiegelstrich. Das sieht dann so aus
 

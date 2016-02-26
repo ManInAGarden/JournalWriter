@@ -61,7 +61,7 @@ namespace JournalWriter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("26")]
+        [global::System.Configuration.DefaultSettingValueAttribute("28")]
         public string ReaderHeadline1FontSize {
             get {
                 return ((string)(this["ReaderHeadline1FontSize"]));
@@ -74,9 +74,9 @@ namespace JournalWriter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("24")]
-        public string ReaderHeadline2FontSize {
+        public int ReaderHeadline2FontSize {
             get {
-                return ((string)(this["ReaderHeadline2FontSize"]));
+                return ((int)(this["ReaderHeadline2FontSize"]));
             }
             set {
                 this["ReaderHeadline2FontSize"] = value;
@@ -98,9 +98,9 @@ namespace JournalWriter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("22")]
-        public string ReaderHeadline3FontSize {
+        public int ReaderHeadline3FontSize {
             get {
-                return ((string)(this["ReaderHeadline3FontSize"]));
+                return ((int)(this["ReaderHeadline3FontSize"]));
             }
             set {
                 this["ReaderHeadline3FontSize"] = value;
@@ -110,9 +110,9 @@ namespace JournalWriter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("20")]
-        public string ReaderHeadline4FontSize {
+        public int ReaderHeadline4FontSize {
             get {
-                return ((string)(this["ReaderHeadline4FontSize"]));
+                return ((int)(this["ReaderHeadline4FontSize"]));
             }
             set {
                 this["ReaderHeadline4FontSize"] = value;
@@ -122,12 +122,36 @@ namespace JournalWriter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("18")]
-        public string ReaderHeadline5FontSize {
+        public int ReaderHeadline5FontSize {
             get {
-                return ((string)(this["ReaderHeadline5FontSize"]));
+                return ((int)(this["ReaderHeadline5FontSize"]));
             }
             set {
                 this["ReaderHeadline5FontSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Consolas")]
+        public string ReaderCodingFont {
+            get {
+                return ((string)(this["ReaderCodingFont"]));
+            }
+            set {
+                this["ReaderCodingFont"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public int ReaderCodingFontSize {
+            get {
+                return ((int)(this["ReaderCodingFontSize"]));
+            }
+            set {
+                this["ReaderCodingFontSize"] = value;
             }
         }
     }

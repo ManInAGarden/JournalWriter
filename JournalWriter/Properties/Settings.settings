@@ -12,22 +12,28 @@
       <Value Profile="(Default)">16</Value>
     </Setting>
     <Setting Name="ReaderHeadline1FontSize" Type="System.String" Scope="User">
-      <Value Profile="(Default)">26</Value>
+      <Value Profile="(Default)">28</Value>
     </Setting>
-    <Setting Name="ReaderHeadline2FontSize" Type="System.String" Scope="User">
+    <Setting Name="ReaderHeadline2FontSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">24</Value>
     </Setting>
     <Setting Name="JournalPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">c:\Users\tiger\JournalStore</Value>
     </Setting>
-    <Setting Name="ReaderHeadline3FontSize" Type="System.String" Scope="User">
+    <Setting Name="ReaderHeadline3FontSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">22</Value>
     </Setting>
-    <Setting Name="ReaderHeadline4FontSize" Type="System.String" Scope="User">
+    <Setting Name="ReaderHeadline4FontSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">20</Value>
     </Setting>
-    <Setting Name="ReaderHeadline5FontSize" Type="System.String" Scope="User">
+    <Setting Name="ReaderHeadline5FontSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">18</Value>
+    </Setting>
+    <Setting Name="ReaderCodingFont" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Consolas</Value>
+    </Setting>
+    <Setting Name="ReaderCodingFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">16</Value>
     </Setting>
   </Settings>
 </SettingsFile>

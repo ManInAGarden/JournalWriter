@@ -103,6 +103,8 @@
     <Compile Include="AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DocLexElement.cs" />
+    <Compile Include="FlowDocGenerator.cs" />
     <Compile Include="FlowDocumentTestWindow.xaml.cs">
       <DependentUpon>FlowDocumentTestWindow.xaml</DependentUpon>
     </Compile>
@@ -110,6 +112,7 @@
       <DependentUpon>GotoLineEntryWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="LogicalTreeHelperHelper.cs" />
+    <Compile Include="MarkDownLexicalAnalyzer.cs" />
     <Compile Include="MarkdownToXaml.cs" />
     <Compile Include="SessionCommands.cs" />
     <Compile Include="ShowSourceWindow.xaml.cs">

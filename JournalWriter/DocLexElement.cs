@@ -16,22 +16,33 @@ namespace JournalWriter
         public LexTypeEnum Type { get; set; }
         public string Text { get; set; }
         public int Level { get; set; }
+        public int SpaceCountAtEnd { get; set; }
 
-        public DocLexElement(LexTypeEnum t, string txt)
+        /// <summary>
+        /// Constructor for Lex-Element with a text content
+        /// </summary>
+        /// <param name="t">The type of the element</param>
+        /// <param name="txt">The text content</param>
+        /// <param name="spcCount">Number of spaces following the element</param>
+        public DocLexElement(LexTypeEnum t, string txt, int spcCount = 0)
         {
             Type = t;
             Text = txt;
+            SpaceCountAtEnd = spcCount;
         }
 
-        public DocLexElement(LexTypeEnum t)
-        {
-            Type = t;
-        }
 
-        public DocLexElement(LexTypeEnum t, int lvl)
+        /// <summary>
+        /// Contructor for lexical element with a level. Used for headings and list elements
+        /// </summary>
+        /// <param name="t">The type of the element</param>
+        /// <param name="level">Level of the elements</param>
+        /// <param name="spcCount">Number of spaces following the element</param>
+        public DocLexElement(LexTypeEnum t, int level=0, int spcCount=0)
         {
             Type = t;
-            Level = lvl;
+            Level = level;
+            SpaceCountAtEnd = spcCount;
         }
 
         public override string ToString()

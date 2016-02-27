@@ -7,7 +7,7 @@ namespace JournalWriter
 {
     public class MarkDownLexicalAnalyzer
     {
-        char[] nowords = new char[] { ' ', '*', '\n', '\r', '\t', '#', '_', '\'' };
+        char[] nowords = new char[] { ' ', '*', '\n', '\r', '\t', '#', '_', '`' };
         
         public string Text { get; set; }
 
@@ -26,73 +26,80 @@ namespace JournalWriter
             char currc, nextc, thirdc;
             string currw = "";
             bool incode = false;
+            int spcCt;
 
             while (currp < max)
             {
-                ConsumeOneChar(textc, currp, out currc, out nextc, out thirdc);
+                ConsumeOneChar(textc, currp, out currc, out nextc, out thirdc, out spcCt);
                 switch (currc)
                 {
                     case ' ':
-                        if(incode)
+                        if (incode)
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.space));
+
                         break;
+
                     case '\t':
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.tab));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.tab, spcCount: spcCt));
                         break;
+
                     case '\n':
                         if (nextc == '\n' || nextc == '\x1A') //parabreak when another newline or document end follows
                         {
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak));
-                            ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc);
+                            ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc, out spcCt);
                         }
                         else
                         {
                             int offset = 0;
                             if (nextc == '=' && HaveALineOfThese(textc, currp + 1, nextc, out offset))
                             {
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, 1));
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, 1, 0));
                                 currp += offset;
                             }
                             else if (nextc == '-' && HaveALineOfThese(textc, currp + 1, nextc, out offset))
                             {
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, 2));
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, 2, 0));
                                 currp += offset;
                             }
                             else
                                 answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.linebreak));
                         }
                         break;
+
                     case '#':
                         int headlev = 0;
                         while (nextc == '#')
                         {
-                            ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc);
+                            ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc, out spcCt);
                             if(nextc=='#')
                                 headlev++;
                         }
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.hashes, headlev+1));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.hashes, headlev+1, spcCount:spcCt));
                         break;
                     case '*':
                         if (nextc != '*')
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: spcCt));
                         else if (thirdc != '*')
                         {
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.bold));
-                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc);
+                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.bold, spcCount: spcCt));
                         }
                         else
                         {
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.boldemphasize));
-                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc);
-                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc);
+                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.boldemphasize, spcCount: spcCt));
                         }
                         break;
                     case '_':
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.underline));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.underline, spcCount: spcCt));
                         break;
                     case '`':
                         if (nextc != '`')
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.codeinline));
+                        {
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.codeinline, spcCount: spcCt));
+                        }
                         else if (thirdc == '`')
                         {
                             incode = !incode;
@@ -103,21 +110,21 @@ namespace JournalWriter
                         {
                             currp++;
                             currw += "``";
-                            if(nowords.Contains(thirdc))
+                            if (nowords.Contains(thirdc))
                             {
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw));
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
                                 currw = "";
                             }
                         }
                         break;
                     case '>':
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.greaterthan));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.greaterthan, spcCount: spcCt));
                         break;
                     default:
                         currw += currc;
                         if (nowords.Contains(nextc))
                         {
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
                             currw = "";
                         }
                         break;
@@ -156,12 +163,27 @@ namespace JournalWriter
             return false;
         }
 
-        private void ConsumeOneChar(char[] textc, int currp, out char currc, out char nextc, out char thirdc)
+        private void ConsumeOneChar(char[] textc, 
+            int currp, 
+            out char currc, 
+            out char nextc, 
+            out char thirdc, 
+            out int spcCount)
         {
             currc = textc[currp];
             nextc = GetNextChar(textc, currp);
             thirdc = GetNextChar(textc, currp + 1);
+            spcCount = 0;
+            int i = currp + 1;
+
+            while ((i < textc.Length) && (textc[i++] == ' '))
+            {
+                    spcCount++;   
+            }
         }
+
+
+
         /// <summary>
         /// Get Next char as a preview, return EOF ('\x1A') when no next char exists at end of array
         /// </summary>

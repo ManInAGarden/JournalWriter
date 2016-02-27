@@ -162,11 +162,9 @@ Dafür schreibt man einfach ein kleines Sternchen vor jeden Punkt der Liste
 
 wird zu 
 
-```
 * Erster Punkt
 * Zweiter Punkt
 * Dritter Punkt
-```
 
 Mit einem kleine o (Ohhhh) anstelle des Sternchens wird daraus eine Liste mit Kreisen als Spiegelstrich. Das sieht dann so aus
 

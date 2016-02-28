@@ -7,7 +7,8 @@ namespace JournalWriter
 {
     public class MarkDownLexicalAnalyzer
     {
-        char[] nowords = new char[] { ' ', '*', '\n', '\r', '\t', '#', '_', '`' };
+        char[] nowords = new char[] { ' ', '*', '\n', '\r', '\t', '#', '_', '`',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
         
         public string Text { get; set; }
 
@@ -27,6 +28,7 @@ namespace JournalWriter
             string currw = "";
             bool incode = false;
             int spcCt;
+            int offset;
 
             while (currp < max)
             {
@@ -51,7 +53,6 @@ namespace JournalWriter
                         }
                         else
                         {
-                            int offset = 0;
                             if (nextc == '=' && HaveALineOfThese(textc, currp + 1, nextc, out offset))
                             {
                                 answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, 1, 0));
@@ -120,6 +121,48 @@ namespace JournalWriter
                     case '>':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.greaterthan, spcCount: spcCt));
                         break;
+
+                    case '0':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+                    case '1':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+                    case '2':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+                    case '3':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+                    case '4':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+                    case '5':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+                    case '6':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+                    case '7':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+                    case '8':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+                    case '9':
+                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
+                        currp += offset-1;
+                        break;
+
                     default:
                         currw += currc;
                         if (nowords.Contains(nextc))
@@ -137,6 +180,35 @@ namespace JournalWriter
                 answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw));
 
             return answ;
+        }
+
+        /// <summary>
+        /// Take car of any digits to recognize a number.
+        /// </summary>
+        /// <param name="textc"></param>
+        /// <param name="currp"></param>
+        /// <param name="currc"></param>
+        /// <param name="nextc"></param>
+        /// <param name="thirdc"></param>
+        /// <param name="spcCt"></param>
+        private DocLexElement HandleDigits(char[] textc, int currp, out char currc, out char nextc, out char thirdc, out int spcCt, out int offset)
+        {
+            bool stop = false;
+            string numbs = "";
+            offset = 0;
+            int i = currp;
+            do
+            {
+                ConsumeOneChar(textc, i, out currc, out nextc, out thirdc, out spcCt);
+
+                stop = !char.IsDigit(nextc) && nextc != '.';
+                
+                numbs += currc;
+                offset++;
+                i++;
+            } while (i < textc.Length && !stop);
+
+            return new DocLexElement(DocLexElement.LexTypeEnum.number, numbs, spcCount: spcCt);
         }
 
         private bool HaveALineOfThese(char[] textc, int currp, char currc, out int offset)
@@ -163,6 +235,15 @@ namespace JournalWriter
             return false;
         }
 
+        /// <summary>
+        /// consume one character from the input text
+        /// </summary>
+        /// <param name="textc">The input text as an array of chars</param>
+        /// <param name="currp">A pointer to the currently processed position in the input text</param>
+        /// <param name="currc">returns the current char</param>
+        /// <param name="nextc">returns the character following the current character</param>
+        /// <param name="thirdc">returns the character following the character after the current character</param>
+        /// <param name="spcCount"></param>
         private void ConsumeOneChar(char[] textc, 
             int currp, 
             out char currc, 

@@ -83,6 +83,26 @@ namespace JournalWriter
                         }
                         break;
 
+                    case DocLexElement.LexTypeEnum.number:
+                        //are we at a start of a line or paragraph
+                        //AND the numbe rist followed by at least one space
+                        //THEN we have a numbered list to be processed,
+                        //ELSE we have a simple number in the middle of a pragraph or something else
+                        if (string.IsNullOrEmpty(subtxt) && lex.SpaceCountAtEnd > 0 && lex.Text.EndsWith("."))
+                        {
+                            answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
+                                            DocumentNormalFontSize,
+                                            DocumentFontFamily,
+                                            TextMarkerStyle.Decimal,
+                                            GetNumberedListElementsText(lexes, i, '0', out offset));
+                            i += offset;
+                        }
+                        else
+                        {
+                            subtxt += lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        }
+                        break;
+
                     case DocLexElement.LexTypeEnum.codeinline:
                         if (!inparmode.HasFlag(InParamodeEnum.inlinecode))
                         {
@@ -223,13 +243,129 @@ namespace JournalWriter
         }
 
 
+
+        /// <summary>
+        /// Fetch the floaw document of all the numbered list elements
+        /// </summary>
+        /// <param name="lexes">List of lexical elements to partly process</param>
+        /// <param name="pos">Position in the lexes list where to start processing</param>
+        /// <param name="listc">The list marker character that was foun in the first element</param>
+        /// <param name="offset">The offset for the porition to continue processing in the calling process</param>
+        /// <returns>FLow document xaml of the list elements</returns>
+        private string GetNumberedListElementsText(List<DocLexElement> lexes, int pos, char listc, out int offset)
+        {
+            string subtxt = "";
+            string answ = "";
+            offset = 0;
+            DocLexElement lex;
+            bool stop = false;
+            bool inbold = false,
+                inunderline = false,
+                initalic = false;
+
+            for (int i = pos; !stop && (i < lexes.Count); i++)
+            {
+                lex = lexes[i];
+                switch (lex.Type)
+                {
+                    case DocLexElement.LexTypeEnum.parabreak:
+                        if (!IsListElementStart(lexes, i + 1, listc))
+                            stop = true;
+                        else
+                        {
+                            answ += string.Format("<ListItem><Paragraph>{0}</Paragraph></ListItem>",
+                                        subtxt);
+                            subtxt = "";
+                        }
+                        break;
+
+                    case DocLexElement.LexTypeEnum.linebreak:
+                        if (!IsListElementStart(lexes, i + 1, listc))
+                            stop = true;
+                        else
+                        {
+                            answ += string.Format("<ListItem><Paragraph>{0}</Paragraph></ListItem>",
+                                        subtxt);
+                            subtxt = "";
+                        }
+                        break;
+
+                    case DocLexElement.LexTypeEnum.word:
+                        subtxt += lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        break;
+
+
+                    case DocLexElement.LexTypeEnum.greaterthan:
+                        subtxt += ">" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.emphasize:
+                        if (!initalic)
+                        {
+                            subtxt += "<Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            initalic = true;
+                        }
+                        else
+                        {
+                            subtxt += "</Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            initalic = false;
+                        }
+
+                        break;
+
+                    case DocLexElement.LexTypeEnum.bold:
+                        if (!inbold)
+                        {
+                            subtxt += "<Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            inbold = true;
+                        }
+                        else
+                        {
+                            subtxt += "</Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            inbold = false;
+                        }
+                        break;
+
+                    case DocLexElement.LexTypeEnum.number:
+                        if(!string.IsNullOrEmpty(subtxt) || !lex.Text.EndsWith("."))
+                            subtxt += lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.underline:
+                        if (!inunderline)
+                        {
+                            subtxt += "<Underline>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            inunderline = true;
+                        }
+                        else
+                        {
+                            subtxt += "</Underline>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            inunderline = false;
+                        }
+                        break;
+
+                }
+
+                offset++;
+
+            }
+
+            //handle the end of doc with this
+            if (!string.IsNullOrEmpty(subtxt))
+                answ += string.Format("<ListItem><Paragraph>{0}</Paragraph></ListItem>",
+                                        subtxt);
+
+            return answ;
+        }
+
+
         /// <summary>
         /// Fetch the flow doc content of a list element
         /// </summary>
-        /// <param name="lexes"></param>
-        /// <param name="pos"></param>
-        /// <param name="offset"></param>
-        /// <returns></returns>
+        /// <param name="lexes">List of lexical elements to partly process</param>
+        /// <param name="pos">Position in the lexes list where to start processing</param>
+        /// <param name="offset">The offset for the porition to continue processing in the calling process</param>
+        /// <returns>FLow document xaml of the list elements</returns>
         private string GetListElementsText(List<DocLexElement> lexes, int pos, char listc, out int offset)
         {
             string subtxt = "";
@@ -271,6 +407,10 @@ namespace JournalWriter
                         subtxt += lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
                         break;
 
+                    case DocLexElement.LexTypeEnum.number:
+                        subtxt = lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        break;
+
                     case DocLexElement.LexTypeEnum.greaterthan:
                         subtxt += ">" + GetStringOf(" ", lex.SpaceCountAtEnd);
                         break;
@@ -306,6 +446,7 @@ namespace JournalWriter
                             inunderline = false;
                         }
                         break;
+
                 }
 
                 offset++;
@@ -341,11 +482,26 @@ namespace JournalWriter
                 case DocLexElement.LexTypeEnum.word:
                     tstc = lexes[pos].Text.First();
                     break;
+                case DocLexElement.LexTypeEnum.number:
+                    tstc = lexes[pos].Text.First();
+                    break;
                 default:
                     return false;
             }
 
-            return tstc == testfor;
+            bool answ = false;
+
+            switch (testfor)
+            {
+                case '*':
+                    answ = tstc == testfor;
+                    break;
+                case '0':
+                    answ = char.IsDigit(tstc);
+                    break;
+            }
+
+            return answ;
         }
 
 
@@ -459,6 +615,9 @@ namespace JournalWriter
                         break;
                     case DocLexElement.LexTypeEnum.space:
                         answ += " ";
+                        break;
+                    case DocLexElement.LexTypeEnum.number:
+                        answ += lex.Text;
                         break;
                     case DocLexElement.LexTypeEnum.hashes:
                         answ += GetStringOf("#", lex.Level);

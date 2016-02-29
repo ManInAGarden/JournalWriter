@@ -48,17 +48,17 @@ namespace JournalWriter
                 switch (lex.Type)
                 {
                     case DocLexElement.LexTypeEnum.word:
-                        subtxt += lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
 
                     case DocLexElement.LexTypeEnum.emphasize:
                         if (inparmode.HasFlag(InParamodeEnum.inlinecode))
                         {
-                            subtxt += "*" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("*", lex.SpaceCountAtEnd);
                         }
                         else
                         {
-                            if (string.IsNullOrEmpty(subtxt) && lex.SpaceCountAtEnd>0) //do we have a list element here
+                            if (AtBeginningOfLine(lexes, i-1) && lex.SpaceCountAtEnd>0) //do we have a list element here
                             {
                                 answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
                                             DocumentNormalFontSize,
@@ -83,12 +83,45 @@ namespace JournalWriter
                         }
                         break;
 
+                    case DocLexElement.LexTypeEnum.minus:
+                        if (AtBeginningOfLine(lexes, i - 1) && lex.SpaceCountAtEnd > 0) //do we have a list element here
+                        {
+                            answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
+                                        DocumentNormalFontSize,
+                                        DocumentFontFamily,
+                                        TextMarkerStyle.None,
+                                        GetListElementsText(lexes, i, '-', out offset));
+                            i += offset;
+                        }
+                        else //no we don't
+                        {
+                            subtxt += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
+                        }
+                        break;
+
+                    case DocLexElement.LexTypeEnum.plus:
+                        if (AtBeginningOfLine(lexes, i - 1) && lex.SpaceCountAtEnd > 0) //do we have a list element here
+                        {
+                            answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
+                                        DocumentNormalFontSize,
+                                        DocumentFontFamily,
+                                        TextMarkerStyle.Box,
+                                        GetListElementsText(lexes, i, '+', out offset));
+                            i += offset;
+                        }
+                        else //no we don't
+                        {
+                            subtxt += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
+                        }
+                        break;
+                        break;
+
                     case DocLexElement.LexTypeEnum.number:
                         //are we at a start of a line or paragraph
                         //AND the numbe rist followed by at least one space
                         //THEN we have a numbered list to be processed,
                         //ELSE we have a simple number in the middle of a pragraph or something else
-                        if (string.IsNullOrEmpty(subtxt) && lex.SpaceCountAtEnd > 0 && lex.Text.EndsWith("."))
+                        if (AtBeginningOfLine(lexes, i-1) && lex.SpaceCountAtEnd > 0 && lex.Text.EndsWith("."))
                         {
                             answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
                                             DocumentNormalFontSize,
@@ -193,9 +226,9 @@ namespace JournalWriter
                         break;
 
                     case DocLexElement.LexTypeEnum.hashes:
-                        if (string.IsNullOrEmpty(subtxt))
+                        if (AtBeginningOfLine(lexes, i-1))
                         {
-                            subtxt = GetHashesContent(lexes, i, out offset);
+                            subtxt = GetHashesContent(lexes, i-1, out offset);
                             if (!string.IsNullOrWhiteSpace(subtxt))
                             {
 
@@ -209,7 +242,7 @@ namespace JournalWriter
                         }
                         else
                         {
-                            subtxt += "#";
+                            subtxt += GetTextAndSpaces("#", lex.SpaceCountAtEnd);
                         }
                         
                         break;
@@ -233,13 +266,27 @@ namespace JournalWriter
                             i += offset;
                         }
                         else
-                            subtxt += " >" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces(">", lex.SpaceCountAtEnd);
 
                         break;
                 }
             }
 
             return start + answ + "</FlowDocument>";
+        }
+
+        /// <summary>
+        /// Test wether the current lex is the first one on a new line
+        /// </summary>
+        /// <param name="lexes">List of lexical elements</param>
+        /// <param name="i">Current position</param>
+        /// <returns></returns>
+        private bool AtBeginningOfLine(List<DocLexElement> lexes, int i)
+        {
+            if (i <= 0)
+                return true;
+
+            return lexes[i - 1].Type == DocLexElement.LexTypeEnum.linebreak || lexes[i - 1].Type == DocLexElement.LexTypeEnum.parabreak;
         }
 
 
@@ -291,23 +338,23 @@ namespace JournalWriter
                         break;
 
                     case DocLexElement.LexTypeEnum.word:
-                        subtxt += lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
 
 
                     case DocLexElement.LexTypeEnum.greaterthan:
-                        subtxt += ">" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        subtxt += GetTextAndSpaces(">", lex.SpaceCountAtEnd);
                         break;
 
                     case DocLexElement.LexTypeEnum.emphasize:
                         if (!initalic)
                         {
-                            subtxt += "<Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("<Bold>", lex.SpaceCountAtEnd);
                             initalic = true;
                         }
                         else
                         {
-                            subtxt += "</Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("</Bold>", lex.SpaceCountAtEnd);
                             initalic = false;
                         }
 
@@ -316,30 +363,30 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.bold:
                         if (!inbold)
                         {
-                            subtxt += "<Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("<Bold>", lex.SpaceCountAtEnd);
                             inbold = true;
                         }
                         else
                         {
-                            subtxt += "</Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("</Bold>", lex.SpaceCountAtEnd);
                             inbold = false;
                         }
                         break;
 
                     case DocLexElement.LexTypeEnum.number:
-                        if(!string.IsNullOrEmpty(subtxt) || !lex.Text.EndsWith("."))
-                            subtxt += lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        if(!AtBeginningOfLine(lexes, i) || !lex.Text.EndsWith("."))
+                            subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
 
                     case DocLexElement.LexTypeEnum.underline:
                         if (!inunderline)
                         {
-                            subtxt += "<Underline>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("<Underline>", lex.SpaceCountAtEnd);
                             inunderline = true;
                         }
                         else
                         {
-                            subtxt += "</Underline>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("</Underline>", lex.SpaceCountAtEnd);
                             inunderline = false;
                         }
                         break;
@@ -404,32 +451,32 @@ namespace JournalWriter
                         break;
 
                     case DocLexElement.LexTypeEnum.word:
-                        subtxt += lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
 
                     case DocLexElement.LexTypeEnum.number:
-                        subtxt = lex.Text + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        subtxt = GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
 
                     case DocLexElement.LexTypeEnum.greaterthan:
-                        subtxt += ">" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                        subtxt += GetTextAndSpaces(">", lex.SpaceCountAtEnd);
                         break;
 
                     case DocLexElement.LexTypeEnum.emphasize:
                         if(!string.IsNullOrEmpty(subtxt))
-                            subtxt += "*" + GetStringOf(" ", lex.SpaceCountAtEnd); 
+                            subtxt += GetTextAndSpaces("*", lex.SpaceCountAtEnd); 
 
                         break;
 
                     case DocLexElement.LexTypeEnum.bold:
                         if (!inbold)
                         {
-                            subtxt += "<Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("<Bold>", lex.SpaceCountAtEnd);
                             inbold = true;
                         }
                         else
                         {
-                            subtxt += "</Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("</Bold>", lex.SpaceCountAtEnd);
                             inbold = false;
                         }
                         break;
@@ -437,12 +484,12 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.underline:
                         if (!inunderline)
                         {
-                            subtxt += "<Underline>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            subtxt += GetTextAndSpaces("<Underline>", lex.SpaceCountAtEnd);
                             inunderline = true;
                         }
                         else
                         {
-                            subtxt += "</Underline>" + GetStringOf(" ", lex.SpaceCountAtEnd); 
+                            subtxt += GetTextAndSpaces("</Underline>", lex.SpaceCountAtEnd); 
                             inunderline = false;
                         }
                         break;
@@ -478,6 +525,12 @@ namespace JournalWriter
             {
                 case DocLexElement.LexTypeEnum.emphasize:
                     tstc = '*';
+                    break;
+                case DocLexElement.LexTypeEnum.plus:
+                    tstc = '+';
+                    break;
+                case DocLexElement.LexTypeEnum.minus:
+                    tstc = '-';
                     break;
                 case DocLexElement.LexTypeEnum.word:
                     tstc = lexes[pos].Text.First();
@@ -529,13 +582,22 @@ namespace JournalWriter
                         stop = true;
                         break;
                     case DocLexElement.LexTypeEnum.word:
-                        answ += lex.Text + " ";
+                        answ += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.greaterthan:
-                        answ += ">";
+                        answ += GetTextAndSpaces(">", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.plus:
+                        answ += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.minus:
+                        answ += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.emphasize:
-                        answ += "*";
+                        answ += GetTextAndSpaces("*", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.hashes:
+                        answ += GetTextAndSpaces(GetStringOf("#", lex.Level), lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.bold:
                         if (!inbold)
@@ -545,7 +607,7 @@ namespace JournalWriter
                         }
                         else
                         {
-                            answ += "</Bold>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            answ += GetTextAndSpaces("</Bold>", lex.SpaceCountAtEnd);
                             inbold = false;
                         }
                         break;
@@ -557,7 +619,7 @@ namespace JournalWriter
                         }
                         else
                         {
-                            answ += "</Underline>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            answ += GetTextAndSpaces("</Underline>", lex.SpaceCountAtEnd);
                             inunderline = false;
                         }
                         break;
@@ -576,6 +638,11 @@ namespace JournalWriter
                     DocumentFontFamily);
             else
                 return "";
+        }
+
+        private string GetTextAndSpaces(string text, int ct)
+        {
+            return text + GetStringOf(" ", ct);
         }
 
 
@@ -602,7 +669,7 @@ namespace JournalWriter
                         answ += "\n";
                         break;
                     case DocLexElement.LexTypeEnum.codeinline:
-                        answ += "'";
+                        answ += "`";
                         break;
                     case DocLexElement.LexTypeEnum.emphasize:
                         answ += "*";
@@ -612,6 +679,15 @@ namespace JournalWriter
                         break;
                     case DocLexElement.LexTypeEnum.boldemphasize:
                         answ += "***";
+                        break;
+                    case DocLexElement.LexTypeEnum.greaterthan:
+                        answ += ">";
+                        break;
+                    case DocLexElement.LexTypeEnum.minus:
+                        answ += "-";
+                        break;
+                    case DocLexElement.LexTypeEnum.plus:
+                        answ += "+";
                         break;
                     case DocLexElement.LexTypeEnum.space:
                         answ += " ";
@@ -632,9 +708,6 @@ namespace JournalWriter
                                 answ += "\n---";
                                 break;
                         }
-                        break;
-                    case DocLexElement.LexTypeEnum.greaterthan:
-                        answ += ">";
                         break;
                     case DocLexElement.LexTypeEnum.parabreak:
                         answ += "\n\n";
@@ -713,7 +786,7 @@ namespace JournalWriter
             bool stop = false;
 
             DocLexElement lex;
-            for(int i=start; i<lexes.Count; i++)
+            for(int i=start+1; i<lexes.Count; i++)
             {
                 lex = lexes[i];
                 switch(lex.Type)
@@ -723,6 +796,36 @@ namespace JournalWriter
                         break;
                     case DocLexElement.LexTypeEnum.word:
                         answ += lex.Text + " ";
+                        break;
+                    case DocLexElement.LexTypeEnum.minus:
+                        answ += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.emphasize:
+                        answ += GetTextAndSpaces("*", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.bold:
+                        answ += GetTextAndSpaces("**", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.boldemphasize:
+                        answ += GetTextAndSpaces("***", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.underline:
+                        answ += GetTextAndSpaces("_", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.codeinline:
+                        answ += GetTextAndSpaces("`", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.plus:
+                        answ += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.greaterthan:
+                        answ += GetTextAndSpaces(">", lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.hashes:
+                        answ += GetTextAndSpaces(GetStringOf("#", lex.Level), lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.number:
+                        answ += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.linebreak:
                         answ += "<LineBreak />";

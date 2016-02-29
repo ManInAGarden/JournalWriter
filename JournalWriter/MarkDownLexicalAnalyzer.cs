@@ -8,7 +8,7 @@ namespace JournalWriter
     public class MarkDownLexicalAnalyzer
     {
         char[] nowords = new char[] { ' ', '*', '\n', '\r', '\t', '#', '_', '`',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+' };
         
         public string Text { get; set; }
 
@@ -77,6 +77,12 @@ namespace JournalWriter
                                 headlev++;
                         }
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.hashes, headlev+1, spcCount:spcCt));
+                        break;
+                    case '-':
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.minus, spcCount: spcCt));
+                        break;
+                    case '+':
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.plus, spcCount: spcCt));
                         break;
                     case '*':
                         if (nextc != '*')

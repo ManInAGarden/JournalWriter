@@ -8,8 +8,8 @@ namespace JournalWriter
     public class MarkDownLexicalAnalyzer
     {
         char[] nowords = new char[] { ' ', '*', '\n', '\r', '\t', '#', '_', '`',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+' };
-        
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+', '>'};
+        char[] enumletters = new char[] { 'A', 'a'};
         public string Text { get; set; }
 
         public MarkDownLexicalAnalyzer(string txt)
@@ -64,7 +64,9 @@ namespace JournalWriter
                                 currp += offset;
                             }
                             else
+                            {
                                 answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.linebreak));
+                            }
                         }
                         break;
 
@@ -124,8 +126,12 @@ namespace JournalWriter
                             }
                         }
                         break;
+
                     case '>':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.greaterthan, spcCount: spcCt));
+                        break;
+                    case '<':
+                        currw += "&lt;";
                         break;
 
                     case '0':
@@ -170,12 +176,24 @@ namespace JournalWriter
                         break;
 
                     default:
-                        currw += currc;
                         if (nowords.Contains(nextc))
                         {
+                            currw += currc;
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
                             currw = "";
-                        }
+                        } else if (enumletters.Contains(currc) && nextc == '.' && thirdc==' ')
+                        {
+                            if(!string.IsNullOrEmpty(currw))
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
+
+                            currw = "";
+                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.letteredenum, currc.ToString() + nextc, spcCount: 1);
+                            ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc, out spcCt);
+                            newl.SpaceCountAtEnd = spcCt;
+                            answ.Add(newl);
+                        } else
+                            currw += currc;
+
                         break;
                 }
 

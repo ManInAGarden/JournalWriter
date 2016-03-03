@@ -154,5 +154,17 @@ namespace JournalWriter.Properties {
                 this["ReaderCodingFontSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Left")]
+        public string ReaderTextAlignment {
+            get {
+                return ((string)(this["ReaderTextAlignment"]));
+            }
+            set {
+                this["ReaderTextAlignment"] = value;
+            }
+        }
     }
 }

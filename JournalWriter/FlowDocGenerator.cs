@@ -20,6 +20,7 @@ namespace JournalWriter
         public string DocumentHeadline5FontSize { set; get; }
         public string CodingFontSize { set; get; }
         public string CodingFontFamily { set; get; }
+        public string TextAlignment { get; set; }
 
 
         /// <summary>
@@ -106,18 +107,16 @@ namespace JournalWriter
                         }
                         break;
 
-                    case DocLexElement.LexTypeEnum.number:
-                        //are we at a start of a line or paragraph
-                        //AND the number is followed by at least one space
-                        //THEN we have a numbered list to be processed,
-                        //ELSE we have a simple number in the middle of a pragraph or something else
-                        if (AtBeginningOfLine(lexes, i-1) && lex.SpaceCountAtEnd > 0 && lex.Text.EndsWith("."))
+                    case DocLexElement.LexTypeEnum.enumeration:
+                        //Enumerations must start at the beginning of a line
+                        if (AtBeginningOfLine(lexes, i-1))
                         {
+                            TextMarkerStyle tms = GetTmsFrom(lex.Text);
                             answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
                                             DocumentNormalFontSize,
                                             DocumentFontFamily,
-                                            TextMarkerStyle.Decimal,
-                                            GetNumberedListElementsText(lexes, i, '0', out offset));
+                                            tms,
+                                            GetNumberedListElementsText(lexes, i, tms, out offset));
                             i += offset;
                         }
                         else
@@ -159,10 +158,11 @@ namespace JournalWriter
                         if (!string.IsNullOrWhiteSpace(subtxt))
                         {
                             
-                            answ += string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
+                            answ += string.Format("<Paragraph TextAlignment=\"{3}\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
                                 GetFontSizeFromHeadLevel(lex.Level),
                                 subtxt,
-                                DocumentFontFamily);
+                                DocumentFontFamily,
+                                TextAlignment);
                         }
                         subtxt = "";
                         break;
@@ -174,10 +174,11 @@ namespace JournalWriter
                             if (!string.IsNullOrWhiteSpace(subtxt))
                             {
 
-                                answ += string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
+                                answ += string.Format("<Paragraph TextAlignment=\"{3}\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
                                     GetFontSizeFromHeadLevel(lex.Level),
                                     subtxt,
-                                    DocumentFontFamily);
+                                    DocumentFontFamily,
+                                    TextAlignment);
                             }
                             subtxt = "";
                             i += offset;
@@ -215,6 +216,35 @@ namespace JournalWriter
             }
 
             return start + answ + "</FlowDocument>";
+        }
+
+        /// <summary>
+        /// Gets a text marker style from the given text. When it starts with a digit
+        /// the marker style ist Decimal, if its a capital letter the marker style is
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private TextMarkerStyle GetTmsFrom(string text)
+        {
+            TextMarkerStyle answ = TextMarkerStyle.UpperRoman;
+
+            if (text.Length < 1)
+                throw new ApplicationException("Enumeration ohne Index-Text");
+
+            if (char.IsDigit(text[0]))
+                answ = TextMarkerStyle.Decimal;
+
+            if (char.IsLetter(text[0]))
+            {
+                if (char.ToUpper(text[0]) == text[0])
+                    answ = TextMarkerStyle.UpperLatin;
+                else if(char.ToLower(text[0])==text[0])
+                    answ = TextMarkerStyle.LowerLatin;
+            }
+
+
+            return answ;
         }
 
 
@@ -336,10 +366,10 @@ namespace JournalWriter
         /// </summary>
         /// <param name="lexes">List of lexical elements to partly process</param>
         /// <param name="pos">Position in the lexes list where to start processing</param>
-        /// <param name="listc">The list marker character that was foun in the first element</param>
+        /// <param name="tms">The list marker style derived from the first element of the enumerated list</param>
         /// <param name="offset">The offset for the porition to continue processing in the calling process</param>
         /// <returns>FLow document xaml of the list elements</returns>
-        private string GetNumberedListElementsText(List<DocLexElement> lexes, int pos, char listc, out int offset)
+        private string GetNumberedListElementsText(List<DocLexElement> lexes, int pos, TextMarkerStyle tms, out int offset)
         {
             string subtxt = "";
             string answ = "";
@@ -347,6 +377,25 @@ namespace JournalWriter
             DocLexElement lex;
             bool stop = false;
             InParamodeEnum ipm = InParamodeEnum.none;
+            char listc;
+
+            switch (tms)
+            {
+                case TextMarkerStyle.Decimal:
+                    listc = '0';
+                    break;
+                case TextMarkerStyle.LowerLatin:
+                    listc = 'a';
+                    break;
+                case TextMarkerStyle.UpperLatin:
+                    listc = 'A';
+                    break;
+                case TextMarkerStyle.UpperRoman:
+                    listc = 'I';
+                    break;
+                default:
+                    throw new ApplicationException("Unknown list marker style");
+            }
 
             for (int i = pos; !stop && (i < lexes.Count); i++)
             {
@@ -358,8 +407,9 @@ namespace JournalWriter
                             stop = true;
                         else
                         {
-                            answ += string.Format("<ListItem><Paragraph>{0}</Paragraph></ListItem>",
-                                        subtxt);
+                            answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
+                                        subtxt,
+                                        TextAlignment);
                             subtxt = "";
                         }
                         break;
@@ -369,8 +419,9 @@ namespace JournalWriter
                             stop = true;
                         else
                         {
-                            answ += string.Format("<ListItem><Paragraph>{0}</Paragraph></ListItem>",
-                                        subtxt);
+                            answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
+                                        subtxt,
+                                        TextAlignment);
                             subtxt = "";
                         }
                         break;
@@ -391,12 +442,7 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.bold:
                         subtxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
                         break;
-
-                    case DocLexElement.LexTypeEnum.number:
-                        if(!AtBeginningOfLine(lexes, i) || !lex.Text.EndsWith("."))
-                            subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
-                        break;
-
+                        
                     case DocLexElement.LexTypeEnum.underline:
                         subtxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
                         break;
@@ -409,8 +455,9 @@ namespace JournalWriter
 
             //handle the end of doc with this
             if (!string.IsNullOrEmpty(subtxt))
-                answ += string.Format("<ListItem><Paragraph>{0}</Paragraph></ListItem>",
-                                        subtxt);
+                answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
+                                        subtxt,
+                                        TextAlignment);
 
             return answ;
         }
@@ -442,8 +489,9 @@ namespace JournalWriter
                             stop = true;
                         else
                         {
-                            answ += string.Format("<ListItem><Paragraph>{0}</Paragraph></ListItem>",
-                                        subtxt);
+                            answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
+                                        subtxt,
+                                        TextAlignment);
                             subtxt = "";
                         }
                         break;
@@ -453,8 +501,9 @@ namespace JournalWriter
                             stop = true;
                         else
                         {
-                            answ += string.Format("<ListItem><Paragraph>{0}</Paragraph></ListItem>",
-                                        subtxt);
+                            answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
+                                        subtxt,
+                                        TextAlignment);
                             subtxt = "";
                         }
                         break;
@@ -499,8 +548,9 @@ namespace JournalWriter
 
             //handle the end of doc with this
             if(!string.IsNullOrEmpty(subtxt))
-                answ += string.Format("<ListItem><Paragraph>{0}</Paragraph></ListItem>",
-                                        subtxt);
+                answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
+                                        subtxt,
+                                        TextAlignment);
 
             return answ;
         }
@@ -532,7 +582,7 @@ namespace JournalWriter
                 case DocLexElement.LexTypeEnum.word:
                     tstc = lexes[pos].Text.First();
                     break;
-                case DocLexElement.LexTypeEnum.number:
+                case DocLexElement.LexTypeEnum.enumeration:
                     tstc = lexes[pos].Text.First();
                     break;
                 default:
@@ -546,8 +596,20 @@ namespace JournalWriter
                 case '*':
                     answ = tstc == testfor;
                     break;
+                case '+':
+                    answ = tstc == testfor;
+                    break;
+                case '-':
+                    answ = tstc == testfor;
+                    break;
                 case '0':
                     answ = char.IsDigit(tstc);
+                    break;
+                case 'a':
+                    answ = char.IsLetter(tstc) && (char.ToLower(tstc) == tstc);
+                    break;
+                case 'A':
+                    answ = char.IsLetter(tstc) && (char.ToUpper(tstc) == tstc);
                     break;
             }
 
@@ -629,10 +691,11 @@ namespace JournalWriter
             }
 
             if (!string.IsNullOrEmpty(answ))
-                return string.Format("<Paragraph Margin=\"50,0,30,0\" FontSize=\"{1}\"  FontFamily=\"{2}\" FontStyle=\"Italic\">{0}</Paragraph>",
+                return string.Format("<Paragraph Margin=\"50,0,30,0\" FontSize=\"{1}\" FontFamily=\"{2}\" FontStyle=\"Italic\" TextAlignment=\"{3}\">{0}</Paragraph>",
                     answ,
                     DocumentNormalFontSize,
-                    DocumentFontFamily);
+                    DocumentFontFamily,
+                    TextAlignment);
             else
                 return "";
         }
@@ -759,10 +822,11 @@ namespace JournalWriter
         private string EndCurrentParagraph(string paratxt)
         {
             if (!string.IsNullOrWhiteSpace(paratxt))
-                return string.Format("<Paragraph TextAlignment=\"Left\" FontSize=\"{0}\" FontFamily=\"{2}\">{1}</Paragraph>\n\n",
+                return string.Format("<Paragraph TextAlignment=\"{3}\" FontSize=\"{0}\" FontFamily=\"{2}\">{1}</Paragraph>\n\n",
                     DocumentNormalFontSize,
                     paratxt,
-                    DocumentFontFamily);
+                    DocumentFontFamily,
+                    TextAlignment);
 
             return "";
         }

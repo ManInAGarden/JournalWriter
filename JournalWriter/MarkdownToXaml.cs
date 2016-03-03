@@ -30,6 +30,7 @@ namespace JournalWriter
         public string DocumentHeadline5FontSize { set; get; }
         public string CodingFontSize { set; get; }
         public string CodingFontFamily { set; get; }
+        public string TextAlignment { get; set; }
 
 
         public Dictionary<string, Regex> Regexes { get; set; }
@@ -184,6 +185,7 @@ namespace JournalWriter
             fdg.DocumentHeadline5FontSize = DocumentHeadline5FontSize;
             fdg.CodingFontSize = CodingFontSize;
             fdg.CodingFontFamily = CodingFontFamily;
+            fdg.TextAlignment = TextAlignment;
 
             return fdg.ProduceDoc(lex);
 

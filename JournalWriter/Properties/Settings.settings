@@ -35,5 +35,8 @@
     <Setting Name="ReaderCodingFontSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">16</Value>
     </Setting>
+    <Setting Name="ReaderTextAlignment" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

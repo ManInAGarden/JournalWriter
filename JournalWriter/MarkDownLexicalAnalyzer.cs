@@ -8,8 +8,9 @@ namespace JournalWriter
     public class MarkDownLexicalAnalyzer
     {
         char[] nowords = new char[] { ' ', '*', '\n', '\r', '\t', '#', '_', '`',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+', '>'};
-        char[] enumletters = new char[] { 'A', 'a'};
+            '-', '+', '>'};
+        char[] enumletters = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+            'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
         public string Text { get; set; }
 
         public MarkDownLexicalAnalyzer(string txt)
@@ -17,6 +18,7 @@ namespace JournalWriter
             Text = txt.Replace("\r", ""); //cure doc from any \r
         }
 
+        
 
         public List<DocLexElement> GetDocLexList()
         {
@@ -134,61 +136,17 @@ namespace JournalWriter
                         currw += "&lt;";
                         break;
 
-                    case '0':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-                    case '1':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-                    case '2':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-                    case '3':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-                    case '4':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-                    case '5':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-                    case '6':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-                    case '7':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-                    case '8':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-                    case '9':
-                        answ.Add(HandleDigits(textc, currp, out currc, out nextc, out thirdc, out spcCt, out offset));
-                        currp += offset-1;
-                        break;
-
                     default:
                         if (nowords.Contains(nextc))
                         {
                             currw += currc;
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
                             currw = "";
-                        } else if (enumletters.Contains(currc) && nextc == '.' && thirdc==' ')
+                        }
+                        else if (string.IsNullOrEmpty(currw) && IsEnumStartChar(currc) && nextc == '.' && thirdc==' ')
                         {
-                            if(!string.IsNullOrEmpty(currw))
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
-
-                            currw = "";
-                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.letteredenum, currc.ToString() + nextc, spcCount: 1);
-                            ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc, out spcCt);
+                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.enumeration, currc.ToString() + nextc, spcCount: 1);
+                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             newl.SpaceCountAtEnd = spcCt;
                             answ.Add(newl);
                         } else
@@ -204,6 +162,17 @@ namespace JournalWriter
                 answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw));
 
             return answ;
+        }
+
+        /// <summary>
+        /// checks wether the given character is a valid
+        /// start of an enumetation
+        /// </summary>
+        /// <param name="currc">Chaarcter to be checked</param>
+        /// <returns></returns>
+        private bool IsEnumStartChar(char currc)
+        {
+            return char.IsDigit(currc) || enumletters.Contains(char.ToLower(currc));
         }
 
         /// <summary>

@@ -12,7 +12,8 @@ namespace JournalWriter
             hashes, headafter,
             bold, emphasize, boldemphasize, underline, codeinline,
             code, greaterthan,
-            number, minus, plus, enumeration};
+            number, minus, plus, enumeration,
+            cellstart};
 
         public LexTypeEnum Type { get; set; }
         public string Text { get; set; }

@@ -75,6 +75,18 @@ namespace JournalWriter
                         }
                         break;
 
+                    case DocLexElement.LexTypeEnum.cellstart:
+                        if (!AtBeginningOfLine(lexes, i - 1))
+                            subtxt += GetTextAndSpaces("|", lex.SpaceCountAtEnd);
+                        else
+                        {
+                            answ += string.Format("\n<Table>{0}</Table>\n",
+                                GetTableText(lexes, i, out offset));
+
+                            i += offset;
+                        }
+                        break;
+
                     case DocLexElement.LexTypeEnum.minus:
                         if (AtBeginningOfLine(lexes, i - 1) && lex.SpaceCountAtEnd > 0) //do we have a list element here
                         {
@@ -216,6 +228,86 @@ namespace JournalWriter
             }
 
             return start + answ + "</FlowDocument>";
+        }
+
+        /// <summary>
+        /// Create the flow doc code for a table created out of lexical definitions from a
+        /// startposition up to a pragraph end
+        /// </summary>
+        /// <param name="lexes"></param>
+        /// <param name="startpos"></param>
+        /// <param name="offset"></param>
+        /// <returns>Code for table represented by the lexcal elements in lexes</returns>
+        private string GetTableText(List<DocLexElement> lexes, int startpos, out int offset)
+        {
+            string celltxt = "",
+                rowtxt = "";
+            string answ = "";
+            offset = 0;
+            DocLexElement lex;
+            bool stop = false, 
+                incell=true,
+                firstrow = true;
+            InParamodeEnum ipm = InParamodeEnum.none;
+
+           
+            for (int i = startpos; !stop && (i < lexes.Count); i++)
+            {
+                lex = lexes[i];
+                switch (lex.Type)
+                {
+                    case DocLexElement.LexTypeEnum.parabreak:
+                        answ += "</TableRowGroup>";
+                        stop = true;
+                        break;
+
+                    case DocLexElement.LexTypeEnum.linebreak:
+                        if (firstrow)
+                        {
+                            answ += "<TableRowGroup>";
+                            firstrow = false;
+                        }
+
+                        answ += string.Format("<TableRow>{0}</TableRow>\n",
+                                    rowtxt);
+                        rowtxt = "";
+                        incell = false;
+                        break;
+
+                    case DocLexElement.LexTypeEnum.cellstart:
+                        incell = true;
+                        rowtxt += string.Format("<TableCell><Paragraph>{0}</Paragraph></TableCell>", 
+                            celltxt);
+                        celltxt = "";
+                        break;
+
+                    case DocLexElement.LexTypeEnum.word:
+                        celltxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.greaterthan:
+                        celltxt += GetTextAndSpaces("&gt;", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.emphasize:
+                        celltxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.bold:
+                        celltxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.underline:
+                        celltxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
+                        break;
+
+                }
+
+                offset++;
+
+            }
+
+            return answ;
         }
 
         /// <summary>
@@ -430,6 +522,9 @@ namespace JournalWriter
                         subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
 
+                    case DocLexElement.LexTypeEnum.cellstart:
+                        subtxt += GetTextAndSpaces("|", lex.SpaceCountAtEnd);
+                        break;
 
                     case DocLexElement.LexTypeEnum.greaterthan:
                         subtxt += GetTextAndSpaces("&gt;", lex.SpaceCountAtEnd);
@@ -514,6 +609,10 @@ namespace JournalWriter
 
                     case DocLexElement.LexTypeEnum.number:
                         subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.cellstart:
+                        subtxt += GetTextAndSpaces("|", lex.SpaceCountAtEnd);
                         break;
 
                     case DocLexElement.LexTypeEnum.greaterthan:
@@ -728,6 +827,9 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.linebreak:
                         answ += "\n";
                         break;
+                    case DocLexElement.LexTypeEnum.cellstart:
+                        answ += "|";
+                        break;
                     case DocLexElement.LexTypeEnum.codeinline:
                         answ += "`";
                         break;
@@ -857,6 +959,9 @@ namespace JournalWriter
                         break;
                     case DocLexElement.LexTypeEnum.word:
                         answ += lex.Text + " ";
+                        break;
+                    case DocLexElement.LexTypeEnum.cellstart:
+                        answ += "|";
                         break;
                     case DocLexElement.LexTypeEnum.minus:
                         answ += GetTextAndSpaces("-", lex.SpaceCountAtEnd);

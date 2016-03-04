@@ -1025,8 +1025,14 @@ namespace JournalWriter
             editModeStatusbarItem.Visibility = System.Windows.Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Handle key presses to register changes with the text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void firstTB_KeyUp(object sender, KeyEventArgs e)
         {
+
             if (HaveChange)
                 return;
 
@@ -1051,10 +1057,16 @@ namespace JournalWriter
                 mainMenu.Visibility = System.Windows.Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// show the user that we are in edit mode for the selected day's text now
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void firstTB_GotFocus(object sender, RoutedEventArgs e)
         {
             editModeStatusbarItem.Visibility = System.Windows.Visibility.Visible;
         }
+
 
         private void editModeStatusbarItem_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {

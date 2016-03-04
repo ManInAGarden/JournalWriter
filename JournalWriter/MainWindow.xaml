@@ -9,9 +9,9 @@
                 SourceName="firstTB">
 
             <EventTrigger.Actions>
-            <BeginStoryboard>
-                <Storyboard>
-                    <ColorAnimation
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation
                         Storyboard.TargetName="editBorder"
                         Storyboard.TargetProperty="Background.Color"
                         From="Blue"
@@ -19,13 +19,14 @@
                         Duration="0:0:0.5"
                         RepeatBehavior="1x"
                     />
-                </Storyboard>
+                    </Storyboard>
                 </BeginStoryboard>
             </EventTrigger.Actions>
 
         </EventTrigger>
 
     </Window.Triggers>
+
 
     <Window.Resources>
         <SolidColorBrush x:Key="TransparentBackground" Color="#FF252525" />
@@ -98,7 +99,20 @@
         </GridSplitter>
 
         <FlowDocumentReader Grid.Column="2" Grid.Row="1" Name="firstDV" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" Background="{StaticResource TransparentBackground}" Foreground="{StaticResource ForegroundOnTransparentBackground}" Visibility="Visible" ToolTip="Hier doppelt klicken um Text zu bearbeiten" FontFamily="{StaticResource ReadableTextFontFamily}" MouseDoubleClick="firstDV_MouseDoubleClick" IsTwoPageViewEnabled="True" FontSize="{StaticResource ReadableFontSize}" SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="dateTreeView_MouseMove"/>
-        <TextBox Grid.Column="2" Grid.Row="1" Name="firstTB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" Background="{StaticResource TransparentBackground}" Foreground="{StaticResource ForegroundOnTransparentBackground}" AcceptsReturn="True" AcceptsTab="True" Visibility="Hidden" TextWrapping="Wrap" LostFocus="firstTB_LostFocus" KeyUp="firstTB_KeyUp" FontFamily="{StaticResource ReadableTextFontFamily}" FontSize="{StaticResource ReadableFontSize}" SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="dateTreeView_MouseMove" GotFocus="firstTB_GotFocus" MouseWheel="firstTB_MouseWheel" CaretBrush="#FFF0DC16"></TextBox>
+        <TextBox Grid.Column="2" Grid.Row="1" Name="firstTB" HorizontalAlignment="Stretch" 
+                 VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" 
+                 Background="{StaticResource TransparentBackground}" 
+                 Foreground="{StaticResource ForegroundOnTransparentBackground}" 
+                 AcceptsReturn="True" AcceptsTab="True" 
+                 Visibility="Hidden" TextWrapping="Wrap" LostFocus="firstTB_LostFocus" 
+                 KeyUp="firstTB_KeyUp" 
+                 FontFamily="{StaticResource ReadableTextFontFamily}" 
+                 FontSize="{StaticResource ReadableFontSize}" 
+                 SelectionBrush="{StaticResource TextSelectionBrush}" 
+                 MouseMove="dateTreeView_MouseMove" 
+                 GotFocus="firstTB_GotFocus" 
+                 MouseWheel="firstTB_MouseWheel" 
+                 CaretBrush="#FFF0DC16"/>
 
 
         <StatusBar Grid.ColumnSpan="3" Grid.Row="2" HorizontalAlignment="Center" Name="mainStatusBar" VerticalAlignment="Stretch" Background="{DynamicResource TransparentBackground}">

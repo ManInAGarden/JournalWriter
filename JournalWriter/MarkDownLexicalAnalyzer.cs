@@ -8,7 +8,7 @@ namespace JournalWriter
     public class MarkDownLexicalAnalyzer
     {
         char[] nowords = new char[] { ' ', '*', '\n', '\r', '\t', '#', '_', '`',
-            '-', '+', '>'};
+            '-', '+', '>', '|'};
         char[] enumletters = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
             'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
         public string Text { get; set; }
@@ -45,6 +45,10 @@ namespace JournalWriter
 
                     case '\t':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.tab, spcCount: spcCt));
+                        break;
+
+                    case '|':
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.cellstart, spcCount: spcCt));
                         break;
 
                     case '\n':

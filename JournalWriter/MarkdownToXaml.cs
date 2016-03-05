@@ -373,6 +373,8 @@ namespace JournalWriter
                 CodingFontFamily = "Lucida Sans";
             if (CodingFontSize == null)
                 CodingFontSize = "12";
+            if (TextAlignment == null)
+                TextAlignment = "Left";
 
             FlowDocument doc = null;
             try

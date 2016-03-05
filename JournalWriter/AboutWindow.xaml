@@ -20,7 +20,7 @@
             SJournal
         </Label>
         <Label Margin="5" Foreground="SkyBlue">
-            (c) Heinrich Speich 2013
+            (c) Heinrich Speich 2013/2016
         </Label>
             
         <Label Margin="5" Name="versionLabel" Foreground="SkyBlue">

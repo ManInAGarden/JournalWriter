@@ -212,3 +212,32 @@ oder auch:
 A. Erster Punkt
 B. Zweiter Punkt
 C. Dritter Punkt
+
+
+### Tabellen
+
+Tabellen funktionieren so. Aus diesem Text der so ähnlich aus wie eine Tabelle
+
+```
+|Name                 |Genre         |      t 2015 /h| Rating |
+|:--------------------|:-------------|--------------:|-------:|
+|Radio fresh 80s      | Vintage Hits |           564 |      5 |
+|Radio Paradise       | ?            |           132 |      5 |
+|Krautrock Radio      | Deutsch-Rock |            17 |      4 | 
+|laut/fm back in time | Vintage Hits |            39 |      3 |
+```
+
+wird:
+
+|Name                 |Genre         |      t 2015 /h| Rating |
+|:--------------------|:-------------|--------------:|-------:|
+|Radio fresh 80s      | Vintage Hits |           564 |      5 |
+|Radio Paradise       | ?            |           132 |      5 |
+|Krautrock Radio      | Deutsch-Rock |            17 |      4 | 
+|laut/fm back in time | Vintage Hits |            39 |      3 |
+
+man beachte dabei die Trennline zwischen den Überschriften und dem Tabelleninhalt. Diese definiert auch wie der Text in den Zellen der
+betreffenden Spalte angeordnet wird.
+
+Die Definition `|:---` sorgt für linksbündige Anordnung des Textes, `----:|` dagen für rechstbündiges und ein Doppelpunkt auf beiden 
+Seiten wie in `|:------:|` lässt den Text zentriert erscheinen.

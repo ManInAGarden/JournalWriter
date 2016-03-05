@@ -81,7 +81,7 @@ namespace JournalWriter
                         else
                         {
                             answ += string.Format("\n<Table>{0}</Table>\n",
-                                GetTableText(lexes, i, out offset));
+                                GetTableText(lexes, i-1, out offset));
 
                             i += offset;
                         }
@@ -141,7 +141,8 @@ namespace JournalWriter
                         if (!inparmode.HasFlag(InParamodeEnum.inlinecode))
                         {
                             inparmode |= InParamodeEnum.inlinecode;
-                            subtxt += "<Span  xml:space=\"preserve\" FontFamily=\"Lucida Sans\">";
+                            subtxt += string.Format("<Span  xml:space=\"preserve\" FontFamily=\"{0}\">",
+                                CodingFontFamily);
                         }
                         else
                         {
@@ -242,14 +243,16 @@ namespace JournalWriter
         {
             string celltxt = "",
                 rowtxt = "";
+            string currAlignment = null;
             string answ = "";
             offset = 0;
             DocLexElement lex;
-            bool stop = false, 
-                incell=true,
-                firstrow = true;
+            bool stop = false;
+            int colnum = 0;
+            int rownum = 0;
+            List<string> colalignments = new List<string>();
+            List<int> maxcollengths = new List<int>();
             InParamodeEnum ipm = InParamodeEnum.none;
-
            
             for (int i = startpos; !stop && (i < lexes.Count); i++)
             {
@@ -257,27 +260,51 @@ namespace JournalWriter
                 switch (lex.Type)
                 {
                     case DocLexElement.LexTypeEnum.parabreak:
+                        answ += AddTableLine(ref rowtxt, ref rownum, ref colnum);
                         answ += "</TableRowGroup>";
                         stop = true;
                         break;
 
                     case DocLexElement.LexTypeEnum.linebreak:
-                        if (firstrow)
+
+                        if (rownum == 0)
                         {
                             answ += "<TableRowGroup>";
-                            firstrow = false;
                         }
 
-                        answ += string.Format("<TableRow>{0}</TableRow>\n",
-                                    rowtxt);
-                        rowtxt = "";
-                        incell = false;
+                        answ += AddTableLine(ref rowtxt, ref rownum, ref colnum);
                         break;
 
                     case DocLexElement.LexTypeEnum.cellstart:
-                        incell = true;
-                        rowtxt += string.Format("<TableCell><Paragraph>{0}</Paragraph></TableCell>", 
-                            celltxt);
+                        if (colnum > 0)
+                        {
+                            if (rownum == 0)
+                            {
+                                rowtxt += string.Format("<TableCell BorderThickness=\"0,0,0,1\" BorderBrush=\"SkyBlue\"><Paragraph FontSize=\"{3}\" FontFamily=\"{2}\" TextAlignment=\"{1}\">{0}</Paragraph></TableCell>",
+                                    celltxt,
+                                    "####COLALIGN####" + (colnum - 1) + "#",
+                                    DocumentFontFamily,
+                                    DocumentNormalFontSize);
+
+                                DoMaxColWidth(maxcollengths, colnum - 1, celltxt.Length);
+                            }
+                            else if (rownum == 1)
+                            {
+                                currAlignment = GetAlignment(celltxt);
+                                colalignments.Add(currAlignment);
+                            }
+                            else
+                            {
+                                rowtxt += string.Format("<TableCell><Paragraph FontSize=\"{3}\" FontFamily=\"{2}\" TextAlignment=\"{1}\">{0}</Paragraph></TableCell>",
+                                    celltxt,
+                                    "####COLALIGN####" + (colnum - 1) + "#",
+                                    DocumentFontFamily,
+                                    DocumentNormalFontSize);
+
+                                DoMaxColWidth(maxcollengths, colnum - 1, celltxt.Length);
+                            }
+                        }
+                        colnum++;
                         celltxt = "";
                         break;
 
@@ -301,11 +328,99 @@ namespace JournalWriter
                         celltxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
                         break;
 
+                    case DocLexElement.LexTypeEnum.minus:
+                        celltxt += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.plus:
+                        celltxt += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
+                        break;
+
                 }
 
                 offset++;
 
             }
+
+            colnum = 0;
+            foreach (string colali in colalignments)
+            {
+                answ = answ.Replace("####COLALIGN####" + colnum++ + "#", colali);
+            }
+
+            return string.Format("{0}\n{1}", GetColumSection(maxcollengths), answ);
+        }
+
+        /// <summary>
+        /// Create the col definitions with percentage rated width of the flow document table
+        /// to be placed at the top of the table definition
+        /// </summary>
+        /// <param name="maxcollengths">A list of maximum col lengths</param>
+        /// <returns>A string containing the col definitions</returns>
+        private object GetColumSection(List<int> maxcollengths)
+        {
+            string colspecs = "";
+
+            foreach (int maxl in maxcollengths)
+            {
+                colspecs += string.Format("<TableColumn Width=\"{0}*\"/>", maxl);
+            }
+
+            return string.Format("<Table.Columns>{0}</Table.Columns>", colspecs);
+        }
+
+        /// <summary>
+        /// Dynamically fill up an initially empty list of maximum columns widths for the table
+        /// </summary>
+        /// <param name="maxcollengths">The list to be built</param>
+        /// <param name="colnum">The current column index</param>
+        /// <param name="length">The length of a text filled into one of the lines of the column</param>
+        private void DoMaxColWidth(List<int> maxcollengths, int colnum, int length)
+        {
+            while (colnum >= maxcollengths.Count)
+            {
+                maxcollengths.Add(0);
+            }
+
+            if (length > maxcollengths[colnum])
+                maxcollengths[colnum] = length;
+        }
+
+        /// <summary>
+        /// Returns a row definition for a table filled with a given rowtext (the cell defs)
+        /// </summary>
+        /// <param name="rowtxt">The cell definitions already in flow document syntax</param>
+        /// <param name="rownum">The current rownum, is incremented internally</param>
+        /// <param name="colnum">The current colnum, is reset to 0 internally</param>
+        /// <returns></returns>
+        private string AddTableLine(ref string rowtxt, ref int rownum, ref int colnum)
+        {
+            string row = string.Format("<TableRow>{0}</TableRow>\n",
+                                          rowtxt);
+
+            rownum++;
+            colnum = 0;
+            rowtxt = "";
+
+            return row;
+        }
+
+        /// <summary>
+        /// Get the alignment for the current column. |:---... or ...----:| or |:---....---:| is acceptet.
+        /// </summary>
+        /// <param name="celltext">Celltext</param>
+        /// <returns>Alignment for the current cell as a string Right, Left, or Center. Standard alignment when no alignment info can be dervive from celltext</returns>
+        private string GetAlignment(string celltext)
+        {
+            string answ;
+            if (celltext.StartsWith(":") && celltext.EndsWith(":"))
+                answ = "Center";
+            else if (celltext.StartsWith(":"))
+                answ = "Left";
+            else if (celltext.EndsWith(":"))
+                answ = "Right";
+            else
+                answ = TextAlignment;
 
             return answ;
         }
@@ -822,16 +937,16 @@ namespace JournalWriter
                 switch(lex.Type)
                 {
                     case DocLexElement.LexTypeEnum.word:
-                        answ += lex.Text;
+                        answ += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.linebreak:
                         answ += "\n";
                         break;
                     case DocLexElement.LexTypeEnum.cellstart:
-                        answ += "|";
+                        answ += GetTextAndSpaces("|", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.codeinline:
-                        answ += "`";
+                        answ += GetTextAndSpaces("`", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.emphasize:
                         answ += "*";

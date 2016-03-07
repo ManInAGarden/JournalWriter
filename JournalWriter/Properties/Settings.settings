@@ -6,7 +6,7 @@
       <Value Profile="(Default)">JournalData.xml</Value>
     </Setting>
     <Setting Name="ReaderFont" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Calibri</Value>
+      <Value Profile="(Default)">Trebuchet MS</Value>
     </Setting>
     <Setting Name="ReaderFontSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">16</Value>

@@ -37,7 +37,7 @@ namespace JournalWriter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Calibri")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Trebuchet MS")]
         public string ReaderFont {
             get {
                 return ((string)(this["ReaderFont"]));

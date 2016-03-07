@@ -7,7 +7,7 @@ using System.Windows;
 namespace JournalWriter
 {
     [Flags]
-    public enum InParamodeEnum { none=0, bold=1, emphasize=2, underline=4, inlinecode=8, unlist=16, inorderedlist=32}
+    public enum InParamodeEnum { none=0, bold=1, emphasize=2, underline=4, inlinecode=8, unlist=16, inorderedlist=32, intabbedcode=64}
 
     public class FlowDocGenerator
     {
@@ -50,6 +50,16 @@ namespace JournalWriter
                 {
                     case DocLexElement.LexTypeEnum.word:
                         subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.tab:
+                        if (AtBeginningOfLine(lexes, i - 1))
+                        {
+                            answ += GetTabbedCodeText(lexes, i - 1, out offset);
+                            i += offset;
+                        }
+                        else
+                            subtxt += "    ";
                         break;
 
                     case DocLexElement.LexTypeEnum.emphasize:
@@ -230,6 +240,8 @@ namespace JournalWriter
 
             return start + answ + "</FlowDocument>";
         }
+
+       
 
         /// <summary>
         /// Create the flow doc code for a table created out of lexical definitions from a
@@ -477,32 +489,44 @@ namespace JournalWriter
                     onflow = "<Underline>";
                     outflow = "</Underline>";
                     break;
+
                 case DocLexElement.LexTypeEnum.bold:
                     rawtext = "**";
                     thisflag = InParamodeEnum.bold;
                     onflow = "<Bold>";
                     outflow = "</Bold>";
                     break;
+
                 case DocLexElement.LexTypeEnum.boldemphasize:
                     rawtext = "***";
                     thisflag = InParamodeEnum.bold | InParamodeEnum.emphasize;
                     onflow = "<Bold><Italic>";
                     outflow = "</Italic></Bold>";
                     break;
+
                 case DocLexElement.LexTypeEnum.emphasize:
                     rawtext = "*";
                     thisflag = InParamodeEnum.emphasize;
                     onflow = "<Italic>";
                     outflow = "</Italic>";
                     break;
+
+                case DocLexElement.LexTypeEnum.codeinline:
+                    rawtext = "`";
+                    thisflag = InParamodeEnum.inlinecode;
+                    onflow = string.Format("<Span  xml:space=\"preserve\" FontFamily=\"{0}\">",
+                                CodingFontFamily);
+                    outflow = "</Span>";
+                    break;
+
                 default:
                     throw new ApplicationException("Unknown inline style");
             }
 
 
-            if (inparmode.HasFlag(InParamodeEnum.inlinecode))
+            if (inparmode.HasFlag(InParamodeEnum.inlinecode) && lex.Type != DocLexElement.LexTypeEnum.codeinline)
             {
-                answ = GetTextAndSpaces("_", lex.SpaceCountAtEnd);
+                answ = GetTextAndSpaces(rawtext, lex.SpaceCountAtEnd);
             }
             else
             {
@@ -844,8 +868,8 @@ namespace JournalWriter
             offset = 0;
             DocLexElement lex;
             bool stop = false;
-            bool inbold = false,
-                inunderline = false;
+            InParamodeEnum inpm = InParamodeEnum.none;
+
             for (int i = pos; i < lexes.Count; i++)
             {
                 lex = lexes[i];
@@ -854,47 +878,41 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.parabreak:
                         stop = true;
                         break;
+
                     case DocLexElement.LexTypeEnum.word:
                         answ += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
+
                     case DocLexElement.LexTypeEnum.greaterthan:
                         answ += GetTextAndSpaces("&gt;", lex.SpaceCountAtEnd);
                         break;
+
                     case DocLexElement.LexTypeEnum.plus:
                         answ += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
                         break;
+
                     case DocLexElement.LexTypeEnum.minus:
                         answ += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
                         break;
+
                     case DocLexElement.LexTypeEnum.emphasize:
                         answ += GetTextAndSpaces("*", lex.SpaceCountAtEnd);
                         break;
+
                     case DocLexElement.LexTypeEnum.hashes:
                         answ += GetTextAndSpaces(GetStringOf("#", lex.Level), lex.SpaceCountAtEnd);
                         break;
+
                     case DocLexElement.LexTypeEnum.bold:
-                        if (!inbold)
-                        {
-                            answ += "<Bold>";
-                            inbold = true;
-                        }
-                        else
-                        {
-                            answ += GetTextAndSpaces("</Bold>", lex.SpaceCountAtEnd);
-                            inbold = false;
-                        }
+                        answ += GetInlineFormat(lex, ref inpm, lexes, i);
                         break;
+
                     case DocLexElement.LexTypeEnum.underline:
-                        if(!inunderline)
-                        {
-                            answ += "<Underline>";
-                            inunderline = true;
-                        }
-                        else
-                        {
-                            answ += GetTextAndSpaces("</Underline>", lex.SpaceCountAtEnd);
-                            inunderline = false;
-                        }
+                        answ += GetInlineFormat(lex, ref inpm, lexes, i);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.codeinline:
+                        answ += GetInlineFormat(lex, ref inpm, lexes, i);
                         break;
                 }
 
@@ -1013,6 +1031,111 @@ namespace JournalWriter
                 
         }
 
+        /// <summary>
+        /// Get the contents of a tabbed code section. Every lien begins with a TAB. The first
+        /// line with no tab ends the tabbed code section
+        /// </summary>
+        /// <param name="lexes">List of lexical elements</param>
+        /// <param name="currp">Current position</param>
+        /// <param name="offset">Offset to be applied after this method</param>
+        /// <returns>Flow document code for a tabbed code section</returns>
+        private string GetTabbedCodeText(List<DocLexElement> lexes, int currp, out int offset)
+        {
+            string answ = "";
+            DocLexElement lex;
+            bool stop = false;
+            offset = 0;
+            for (int i = currp; i < lexes.Count; i++)
+            {
+                lex = lexes[i];
+
+                if (AtBeginningOfLine(lexes, i) && lex.Type != DocLexElement.LexTypeEnum.tab)
+                    stop = true;
+                else
+                {
+                    switch (lex.Type)
+                    {
+                        case DocLexElement.LexTypeEnum.word:
+                            answ += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                            break;
+                        case DocLexElement.LexTypeEnum.linebreak:
+                            answ += "\n";
+                            break;
+                        case DocLexElement.LexTypeEnum.cellstart:
+                            answ += GetTextAndSpaces("|", lex.SpaceCountAtEnd);
+                            break;
+                        case DocLexElement.LexTypeEnum.codeinline:
+                            answ += GetTextAndSpaces("`", lex.SpaceCountAtEnd);
+                            break;
+                        case DocLexElement.LexTypeEnum.emphasize:
+                            answ += "*";
+                            break;
+                        case DocLexElement.LexTypeEnum.bold:
+                            answ += "**";
+                            break;
+                        case DocLexElement.LexTypeEnum.boldemphasize:
+                            answ += "***";
+                            break;
+                        case DocLexElement.LexTypeEnum.greaterthan:
+                            answ += "&gt;";
+                            break;
+                        case DocLexElement.LexTypeEnum.minus:
+                            answ += "-";
+                            break;
+                        case DocLexElement.LexTypeEnum.plus:
+                            answ += "+";
+                            break;
+                        case DocLexElement.LexTypeEnum.space:
+                            answ += " ";
+                            break;
+                        case DocLexElement.LexTypeEnum.number:
+                            answ += lex.Text;
+                            break;
+                        case DocLexElement.LexTypeEnum.hashes:
+                            answ += GetStringOf("#", lex.Level);
+                            break;
+                        case DocLexElement.LexTypeEnum.headafter:
+                            switch (lex.Level)
+                            {
+                                case 1:
+                                    answ += "\n===";
+                                    break;
+                                case 2:
+                                    answ += "\n---";
+                                    break;
+                            }
+                            break;
+                        case DocLexElement.LexTypeEnum.parabreak:
+                            answ += "\n\n";
+                            break;
+                        case DocLexElement.LexTypeEnum.tab:
+                            if (!AtBeginningOfLine(lexes, i))
+                                answ += "    ";
+                            else
+                            {
+                                answ += GetStringOf(" ", lex.SpaceCountAtEnd); // TAB+spaces at beginning of line
+                            }
+                            break;
+                        case DocLexElement.LexTypeEnum.code:
+                            stop = true;
+                            break;
+                    }
+
+                    offset++;
+                }
+
+                if (stop)
+                    break;
+            }
+
+            if (!string.IsNullOrEmpty(answ))
+                return string.Format("<Paragraph xml:space=\"preserve\" TextAlignment=\"Left\" Margin=\"50,0,0,0\" FontSize=\"{1}\" FontFamily=\"{2}\">{0}</Paragraph>",
+                    answ,
+                    CodingFontSize,
+                    CodingFontFamily);
+            else
+                return "";
+        }
 
         /// <summary>
         /// Produce a string by repeating a string a given number of times

@@ -1,18 +1,8 @@
-﻿Über SJournal
+﻿
+Markup in SJournal
 ===
 
-Mit SJournal kann man
-Notizen für jeden Tag ablegen. Damit wird es einfach sich an Dinge aus der Vergangenheit zu erinnern. Dazu legt SJournal für jeden Tag einen
-neuen Eintrag an, den der Anweder mit Text füllen kann.
-
-Der Text wird in einer normalen Textbox eingegeben, zur besseren Lesbarkeit aber in einem sog. Flow-Document-Reader dargestellt. Die Darstellung des Textes
-kann durch spezielle Textinhalte beeinflusst werden. Um den Text zu bearbeiten klickt man einfach Doppelt in das Textfenster auf der rechten Seite. Dies "verwandelt" sind dann
-in einen Eingabebereich für Texte.
-
-Wie man die Darstellung im Einzelnen beeinflussen kann wird im Folgenden erklärt:
-
-Markup in SJournal
----
+Im folgenden wird erklärt wie die sog. Markdown-Syntax in SJournal genutzt werden kann um die Darstellung des Textes zu beeinflussen.
 
 Überschriften schreibt man indem an eine Zeile Text mit mindestens drei Gleichheitsteichen oder Minuszeichen (Bindestriche) unterstreicht.
 
@@ -117,11 +107,12 @@ Um dies zu erreichen gibt es zwei Möglichkeiten.
 
 Triple-Backtick-Zeilen am Ende und am Anfang des Code-Blocks.
 
-'''
-FOR I = 0 TO 10
-  PRINT I
-NEXT
-'''
+
+	```
+	FOR I = 0 TO 10
+	   PRINT I
+	NEXT
+	```
 
 *Die Backtick-Zeichen sind rechts neben dem ß und mit Shift zu erreichen*
 
@@ -129,7 +120,7 @@ Dies wird dann zu:
 
 ```
 FOR I=0 TO 10
- 	PRINT I
+	PRINT I
 NEXT
 ```
 
@@ -166,18 +157,26 @@ wird zu
 * Zweiter Punkt
 * Dritter Punkt
 
-Mit einem kleine o (Ohhhh) anstelle des Sternchens wird daraus eine Liste mit Kreisen als Spiegelstrich. Das sieht dann so aus
+Mit einem + (Pluszeichen) anstelle des Sternchens wird daraus eine Liste mit Quadraten als Spiegelstrich. Das sieht dann so aus
 
-o Erster Punkt
-o Zweiter Punkt
-o Dritter Punkt
++ Erster Punkt
++ Zweiter Punkt
++ Dritter Punkt
+
+Und mit - (Minuszeichen) erhalten wir eine Bulletliste ganz ohne irgendwelche Spiegelstrich-Zeichen. Das sieht dann so aus:
+
+- Erster Punkt
+- Zweiter Punkt
+- Dritter Punkt
 
 Nummerierte Liste erhält man indem man anstelle der Sternchen einfach eine Ziffer gefolgt von einem Punkt hinschreibt. So wird aus
 
 ```
-:1. Erster Punkt (den Doppelpunkt am Anfang habe ich nur eingefügt damit nicht auch dies hier als Liste erkannt und formatiert wird. D.h. den muss man weglassen)
+:1. Erster Punkt
 :2. Zweiter Punkt
 :3. Dritter Punkt
+
+Die Doppelpunkte bitte nicht mitchreiben.
 ```
 
 dies hier
@@ -199,7 +198,6 @@ wird zu
 0. Erster Punkt
 0. Zweiter Punkt
 0. Dritter Punkt
-
 
 Schreibt man kleine oder große Buchstabem vor die Listenpunkte erhält man eine nummerierte Liste mit den großen oder den kleinen Buchstaben des Alphabets.
 	

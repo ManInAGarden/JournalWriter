@@ -16,7 +16,8 @@ namespace JournalWriter
         public static RoutedUICommand About { get; private set; }
         public static RoutedUICommand ShowSource { get; private set; }
         public static RoutedUICommand ShowTabs{get; private set;}
-        public static RoutedUICommand GotoLine { get; set; }
+        public static RoutedUICommand GotoLine { get; private set; }
+        public static RoutedUICommand MarkdownHelp { get; private set; }
 
         static SessionCommands()
         {
@@ -36,6 +37,9 @@ namespace JournalWriter
               );
 
             About = new RoutedUICommand("_Über Journal Writer", "About", typeof(SessionCommands)
+              );
+
+            MarkdownHelp = new RoutedUICommand("_Markdown Hilfe", "MarkdownHelp", typeof(SessionCommands)
               );
 
             ShowSource = new RoutedUICommand("_Quelltext (Flow Document) anzeigen", "ShowSource", typeof(SessionCommands)

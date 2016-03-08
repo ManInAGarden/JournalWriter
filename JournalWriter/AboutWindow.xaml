@@ -13,7 +13,23 @@
         </Grid.RowDefinitions>
         
         <FlowDocumentReader Grid.Column="1" HorizontalAlignment="Stretch" IsEnabled="True" Margin="5" Name="aboutDocumentViewer" VerticalAlignment="Stretch" Foreground="Black" Background="White" IsManipulationEnabled="True">
-          
+            <FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                <Paragraph TextAlignment="Left" FontSize="28" FontFamily="Trebuchet MS" FontWeight="Bold">Sonntag 21.02.2016</Paragraph>
+
+                <Paragraph TextAlignment="Left" FontSize="28" FontFamily="Trebuchet MS" FontWeight="Bold">Über SJournal</Paragraph>
+
+                <Paragraph TextAlignment="Left" FontSize="16" FontFamily="Trebuchet MS">Mit SJournal kann man
+                    <LineBreak /> Notizen für jeden Tag ablegen. Damit wird es einfach sich an Dinge aus der Vergangenheit zu erinnern. Dazu legt SJournal für jeden Tag einen
+                    <LineBreak /> neuen Eintrag an, den der Anweder mit Text füllen kann.
+                </Paragraph>
+
+                <Paragraph TextAlignment="Left" FontSize="16" FontFamily="Trebuchet MS">Der Text wird in einer normalen Textbox eingegeben, zur besseren Lesbarkeit aber in einem sog. Flow-Document-Reader dargestellt. Die Darstellung des Textes
+                    <LineBreak /> kann durch spezielle Textinhalte beeinflusst werden. Um den Text zu bearbeiten klickt man einfach Doppelt in das Textfenster auf der rechten Seite. Dies "verwandelt" sind dann
+                    <LineBreak /> in einen Eingabebereich für Texte.
+                </Paragraph>
+
+                <Paragraph TextAlignment="Left" FontSize="16" FontFamily="Trebuchet MS">Wie man die Darstellung im Einzelnen beeinflussen kann wird im Hilfe-Menu unter Markdown-Hilfe erklärt.</Paragraph>
+            </FlowDocument>
         </FlowDocumentReader>
         <StackPanel Background="White">
         <Label Margin="5" Name="label1" FontSize="14" Foreground="Black" >

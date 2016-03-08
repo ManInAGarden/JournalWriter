@@ -18,9 +18,9 @@ namespace JournalWriter
     /// <summary>
     /// Interaktionslogik für AboutWindow.xaml
     /// </summary>
-    public partial class AboutWindow : Window
+    public partial class MarkdownHelpWindow : Window
     {
-        public AboutWindow()
+        public MarkdownHelpWindow()
         {
             InitializeComponent();
         }
@@ -32,7 +32,14 @@ namespace JournalWriter
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            versionLabel.Content = "V" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            StreamReader sr = new StreamReader("JournalWriterHelpMarkup.txt");
+            using (sr)
+            {
+                string txt = sr.ReadToEnd();
+                MarkdownToXaml md2xaml = new MarkdownToXaml();
+                aboutDocumentViewer.Document = md2xaml.GetDocument(this, txt);
+            }
+            
         }
     }
 }

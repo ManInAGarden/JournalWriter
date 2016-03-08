@@ -49,6 +49,7 @@
         <CommandBinding Command="cmds:SessionCommands.ShowSource" Executed="ShowSource_Executed" CanExecute="ShowSource_CanExecute"/>
         <CommandBinding Command="cmds:SessionCommands.ShowTabs" Executed="ShowTabs_Executed" CanExecute="ShowTabs_CanExecute"/>
         <CommandBinding Command="cmds:SessionCommands.GotoLine" Executed="GotoLine_Executed" CanExecute="GotoLine_CanExecute"/>
+        <CommandBinding Command="cmds:SessionCommands.MarkdownHelp" Executed="MarkdownHelp_Executed" CanExecute="MarkdownHelp_CanExecute" />
     </Window.CommandBindings>
     
     <Grid Background="{StaticResource TransparentBackground}">
@@ -75,7 +76,7 @@
                 <MenuItem Command="cmds:SessionCommands.ShowTabs" Header="TAB Anzeige ein/aus"></MenuItem>
             </MenuItem>
             <MenuItem Header="Hilfe">
-                <MenuItem Header="Inhalt" />
+                <MenuItem Header="Markdown Hilfe" Command="cmds:SessionCommands.MarkdownHelp" />
                 <MenuItem Header="Über Journal-Writer" Command="cmds:SessionCommands.About"/>
             </MenuItem>
         </Menu>

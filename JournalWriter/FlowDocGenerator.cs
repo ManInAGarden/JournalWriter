@@ -1008,7 +1008,7 @@ namespace JournalWriter
                         answ += "\n\n";
                         break;
                     case DocLexElement.LexTypeEnum.tab:
-                        answ += "\t";
+                        answ += "    ";
                         break;
                     case DocLexElement.LexTypeEnum.code:
                         stop = true;
@@ -1117,7 +1117,7 @@ namespace JournalWriter
                             }
                             break;
                         case DocLexElement.LexTypeEnum.code:
-                            stop = true;
+                            answ += GetTextAndSpaces("```", lex.SpaceCountAtEnd);
                             break;
                     }
 

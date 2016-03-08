@@ -1073,6 +1073,23 @@ namespace JournalWriter
 
         }
 
+        private void MarkdownHelp_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            MarkdownHelpWindow mdh = new MarkdownHelpWindow();
+            mdh.Owner = this;
+            mdh.Show();
+        }
+
+        /// <summary>
+        /// We`re always in the mood to help
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MarkdownHelp_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
         private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)
         {
             //Wenn wir nicht gerade editieren, dann lassen wir einfach die alte Zahl stehen

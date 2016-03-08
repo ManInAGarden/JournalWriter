@@ -29,17 +29,17 @@
 
 
     <Window.Resources>
-        <SolidColorBrush x:Key="TransparentBackground" Color="#FF252525" />
-        <SolidColorBrush x:Key="ForegroundOnTransparentBackground" Color="SkyBlue" />
-        <SolidColorBrush x:Key="BorderOnTransparentBackground" Color="SkyBlue" />
+        <SolidColorBrush x:Key="TransparentBackground" Color="White" />
+        <SolidColorBrush x:Key="ForegroundOnTransparentBackground" Color="Black" />
+        <SolidColorBrush x:Key="BorderOnTransparentBackground" Color="Black" />
         <FontFamily x:Key="ReadableTextFontFamily">Consolas</FontFamily>
         <my:Double x:Key="ReadableFontSize">14</my:Double>
-        <SolidColorBrush x:Key="EditTBTransparentBackground" Color="Black" />
-        <SolidColorBrush x:Key="EditTBForegroundOnTransparentBackground" Color="SkyBlue" />
-        <SolidColorBrush x:Key="EditTBBorderOnTransparentBackground" Color="SkyBlue" />
+        <SolidColorBrush x:Key="EditTBTransparentBackground" Color="White" />
+        <SolidColorBrush x:Key="EditTBForegroundOnTransparentBackground" Color="Black" />
+        <SolidColorBrush x:Key="EditTBBorderOnTransparentBackground" Color="Black" />
         <FontFamily x:Key="EditTBReadableTextFontFamily">Consolas</FontFamily>
         <my:Double x:Key="EditTBReadableFontSize">14</my:Double>
-        <SolidColorBrush x:Key="TextSelectionBrush" Color="Beige"/>
+        <SolidColorBrush x:Key="TextSelectionBrush" Color="Red"/>
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -59,9 +59,9 @@
             <RowDefinition Height="33" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30*" />
+            <ColumnDefinition Width="20*" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="70*" />
+            <ColumnDefinition Width="80*" />
         </Grid.ColumnDefinitions>
         <Menu Grid.ColumnSpan="3" Height="23" HorizontalAlignment="Stretch" Margin="0" Name="mainMenu" VerticalAlignment="Top" Visibility="Collapsed">
             <MenuItem Header="Datei">

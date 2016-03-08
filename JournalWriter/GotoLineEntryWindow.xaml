@@ -9,17 +9,17 @@
         Title="Zeilennummerneingabe" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner" >
 
     <Window.Resources>
-        <SolidColorBrush x:Key="TransparentBackground" Color="#FF252525" />
-        <SolidColorBrush x:Key="ForegroundOnTransparentBackground" Color="SkyBlue" />
-        <SolidColorBrush x:Key="BorderOnTransparentBackground" Color="SkyBlue" />
+        <SolidColorBrush x:Key="TransparentBackground" Color="White" />
+        <SolidColorBrush x:Key="ForegroundOnTransparentBackground" Color="Black" />
+        <SolidColorBrush x:Key="BorderOnTransparentBackground" Color="Black" />
         <FontFamily x:Key="ReadableTextFontFamily">Consolas</FontFamily>
         <my:Double x:Key="ReadableFontSize">14</my:Double>
-        <SolidColorBrush x:Key="EditTBTransparentBackground" Color="Black" />
-        <SolidColorBrush x:Key="EditTBForegroundOnTransparentBackground" Color="SkyBlue" />
-        <SolidColorBrush x:Key="EditTBBorderOnTransparentBackground" Color="SkyBlue" />
+        <SolidColorBrush x:Key="EditTBTransparentBackground" Color="White" />
+        <SolidColorBrush x:Key="EditTBForegroundOnTransparentBackground" Color="Black" />
+        <SolidColorBrush x:Key="EditTBBorderOnTransparentBackground" Color="Black" />
         <FontFamily x:Key="EditTBReadableTextFontFamily">Consolas</FontFamily>
         <my:Double x:Key="EditTBReadableFontSize">14</my:Double>
-        <SolidColorBrush x:Key="TextSelectionBrush" Color="Beige"/>
+        <SolidColorBrush x:Key="TextSelectionBrush" Color="Red"/>
     </Window.Resources>
 
     <WrapPanel Orientation="Vertical" Margin="5" Background="{StaticResource TransparentBackground}">
@@ -28,8 +28,8 @@
             <TextBox x:Name="LineNumberTB" ToolTip="Hier die Zeilennummer eingeben die angesteuert werden soll" Width="83" Foreground="{DynamicResource EditTBForegroundOnTransparentBackground}" Background="{DynamicResource EditTBTransparentBackground}" BorderBrush="{DynamicResource EditTBBorderOnTransparentBackground}" SelectionBrush="{DynamicResource TextSelectionBrush}" TabIndex="1" ></TextBox>
         </WrapPanel>
         <WrapPanel Margin="5">
-            <Button Name="OKBu" Margin="5" IsDefault="True" Foreground="{DynamicResource ForegroundOnTransparentBackground}" BorderBrush="{DynamicResource BorderOnTransparentBackground}" Background="{DynamicResource TransparentBackground}" Click="OKBu_Click" TabIndex="2">OK</Button>
-            <Button Name="CancelBu" Margin="5" IsCancel="True" Foreground="{DynamicResource ForegroundOnTransparentBackground}" Background="{DynamicResource TransparentBackground}" BorderBrush="{DynamicResource BorderOnTransparentBackground}" Click="CancelBu_Click" TabIndex="3">Abbruch</Button>
+            <Button Name="OKBu" Margin="5" Padding="2,2,2,2" IsDefault="True" Foreground="{DynamicResource ForegroundOnTransparentBackground}" BorderBrush="{DynamicResource BorderOnTransparentBackground}" Background="{DynamicResource TransparentBackground}" Click="OKBu_Click" TabIndex="2">OK</Button>
+            <Button Name="CancelBu" Margin="5" Padding="2,2,2,2" IsCancel="True" Foreground="{DynamicResource ForegroundOnTransparentBackground}" Background="{DynamicResource TransparentBackground}" BorderBrush="{DynamicResource BorderOnTransparentBackground}" Click="CancelBu_Click" TabIndex="3">Abbruch</Button>
         </WrapPanel>
     </WrapPanel>
 </Window>

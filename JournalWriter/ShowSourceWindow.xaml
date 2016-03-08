@@ -6,6 +6,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="231*" />
         </Grid.RowDefinitions>
-        <TextBox HorizontalAlignment="Stretch" Background="Black" Foreground="SkyBlue" FontFamily="Consolas" FontSize="11pt" Margin="5" Name="sourceTextBox" Text="Der Text sollte hier stehen ..." VerticalAlignment="Stretch" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" />
+        <TextBox HorizontalAlignment="Stretch" Background="White" Foreground="Black" FontFamily="Consolas" FontSize="11pt" Margin="5" Name="sourceTextBox" Text="Der Text sollte hier stehen ..." VerticalAlignment="Stretch" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" />
     </Grid>
 </Window>

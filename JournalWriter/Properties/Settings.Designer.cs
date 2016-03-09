@@ -62,9 +62,9 @@ namespace JournalWriter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("28")]
-        public string ReaderHeadline1FontSize {
+        public int ReaderHeadline1FontSize {
             get {
-                return ((string)(this["ReaderHeadline1FontSize"]));
+                return ((int)(this["ReaderHeadline1FontSize"]));
             }
             set {
                 this["ReaderHeadline1FontSize"] = value;

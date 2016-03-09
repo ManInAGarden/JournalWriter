@@ -523,15 +523,19 @@ namespace JournalWriter
         private bool WriteToFile(TreeView tv)
         {
             bool answ = false;
-            //string fileName = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments)
-            //    + System.IO.Path.DirectorySeparatorChar.ToString()
-            //    + Properties.Settings.Default.FileName;
-            string fileName = Properties.Settings.Default.JournalPath
-                + System.IO.Path.DirectorySeparatorChar.ToString()
-                + Properties.Settings.Default.FileName;
+            string fileName;
+
+            if(!string.IsNullOrWhiteSpace(Properties.Settings.Default.JournalPath))
+                fileName = Properties.Settings.Default.JournalPath
+                    + System.IO.Path.DirectorySeparatorChar.ToString()
+                    + Properties.Settings.Default.FileName;
+            else
+                fileName = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)
+                    + System.IO.Path.DirectorySeparatorChar.ToString()
+                    + Properties.Settings.Default.FileName;
 
             try
-            {
+                {
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.CloseOutput = true;
                 settings.Indent = true;
@@ -614,13 +618,17 @@ namespace JournalWriter
 
         private bool FetchFromFile()
         {
-            //string fileName = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) 
-            //    + System.IO.Path.DirectorySeparatorChar.ToString() 
-            //    + Properties.Settings.Default.FileName;
+            string fileName;
 
-            string fileName = Properties.Settings.Default.JournalPath
-                + System.IO.Path.DirectorySeparatorChar.ToString()
-                + Properties.Settings.Default.FileName;
+            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.JournalPath))
+                fileName = Properties.Settings.Default.JournalPath
+                    + System.IO.Path.DirectorySeparatorChar.ToString()
+                    + Properties.Settings.Default.FileName;
+            else
+                fileName = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)
+                    + System.IO.Path.DirectorySeparatorChar.ToString()
+                    + Properties.Settings.Default.FileName;
+
 
             bool answ = false;
 
@@ -720,7 +728,6 @@ namespace JournalWriter
 
             if (!selItem.Name.StartsWith("D_"))
                 return;
-
 
             CurrentTiToFill = selItem;
 

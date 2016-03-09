@@ -37,9 +37,23 @@ namespace JournalWriter
             {
                 string txt = sr.ReadToEnd();
                 MarkdownToXaml md2xaml = new MarkdownToXaml();
+                SetDocProps(md2xaml);
                 aboutDocumentViewer.Document = md2xaml.GetDocument(this, txt);
             }
             
+        }
+
+        private void SetDocProps(MarkdownToXaml md2xaml)
+        {
+            md2xaml.CodingFontFamily = Properties.Settings.Default.ReaderCodingFont;
+            md2xaml.CodingFontSize = Properties.Settings.Default.ReaderCodingFontSize.ToString();
+            md2xaml.DocumentFontFamily = Properties.Settings.Default.ReaderFont;
+            md2xaml.DocumentNormalFontSize = Properties.Settings.Default.ReaderFontSize.ToString();
+            md2xaml.DocumentHeadline1FontSize = Properties.Settings.Default.ReaderHeadline1FontSize.ToString();
+            md2xaml.DocumentHeadline2FontSize = Properties.Settings.Default.ReaderHeadline2FontSize.ToString();
+            md2xaml.DocumentHeadline3FontSize = Properties.Settings.Default.ReaderHeadline3FontSize.ToString();
+            md2xaml.DocumentHeadline4FontSize = Properties.Settings.Default.ReaderHeadline4FontSize.ToString();
+            md2xaml.DocumentHeadline5FontSize = Properties.Settings.Default.ReaderHeadline5FontSize.ToString();
         }
     }
 }

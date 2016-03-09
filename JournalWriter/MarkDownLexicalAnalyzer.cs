@@ -47,6 +47,7 @@ namespace JournalWriter
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.tab, spcCount: spcCt));
                         break;
 
+                   
                     case '|':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.cellstart, spcCount: spcCt));
                         break;
@@ -137,7 +138,24 @@ namespace JournalWriter
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.greaterthan, spcCount: spcCt));
                         break;
                     case '<':
-                        currw += "&lt;";
+                        if (nowords.Contains(nextc))
+                        {
+                            currw += "&lt;";
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
+                            currw = "";
+                        }
+                        else
+                            currw += "&lt;";
+                        break;
+                    case '&':
+                        if (nowords.Contains(nextc))
+                        {
+                            currw += "&amp;";
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
+                            currw = "";
+                        }
+                        else
+                            currw += "&amp;";
                         break;
 
                     default:

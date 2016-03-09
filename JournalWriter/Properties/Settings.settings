@@ -11,7 +11,7 @@
     <Setting Name="ReaderFontSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">16</Value>
     </Setting>
-    <Setting Name="ReaderHeadline1FontSize" Type="System.String" Scope="User">
+    <Setting Name="ReaderHeadline1FontSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">28</Value>
     </Setting>
     <Setting Name="ReaderHeadline2FontSize" Type="System.Int32" Scope="User">

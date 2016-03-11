@@ -5,30 +5,35 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JournalWriter"
         mc:Ignorable="d"
-        Title="FlowDocumentTestWindow" Height="300" Width="300">
+        Title="FlowDocumentTestWindow" Height="550" Width="448.837">
     <Grid>
         <FlowDocumentPageViewer>
-        <FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-            <Paragraph TextAlignment="Left" FontSize="22" FontFamily="Calibri" FontWeight="Bold">Sonntag 27.09.2015</Paragraph>
+            <FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                <Paragraph TextAlignment="Left" FontSize="22" FontFamily="Calibri" FontWeight="Bold">Sonntag 27.09.2015</Paragraph>
 
 
 
-            <Paragraph FontSize="16" FontFamily="Calibri">Zuerst mal ganz normaler Fließtext bei dem ich wie immer nicht weiß was ich schrieben soll.</Paragraph>
+                <Paragraph FontSize="16" FontFamily="Calibri">Zuerst mal ganz normaler Fließtext bei dem ich wie immer nicht weiß was ich schrieben soll.</Paragraph>
 
-            <Paragraph TextAlignment="Left" FontSize="18" FontFamily="Calibri" FontWeight="Bold">Dann eine Liste</Paragraph>
+                <Paragraph TextAlignment="Left" FontSize="18" FontFamily="Calibri" FontWeight="Bold">Dann eine Liste</Paragraph>
 
 
 
                 <List FontSize="16" FontFamily="Calibri" MarkerStyle="Disc">
-                 
+
                     <ListItem>
                         <Paragraph >Listenelement 1: Ich frage mich was geschieht wenn wir hier mehrzeiig werden. Solange man keine Zeilenschaltungen einbaut sollte alles prima funktionieren.</Paragraph>
                     </ListItem>
-                  
+
                     <ListItem>
-                        <Paragraph FontSize="16" FontFamily="Calibri">Listenelement 2: Auch hier gebe ich jetzt mal mehr Text ein. Mal sehen was dann geschieht. Sieht ja ganz OK aus, oder? Würde das auch mit kursiven Wörtern in der Liste klappen?</Paragraph>
+                        <BlockUIContainer>
+                            <CheckBox IsThreeState="True" IsChecked="{x:Null}">
+                                Listenelement 2: Auch hier gebe ich jetzt mal mehr Text ein. Mal sehen was dann geschieht. Sieht ja ganz OK aus, oder? Würde das auch mit kursiven Wörtern in der Liste klappen?
+                            </CheckBox>
+                        </BlockUIContainer>
+                        
                     </ListItem>
- 
+
                     <ListItem>
                         <Paragraph FontSize="16" FontFamily="Calibri">Listenelement 3: Jetzt mal in
                             <Italic>kursiv</Italic> . Juhuuuuu!
@@ -40,15 +45,15 @@
                     </ListItem>
 
                 </List>
-  
+
                 <Paragraph TextAlignment="Left" FontSize="18" FontFamily="Calibri" FontWeight="Bold">Jetzt versuchen wir mal eine nummerierte Liste</Paragraph>
 
 
-            <Paragraph FontSize="16" FontFamily="Calibri">1. Erstens müssen wir uns fragen ob eine numerierte Liste überhaupt erkannt wird
-                <LineBreak /> 2. Müssen wir, falls wir es unter 1. für möglich hielten, versuchen dies darzustellen
-            </Paragraph>
+                <Paragraph FontSize="16" FontFamily="Calibri">1. Erstens müssen wir uns fragen ob eine numerierte Liste überhaupt erkannt wird
+                    <LineBreak /> 2. Müssen wir, falls wir es unter 1. für möglich hielten, versuchen dies darzustellen
+                </Paragraph>
 
-        </FlowDocument>
+            </FlowDocument>
         </FlowDocumentPageViewer>
     </Grid>
 </Window>

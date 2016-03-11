@@ -24,10 +24,11 @@ namespace JournalWriter
 
 
         /// <summary>
-        /// Das FlowDocument erzeugen aus dem Ergebnis der lexikalischen Analyse
+        /// Produce a flow document by parsing over a list of lexical elementes provided by the Markdown 
+        /// lexical analyser
         /// </summary>
-        /// <param name="lexes">Die Liste lexikalischer Konstruktionen</param>
-        /// <returns>Ein String, der das FlowDocument erzeugen kann</returns>
+        /// <param name="lexes">List of lexcal elements</param>
+        /// <returns>String containing all the xml structures to build a flow document</returns>
         public string ProduceDoc(List<DocLexElement> lexes)
         {
             const string start = "<FlowDocument xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\""
@@ -55,6 +56,7 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.tab:
                         if (AtBeginningOfLine(lexes, i - 1))
                         {
+                            answ += EndCurrentParagraph(ref subtxt);
                             answ += GetTabbedCodeText(lexes, i - 1, out offset);
                             i += offset;
                         }
@@ -71,6 +73,7 @@ namespace JournalWriter
                         {
                             if (AtBeginningOfLine(lexes, i-1) && lex.SpaceCountAtEnd>0) //do we have a list element here
                             {
+                                answ += EndCurrentParagraph(ref subtxt);
                                 answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
                                             DocumentNormalFontSize,
                                             DocumentFontFamily,
@@ -90,6 +93,7 @@ namespace JournalWriter
                             subtxt += GetTextAndSpaces("|", lex.SpaceCountAtEnd);
                         else
                         {
+                            answ += EndCurrentParagraph(ref subtxt);
                             answ += string.Format("\n<Table>{0}</Table>\n",
                                 GetTableText(lexes, i-1, out offset));
 
@@ -100,6 +104,7 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.minus:
                         if (AtBeginningOfLine(lexes, i - 1) && lex.SpaceCountAtEnd > 0) //do we have a list element here
                         {
+                            answ += EndCurrentParagraph(ref subtxt);
                             answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
                                         DocumentNormalFontSize,
                                         DocumentFontFamily,
@@ -116,6 +121,7 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.plus:
                         if (AtBeginningOfLine(lexes, i - 1) && lex.SpaceCountAtEnd > 0) //do we have a list element here
                         {
+                            answ += EndCurrentParagraph(ref subtxt);      
                             answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
                                         DocumentNormalFontSize,
                                         DocumentFontFamily,
@@ -133,6 +139,8 @@ namespace JournalWriter
                         //Enumerations must start at the beginning of a line
                         if (AtBeginningOfLine(lexes, i-1))
                         {
+                            answ += EndCurrentParagraph(ref subtxt);
+
                             TextMarkerStyle tms = GetTmsFrom(lex.Text);
                             answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
                                             DocumentNormalFontSize,
@@ -144,6 +152,30 @@ namespace JournalWriter
                         else
                         {
                             subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        }
+                        break;
+
+                    case DocLexElement.LexTypeEnum.todo:
+                        if (inparmode.HasFlag(InParamodeEnum.inlinecode))
+                        {
+                            subtxt += GetTextAndSpaces("[ ]", lex.SpaceCountAtEnd);
+                        }
+                        else
+                        {
+                            if (AtBeginningOfLine(lexes, i - 1) && lex.SpaceCountAtEnd > 0) //do we have a todo element here
+                            {
+                                answ += EndCurrentParagraph(ref subtxt);
+                                answ += string.Format("\n<List FontSize=\"{0}\" FontFamily=\"{1}\" MarkerStyle=\"{2}\">\n{3}</List>\n",
+                                            DocumentNormalFontSize,
+                                            DocumentFontFamily,
+                                            TextMarkerStyle.None,
+                                            GetTodoListElementsText(lexes, i, out offset));
+                                i += offset;
+                            }
+                            else //no we don't
+                            {
+                                subtxt += GetInlineFormat(lex, ref inparmode, lexes, i);
+                            }
                         }
                         break;
 
@@ -180,8 +212,7 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.headafter:
                         if (!string.IsNullOrWhiteSpace(subtxt))
                         {
-                            
-                            answ += string.Format("<Paragraph TextAlignment=\"{3}\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
+                           answ += string.Format("<Paragraph TextAlignment=\"{3}\" FontSize=\"{0}\" FontFamily=\"{2}\" FontWeight=\"Bold\">{1}</Paragraph>\n\n",
                                 GetFontSizeFromHeadLevel(lex.Level),
                                 subtxt,
                                 DocumentFontFamily,
@@ -214,13 +245,11 @@ namespace JournalWriter
                         break;
 
                     case DocLexElement.LexTypeEnum.parabreak:
-                        answ += EndCurrentParagraph(subtxt);
-                        subtxt = "";
+                        answ += EndCurrentParagraph(ref subtxt);
                         break;
 
                     case DocLexElement.LexTypeEnum.code:
-                        answ += EndCurrentParagraph(subtxt);
-                        subtxt = "";
+                        answ += EndCurrentParagraph(ref subtxt);
                         answ += GetCodeText(lexes, ++i, out offset);
                         i += offset;
                         break;
@@ -228,6 +257,7 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.greaterthan:
                         if (AtBeginningOfLine(lexes, i-1))
                         {
+                            answ += EndCurrentParagraph(ref subtxt);
                             answ += GetQuotationText(lexes, i, out offset);
                             i += offset;
                         }
@@ -241,7 +271,92 @@ namespace JournalWriter
             return start + answ + "</FlowDocument>";
         }
 
-       
+
+        /// <summary>
+        /// Get the flow doc for a todo list. This is done by encapsulating real check boxex in 
+        /// UI containers.
+        /// </summary>
+        /// <param name="lexes">The list of lexical elements</param>
+        /// <param name="pos">current position in the list</param>
+        /// <param name="offset">returns the offset in the list to be perfomed in the calling method</param>
+        /// <returns>The flow doc for the list elements</returns>
+        private string GetTodoListElementsText(List<DocLexElement> lexes, int pos, out int offset)
+        {
+            string answ = "";
+            bool stop = false;
+            DocLexElement lex;
+            bool? currState = null;
+            string subtxt = "";
+            offset = 0;
+
+            for (int i = pos-1; i < lexes.Count && !stop; i++)
+            {
+                lex = lexes[i];
+                switch (lex.Type)
+                {
+                    case DocLexElement.LexTypeEnum.parabreak:
+                        if (!IsTodoListElementStart(lexes, i + 1))
+                            stop = true;
+                        else
+                        {
+                            answ += string.Format("<ListItem><BlockUIContainer><CheckBox IsThreeState=\"True\" IsChecked=\"{1}\">{0}</CheckBox></BlockUIContainer></ListItem>",
+                                 subtxt,
+                                 StateString(currState));
+                            subtxt = "";
+                        }
+                        break;
+
+                    case DocLexElement.LexTypeEnum.linebreak:
+                        if (!IsTodoListElementStart(lexes, i + 1))
+                            stop = true;
+                        else
+                        {
+                            answ += string.Format("<ListItem><BlockUIContainer><CheckBox IsThreeState=\"True\" IsChecked=\"{1}\">{0}</CheckBox></BlockUIContainer></ListItem>",
+                                subtxt,
+                                StateString(currState));
+                            subtxt = "";
+                        }
+                        break;
+
+                    case DocLexElement.LexTypeEnum.todo:
+                        currState = lex.State;
+                        break;
+
+                    case DocLexElement.LexTypeEnum.word:
+                        subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        break;
+                        
+                }
+
+                offset++;  
+            }
+
+            
+            return answ;
+        }
+
+
+        private object StateString(bool? currState)
+        {
+            if (currState == null)
+                return "{x:Null}";
+            else
+                return currState.ToString();
+        }
+
+
+        /// <summary>
+        /// Checks wether an element is another tolist elements start
+        /// </summary>
+        /// <param name="lexes"></param>
+        /// <param name="tstpos"></param>
+        /// <returns></returns>
+        private bool IsTodoListElementStart(List<DocLexElement> lexes, int tstpos)
+        {
+            return lexes[tstpos].Type == DocLexElement.LexTypeEnum.todo;
+        }
+
+
 
         /// <summary>
         /// Create the flow doc code for a table created out of lexical definitions from a
@@ -817,9 +932,6 @@ namespace JournalWriter
                 case DocLexElement.LexTypeEnum.minus:
                     tstc = '-';
                     break;
-                case DocLexElement.LexTypeEnum.word:
-                    tstc = lexes[pos].Text.First();
-                    break;
                 case DocLexElement.LexTypeEnum.enumeration:
                     tstc = lexes[pos].Text.First();
                     break;
@@ -1185,16 +1297,24 @@ namespace JournalWriter
         /// </summary>
         /// <param name="paratxt"></param>
         /// <returns></returns>
-        private string EndCurrentParagraph(string paratxt)
+        private string EndCurrentParagraph(ref string paratxt)
         {
+            string answ = "";
             if (!string.IsNullOrWhiteSpace(paratxt))
-                return string.Format("<Paragraph TextAlignment=\"{3}\" FontSize=\"{0}\" FontFamily=\"{2}\">{1}</Paragraph>\n\n",
+            {
+                if (paratxt.EndsWith("<LineBreak />"))
+                    paratxt = paratxt.Substring(0, paratxt.Length - 13);
+
+                answ = string.Format("<Paragraph TextAlignment=\"{3}\" FontSize=\"{0}\" FontFamily=\"{2}\">{1}</Paragraph>\n\n",
                     DocumentNormalFontSize,
                     paratxt,
                     DocumentFontFamily,
                     TextAlignment);
 
-            return "";
+                paratxt = "";
+            }
+
+            return answ;
         }
 
 

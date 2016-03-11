@@ -8,7 +8,7 @@ namespace JournalWriter
     public class MarkDownLexicalAnalyzer
     {
         char[] nowords = new char[] { ' ', '*', '\n', '\r', '\t', '#', '_', '`',
-            '-', '+', '>', '|'};
+            '-', '+', '>', '|', '['};
         char[] enumletters = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
             'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
         public string Text { get; set; }
@@ -62,12 +62,12 @@ namespace JournalWriter
                         {
                             if (nextc == '=' && HaveALineOfThese(textc, currp + 1, nextc, out offset))
                             {
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, 1, 0));
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, level:1, spcCount: 0));
                                 currp += offset;
                             }
                             else if (nextc == '-' && HaveALineOfThese(textc, currp + 1, nextc, out offset))
                             {
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, 2, 0));
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, level: 2, spcCount: 0));
                                 currp += offset;
                             }
                             else
@@ -85,14 +85,17 @@ namespace JournalWriter
                             if(nextc=='#')
                                 headlev++;
                         }
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.hashes, headlev+1, spcCount:spcCt));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.hashes, level: headlev+1, spcCount:spcCt));
                         break;
+
                     case '-':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.minus, spcCount: spcCt));
                         break;
+
                     case '+':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.plus, spcCount: spcCt));
                         break;
+
                     case '*':
                         if (nextc != '*')
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: spcCt));
@@ -108,9 +111,11 @@ namespace JournalWriter
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.boldemphasize, spcCount: spcCt));
                         }
                         break;
+
                     case '_':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.underline, spcCount: spcCt));
                         break;
+
                     case '`':
                         if (nextc != '`')
                         {
@@ -137,6 +142,29 @@ namespace JournalWriter
                     case '>':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.greaterthan, spcCount: spcCt));
                         break;
+
+                    case '[':
+                        if (nextc != ']' && thirdc == ']')
+                        {
+                            bool? state;
+                            if (nextc == ' ')
+                                state = false;
+                            else if (char.ToLower(nextc) == 'o')
+                                state = null;
+                            else
+                                state = true;
+
+                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.todo, state: state, spcCount: spcCt);
+                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            newl.Text = currc.ToString();
+                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            newl.SpaceCountAtEnd = spcCt;
+                            
+                            answ.Add(newl);
+                            
+                        }
+                        break;
+
                     case '<':
                         if (nowords.Contains(nextc))
                         {
@@ -147,6 +175,7 @@ namespace JournalWriter
                         else
                             currw += "&lt;";
                         break;
+
                     case '&':
                         if (nowords.Contains(nextc))
                         {

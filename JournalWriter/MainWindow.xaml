@@ -140,7 +140,6 @@
                  MouseWheel="firstTB_MouseWheel" 
                  CaretBrush="Black"/>
 
-
         <StatusBar Grid.ColumnSpan="3" Grid.Row="2" HorizontalAlignment="Center" Name="mainStatusBar" VerticalAlignment="Stretch" Background="{DynamicResource TransparentBackground}">
             <Border BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8">
                 <StatusBarItem Name="dateTimeStatusbarItem" Content="01.01.2013 00:00" BorderBrush="{StaticResource BorderOnTransparentBackground}"  Foreground="{StaticResource ForegroundOnTransparentBackground}"  FontFamily="{StaticResource ReadableTextFontFamily}" ToolTip="Aktuelles Datum und Uhrzeit" />
@@ -156,6 +155,7 @@
                     <SolidColorBrush />
                 </Border.Background>
                 <StatusBarItem Name="editModeStatusbarItem" Content="E" FontWeight="Bold" Visibility="Collapsed" Margin="5,0,5,0" BorderBrush="{StaticResource EditTBBorderOnTransparentBackground}"  Foreground="{StaticResource EditTBForegroundOnTransparentBackground}"  FontFamily="{StaticResource EditTBReadableTextFontFamily}" ToolTip="Edit Modus" IsVisibleChanged="editModeStatusbarItem_IsVisibleChanged" Background="Transparent"/>
+                
             </Border>
         </StatusBar>
         

@@ -20,7 +20,7 @@ namespace JournalWriter
         public int Level { get; set; }
         public int SpaceCountAtEnd { get; set; }
         public bool? State { get; set; }
-
+        public long Position { get; set; }
 
         /// <summary>
         /// Contructor for lexical element with a level. Used for headings and list elements
@@ -29,13 +29,15 @@ namespace JournalWriter
         /// <param name="text">Text contents of the lexical element</param>
         /// <param name="level">Level of the elements</param>
         /// <param name="spcCount">Number of spaces following the element</param>
-        public DocLexElement(LexTypeEnum t, string text = "", int level=0, int spcCount=0, bool? state=null)
+        /// <param name="posi">Position of the element in the text. Normally used for reverse finds</param>
+        public DocLexElement(LexTypeEnum t, string text = "", int level=0, int spcCount=0, bool? state=null, int posi=0)
         {
             Type = t;
             Level = level;
             Text = text;
             SpaceCountAtEnd = spcCount;
             State = state;
+            Position = posi;
         }
 
         public override string ToString()
@@ -52,6 +54,9 @@ namespace JournalWriter
                     break;
                 case LexTypeEnum.headafter:
                     answ += "(" + Level + ")";
+                    break;
+                case LexTypeEnum.todo:
+                    answ += "(" + Position + "," + State + ")";
                     break;
             }
             return answ;

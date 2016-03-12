@@ -39,23 +39,24 @@ namespace JournalWriter
                 {
                     case ' ':
                         if (incode)
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.space));
-
+                        {
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.space, posi: currp));
+                        }
                         break;
 
                     case '\t':
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.tab, spcCount: spcCt));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.tab, spcCount: spcCt, posi: currp));
                         break;
 
                    
                     case '|':
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.cellstart, spcCount: spcCt));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.cellstart, spcCount: spcCt, posi: currp));
                         break;
 
                     case '\n':
                         if (nextc == '\n' || nextc == '\x1A') //parabreak when another newline or document end follows
                         {
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak, posi: currp));
                             ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc, out spcCt);
                         }
                         else
@@ -82,50 +83,50 @@ namespace JournalWriter
                         while (nextc == '#')
                         {
                             ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc, out spcCt);
-                            if(nextc=='#')
+                            if (nextc=='#')
                                 headlev++;
                         }
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.hashes, level: headlev+1, spcCount:spcCt));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.hashes, level: headlev+1, spcCount:spcCt, posi: currp-headlev));
                         break;
 
                     case '-':
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.minus, spcCount: spcCt));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.minus, spcCount: spcCt, posi: currp));
                         break;
 
                     case '+':
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.plus, spcCount: spcCt));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.plus, spcCount: spcCt, posi: currp));
                         break;
 
                     case '*':
                         if (nextc != '*')
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: spcCt));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: spcCt, posi: currp));
                         else if (thirdc != '*')
                         {
                             ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.bold, spcCount: spcCt));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.bold, spcCount: spcCt, posi: currp-1));
                         }
                         else
                         {
                             ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.boldemphasize, spcCount: spcCt));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.boldemphasize, spcCount: spcCt, posi: currp-2));
                         }
                         break;
 
                     case '_':
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.underline, spcCount: spcCt));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.underline, spcCount: spcCt, posi: currp));
                         break;
 
                     case '`':
                         if (nextc != '`')
                         {
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.codeinline, spcCount: spcCt));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.codeinline, spcCount: spcCt, posi: currp));
                         }
                         else if (thirdc == '`')
                         {
                             incode = !incode;
                             currp += 2;
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.code));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.code, posi: currp));
                         }
                         else
                         {
@@ -133,14 +134,14 @@ namespace JournalWriter
                             currw += "``";
                             if (nowords.Contains(thirdc))
                             {
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt, posi: currp));
                                 currw = "";
                             }
                         }
                         break;
 
                     case '>':
-                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.greaterthan, spcCount: spcCt));
+                        answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.greaterthan, spcCount: spcCt, posi: currp));
                         break;
 
                     case '[':
@@ -154,7 +155,10 @@ namespace JournalWriter
                             else
                                 state = true;
 
-                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.todo, state: state, spcCount: spcCt);
+                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.todo, 
+                                state: state,
+                                posi: currp,
+                                spcCount: spcCt);
                             ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             newl.Text = currc.ToString();
                             ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
@@ -169,7 +173,7 @@ namespace JournalWriter
                         if (nowords.Contains(nextc))
                         {
                             currw += "&lt;";
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt, posi: currp));
                             currw = "";
                         }
                         else
@@ -180,7 +184,7 @@ namespace JournalWriter
                         if (nowords.Contains(nextc))
                         {
                             currw += "&amp;";
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt, posi: currp));
                             currw = "";
                         }
                         else
@@ -191,12 +195,15 @@ namespace JournalWriter
                         if (nowords.Contains(nextc))
                         {
                             currw += currc;
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt));
+                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt, posi: currp));
                             currw = "";
                         }
                         else if (string.IsNullOrEmpty(currw) && IsEnumStartChar(currc) && nextc == '.' && thirdc==' ')
                         {
-                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.enumeration, currc.ToString() + nextc, spcCount: 1);
+                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.enumeration, 
+                                currc.ToString() + nextc, 
+                                spcCount: 1, 
+                                posi: currp);
                             ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             newl.SpaceCountAtEnd = spcCt;
                             answ.Add(newl);

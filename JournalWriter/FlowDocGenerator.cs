@@ -286,6 +286,7 @@ namespace JournalWriter
             bool stop = false;
             DocLexElement lex;
             bool? currState = null;
+            long currlexpos = 0;
             string subtxt = "";
             offset = 0;
 
@@ -299,9 +300,10 @@ namespace JournalWriter
                             stop = true;
                         else
                         {
-                            answ += string.Format("<ListItem><BlockUIContainer><CheckBox IsThreeState=\"True\" IsChecked=\"{1}\">{0}</CheckBox></BlockUIContainer></ListItem>",
+                            answ += string.Format("<ListItem><BlockUIContainer><CheckBox Tag=\"{2}\" IsThreeState=\"True\" IsChecked=\"{1}\"><TextBlock TextWrapping=\"Wrap\" Text=\"{0}\"/></CheckBox></BlockUIContainer></ListItem>",
                                  subtxt,
-                                 StateString(currState));
+                                 StateString(currState),
+                                 currlexpos);
                             subtxt = "";
                         }
                         break;
@@ -311,31 +313,90 @@ namespace JournalWriter
                             stop = true;
                         else
                         {
-                            answ += string.Format("<ListItem><BlockUIContainer><CheckBox IsThreeState=\"True\" IsChecked=\"{1}\">{0}</CheckBox></BlockUIContainer></ListItem>",
-                                subtxt,
-                                StateString(currState));
+                            answ += string.Format("<ListItem><BlockUIContainer><CheckBox Tag=\"{2}\" IsThreeState=\"True\" IsChecked=\"{1}\"><TextBlock TextWrapping=\"Wrap\" Text=\"{0}\"/></CheckBox></BlockUIContainer></ListItem>",
+                                   subtxt,
+                                  StateString(currState),
+                                  currlexpos);
                             subtxt = "";
                         }
                         break;
 
                     case DocLexElement.LexTypeEnum.todo:
                         currState = lex.State;
+                        currlexpos = lex.Position;
                         break;
 
                     case DocLexElement.LexTypeEnum.word:
                         subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
-                        
+
+                    case DocLexElement.LexTypeEnum.emphasize:
+                        subtxt += GetTextAndSpaces("*", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.bold:
+                        subtxt += GetTextAndSpaces("**", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.boldemphasize:
+                        subtxt += GetTextAndSpaces("***", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.underline:
+                        subtxt += GetTextAndSpaces("_", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.plus:
+                        subtxt += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.minus:
+                        subtxt += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.number:
+                        subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.enumeration:
+                        subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.cellstart:
+                        subtxt += GetTextAndSpaces("|", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.greaterthan:
+                        subtxt += GetTextAndSpaces(">", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.hashes:
+                        subtxt += GetTextAndSpaces(GetStringOf("#", lex.Level), lex.SpaceCountAtEnd);
+                        break;
                 }
 
                 offset++;  
             }
 
-            
+            if (!string.IsNullOrEmpty(subtxt))
+            {
+                answ += string.Format("<ListItem><BlockUIContainer><CheckBox Tag=\"{2}\" IsThreeState=\"True\" IsChecked=\"{1}\"><TextBlock TextWrapping=\"Wrap\" Text=\"{0}\"/></CheckBox></BlockUIContainer></ListItem>",
+                                 subtxt,
+                                 StateString(currState),
+                                 currlexpos);
+            }
+
+            if (offset > 0)
+                offset--;
+
             return answ;
         }
 
-
+        /// <summary>
+        /// Get the string representation of the check box's state
+        /// </summary>
+        /// <param name="currState">State as nullable bool</param>
+        /// <returns>String containing True, false of {x:Null} to be used in a WPF checkbox definition</returns>
         private object StateString(bool? currState)
         {
             if (currState == null)
@@ -353,6 +414,9 @@ namespace JournalWriter
         /// <returns></returns>
         private bool IsTodoListElementStart(List<DocLexElement> lexes, int tstpos)
         {
+            if (tstpos >= lexes.Count)
+                return false;
+
             return lexes[tstpos].Type == DocLexElement.LexTypeEnum.todo;
         }
 
@@ -1077,16 +1141,19 @@ namespace JournalWriter
                 switch(lex.Type)
                 {
                     case DocLexElement.LexTypeEnum.word:
-                        answ += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        answ += lex.Text;
                         break;
                     case DocLexElement.LexTypeEnum.linebreak:
                         answ += "\n";
                         break;
                     case DocLexElement.LexTypeEnum.cellstart:
-                        answ += GetTextAndSpaces("|", lex.SpaceCountAtEnd);
+                        answ += "|";
+                        break;
+                    case DocLexElement.LexTypeEnum.todo:
+                        answ += "[" + lex.Text + "]";
                         break;
                     case DocLexElement.LexTypeEnum.codeinline:
-                        answ += GetTextAndSpaces("`", lex.SpaceCountAtEnd);
+                        answ += "`";
                         break;
                     case DocLexElement.LexTypeEnum.emphasize:
                         answ += "*";

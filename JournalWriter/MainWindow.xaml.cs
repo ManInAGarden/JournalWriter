@@ -447,6 +447,7 @@ namespace JournalWriter
             e.CanExecute = true;
         }
 
+
         /// <summary>
         /// "Quelltext anzeigen" ausführen
         /// </summary>
@@ -737,7 +738,6 @@ namespace JournalWriter
                 text = "";
 
             firstDV.Document = mdwn.GetDocument(this, text);
-
             SetEventsOnDocument(firstDV.Document);
 
             firstDV.Visibility = System.Windows.Visibility.Visible;
@@ -748,11 +748,53 @@ namespace JournalWriter
             wordCountStatusBarItem.Content = wcount.ToString();
         }
 
+
         private void SetEventsOnDocument(FlowDocument fdoc)
         {
-            foreach (Run curRun in LogicalTreeHelperHelper.GetChildren<Run>(fdoc, true))
-                curRun.MouseDown += new MouseButtonEventHandler(fdoc_MouseDown);
+            foreach (object obi in LogicalTreeHelperHelper.GetChildren<object>(fdoc, true))
+            {
+                if (obi is Run)
+                {
+                    (obi as Run).MouseDown += new MouseButtonEventHandler(fdoc_MouseDown);
+                } else if (obi is CheckBox)
+                {
+                    (obi as CheckBox).Checked += FlowDoCB_Checked;
+                    (obi as CheckBox).Unchecked += FlowDoCB_Unchecked;
+                    (obi as CheckBox).Indeterminate += FlowDoCB_Indeterminate;
+                }
+                
+            }
 
+        }
+
+        private void FlowDoCB_Indeterminate(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            WriteCBToText(cb.Tag as string, "o");
+        }
+
+        private void FlowDoCB_Unchecked(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            WriteCBToText(cb.Tag as string, " ");
+        }
+
+        private void FlowDoCB_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            WriteCBToText(cb.Tag as string, "x");
+        }
+
+        private void WriteCBToText(string poss, string todovalue)
+        {
+            int pos = 0;
+
+            if (int.TryParse(poss, out pos))
+            {
+                string fulltxt = CurrentTiToFill.Tag as string;
+                string txt = fulltxt.Substring(0, pos+1) + todovalue + fulltxt.Substring(pos + 2);
+                CurrentTiToFill.Tag = txt;
+            }
         }
 
         void fdoc_MouseDown(object sender, MouseButtonEventArgs e)

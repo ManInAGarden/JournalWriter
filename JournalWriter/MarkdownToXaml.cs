@@ -398,11 +398,8 @@ namespace JournalWriter
         }
 
 
-      
-
-       
         private FlowDocument LoadXaml(string text)
-        {
+        { 
             return System.Windows.Markup.XamlReader.Parse(text) as FlowDocument;
         }
 

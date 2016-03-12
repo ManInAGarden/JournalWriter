@@ -27,7 +27,7 @@
 
                     <ListItem>
                         <BlockUIContainer>
-                            <CheckBox IsThreeState="True" IsChecked="{x:Null}">
+                            <CheckBox IsThreeState="True" IsChecked="{x:Null}" Click="CheckBox_Click" Tag="12131" Checked="CheckBox_Checked"  >
                                 Listenelement 2: Auch hier gebe ich jetzt mal mehr Text ein. Mal sehen was dann geschieht. Sieht ja ganz OK aus, oder? Würde das auch mit kursiven Wörtern in der Liste klappen?
                             </CheckBox>
                         </BlockUIContainer>

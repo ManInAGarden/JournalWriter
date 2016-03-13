@@ -1409,7 +1409,7 @@ namespace JournalWriter
                         stop = true;
                         break;
                     case DocLexElement.LexTypeEnum.word:
-                        answ += lex.Text + " ";
+                        answ += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.cellstart:
                         answ += "|";

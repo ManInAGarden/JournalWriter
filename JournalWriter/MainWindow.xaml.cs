@@ -75,19 +75,38 @@ namespace JournalWriter
             dateTreeView.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("Header", System.ComponentModel.ListSortDirection.Ascending));
 
             JumpToNode(dateTreeView, "D_" + DateTime.Now.ToString("yyyyMMdd"));
+            CreateAllTimers();
+            StartAllTimers();
+        }
 
+
+        private void CreateAllTimers()
+        {
             clockDT.Tick += new EventHandler(clockDT_Tick);
             clockDT.Interval = new TimeSpan(0, 1, 0);
-            clockDT.Start();
 
             autoSaveDT.Tick += new EventHandler(autoSaveDT_Tick);
             autoSaveDT.Interval = new TimeSpan(0, 10, 0);
-            autoSaveDT.Start();
 
             wordCountDT.Tick += new EventHandler(wordCountDT_Tick);
             wordCountDT.Interval = new TimeSpan(0, 0, 5);
+        }
+
+
+        private void StartAllTimers()
+        {
+            clockDT.Start();
+            autoSaveDT.Start();
             wordCountDT.Start();
         }
+
+        private void StopAllTimers()
+        {
+            clockDT.Stop();
+            autoSaveDT.Stop();
+            wordCountDT.Stop();
+        }
+
 
         private void wordCountDT_Tick(object sender, EventArgs e)
         {
@@ -507,6 +526,11 @@ namespace JournalWriter
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            SaveAllToFile();
+        }
+
+        private void SaveAllToFile()
         {
             if (firstTB.IsFocused && CurrentTiToFill != null)
             {
@@ -1137,6 +1161,53 @@ namespace JournalWriter
         private void MarkdownHelp_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
+        }
+
+
+        private void SetFileLocation_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog opfd = new Microsoft.Win32.OpenFileDialog();
+            opfd.AddExtension = true;
+            opfd.CheckPathExists = true;
+            opfd.DefaultExt = "xml";
+            opfd.Multiselect = false;
+            opfd.Filter = "SJournal-Dateien (*.xml) |*.xml| Alle Dateien (*.*) |*.*";
+            opfd.InitialDirectory = Properties.Settings.Default.JournalPath;
+            opfd.Title = "Dateiauswahl für die Journal Datei";
+            opfd.CheckFileExists = true;
+
+            StopAllTimers();
+
+            if (HaveChange)
+                SaveAllToFile();
+
+            if (opfd.ShowDialog() == true)
+            {
+                Properties.Settings.Default.JournalPath = System.IO.Path.GetDirectoryName(opfd.FileName);
+                Properties.Settings.Default.FileName = System.IO.Path.GetFileName(opfd.FileName);
+                dateTreeView.Items.Clear();
+                CurrentTiToFill = null;
+                FetchFromFile();
+
+                AddCurrentDay();
+                dateTreeView.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("Header", System.ComponentModel.ListSortDirection.Ascending));
+
+                JumpToNode(dateTreeView, "D_" + DateTime.Now.ToString("yyyyMMdd"));
+
+                Properties.Settings.Default.Save();
+            }
+
+            StartAllTimers();
+        }
+
+        /// <summary>
+        /// We can only change the file location when we are not currently editing a day's text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetFileLocation_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !firstTB.IsVisible;
         }
 
         private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)

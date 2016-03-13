@@ -7,13 +7,15 @@ namespace JournalWriter
 {
     public class DocLexElement
     {
-        public enum LexTypeEnum {word, tab, space,
+        public enum LexTypeEnum {word, tab, space, nothing,
             linebreak, parabreak,
             hashes, headafter,
             bold, emphasize, boldemphasize, underline, codeinline,
             code, greaterthan,
             number, minus, plus, enumeration,
             cellstart, todo};
+
+        static public List<int> JumpPositions { get; set; }
 
         public LexTypeEnum Type { get; set; }
         public string Text { get; set; }
@@ -37,7 +39,19 @@ namespace JournalWriter
             Text = text;
             SpaceCountAtEnd = spcCount;
             State = state;
-            Position = posi;
+            Position = CorrectPosi(posi);
+        }
+
+        private long CorrectPosi(int posi)
+        {
+            int idx = 0;
+
+            while (idx < JumpPositions.Count && posi >= JumpPositions[idx])
+            {
+                idx++;
+            }
+
+            return posi + idx;
         }
 
         public override string ToString()

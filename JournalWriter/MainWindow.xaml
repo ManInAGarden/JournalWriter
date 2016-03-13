@@ -50,6 +50,7 @@
         <CommandBinding Command="cmds:SessionCommands.ShowTabs" Executed="ShowTabs_Executed" CanExecute="ShowTabs_CanExecute"/>
         <CommandBinding Command="cmds:SessionCommands.GotoLine" Executed="GotoLine_Executed" CanExecute="GotoLine_CanExecute"/>
         <CommandBinding Command="cmds:SessionCommands.MarkdownHelp" Executed="MarkdownHelp_Executed" CanExecute="MarkdownHelp_CanExecute" />
+        <CommandBinding Command="cmds:SessionCommands.SetFileLocation" Executed="SetFileLocation_Executed" CanExecute="SetFileLocation_CanExecute" />
     </Window.CommandBindings>
     
     <Grid Background="{StaticResource TransparentBackground}">
@@ -67,7 +68,8 @@
         <Menu Grid.ColumnSpan="3" Height="23" HorizontalAlignment="Stretch" Margin="0" Name="mainMenu" VerticalAlignment="Top" Visibility="Collapsed">
             <MenuItem Header="Datei">
                 <MenuItem Header="Speichern" Command="cmds:SessionCommands.Save" />
-                <MenuItem Header="Speichern unter" Visibility="Collapsed"></MenuItem>
+                <MenuItem Header="Journal Datei festlegen" Command="cmds:SessionCommands.SetFileLocation" />
+                <MenuItem Header="Speichern unter" Visibility="Collapsed" />
                 <MenuItem Command="cmds:SessionCommands.Exit" Header="Beenden" />
             </MenuItem>
             <MenuItem Header="Bearbeiten">

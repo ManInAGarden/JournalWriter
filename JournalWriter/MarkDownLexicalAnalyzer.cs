@@ -13,19 +13,36 @@ namespace JournalWriter
             'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
         public string Text { get; set; }
 
+       
+
         public MarkDownLexicalAnalyzer(string txt)
         {
-            Text = txt.Replace("\r", ""); //cure doc from any \r
-        }
+            //cure doc from any \r and store the positions of 
+            //ommited chars for late rcorrection of text positions
+            //for the lexical elements
 
-        
+            //Text = txt.Replace("\r", ""); 
+            DocLexElement.JumpPositions = new List<int>();
+            Text = "";
+            char currc;
+            for (int i = 0; i < txt.Length; i++)
+            {
+                currc = txt[i];
+                if (currc != '\r')
+                    Text += currc;
+                else
+                    DocLexElement.JumpPositions.Add(i);
+            }
+
+        }
+    
 
         public List<DocLexElement> GetDocLexList()
         {
             List<DocLexElement> answ = new List<DocLexElement>();
-            char[] textc = Text.ToCharArray();
+            string txt = Text;
             int currp = 0,
-                max = textc.Length;
+                max = txt.Length;
             char currc, nextc, thirdc;
             string currw = "";
             bool incode = false;
@@ -34,7 +51,7 @@ namespace JournalWriter
 
             while (currp < max)
             {
-                ConsumeOneChar(textc, currp, out currc, out nextc, out thirdc, out spcCt);
+                ConsumeOneChar(txt, currp, out currc, out nextc, out thirdc, out spcCt);
                 switch (currc)
                 {
                     case ' ':
@@ -47,8 +64,7 @@ namespace JournalWriter
                     case '\t':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.tab, spcCount: spcCt, posi: currp));
                         break;
-
-                   
+ 
                     case '|':
                         answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.cellstart, spcCount: spcCt, posi: currp));
                         break;
@@ -57,16 +73,16 @@ namespace JournalWriter
                         if (nextc == '\n' || nextc == '\x1A') //parabreak when another newline or document end follows
                         {
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak, posi: currp));
-                            ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(txt, currp++, out currc, out nextc, out thirdc, out spcCt);
                         }
                         else
                         {
-                            if (nextc == '=' && HaveALineOfThese(textc, currp + 1, nextc, out offset))
+                            if (nextc == '=' && HaveALineOfThese(txt, currp + 1, nextc, out offset))
                             {
                                 answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, level:1, spcCount: 0));
                                 currp += offset;
                             }
-                            else if (nextc == '-' && HaveALineOfThese(textc, currp + 1, nextc, out offset))
+                            else if (nextc == '-' && HaveALineOfThese(txt, currp + 1, nextc, out offset))
                             {
                                 answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, level: 2, spcCount: 0));
                                 currp += offset;
@@ -82,7 +98,7 @@ namespace JournalWriter
                         int headlev = 0;
                         while (nextc == '#')
                         {
-                            ConsumeOneChar(textc, currp++, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(txt, currp++, out currc, out nextc, out thirdc, out spcCt);
                             if (nextc=='#')
                                 headlev++;
                         }
@@ -102,13 +118,13 @@ namespace JournalWriter
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: spcCt, posi: currp));
                         else if (thirdc != '*')
                         {
-                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(txt, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.bold, spcCount: spcCt, posi: currp-1));
                         }
                         else
                         {
-                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
-                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(txt, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(txt, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.boldemphasize, spcCount: spcCt, posi: currp-2));
                         }
                         break;
@@ -159,9 +175,9 @@ namespace JournalWriter
                                 state: state,
                                 posi: currp,
                                 spcCount: spcCt);
-                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(txt, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             newl.Text = currc.ToString();
-                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(txt, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             newl.SpaceCountAtEnd = spcCt;
                             
                             answ.Add(newl);
@@ -204,7 +220,7 @@ namespace JournalWriter
                                 currc.ToString() + nextc, 
                                 spcCount: 1, 
                                 posi: currp);
-                            ConsumeOneChar(textc, ++currp, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(txt, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             newl.SpaceCountAtEnd = spcCt;
                             answ.Add(newl);
                         } else
@@ -222,6 +238,7 @@ namespace JournalWriter
             return answ;
         }
 
+
         /// <summary>
         /// checks wether the given character is a valid
         /// start of an enumetation
@@ -233,40 +250,12 @@ namespace JournalWriter
             return char.IsDigit(currc) || enumletters.Contains(char.ToLower(currc));
         }
 
-        /// <summary>
-        /// Take car of any digits to recognize a number.
-        /// </summary>
-        /// <param name="textc"></param>
-        /// <param name="currp"></param>
-        /// <param name="currc"></param>
-        /// <param name="nextc"></param>
-        /// <param name="thirdc"></param>
-        /// <param name="spcCt"></param>
-        private DocLexElement HandleDigits(char[] textc, int currp, out char currc, out char nextc, out char thirdc, out int spcCt, out int offset)
-        {
-            bool stop = false;
-            string numbs = "";
-            offset = 0;
-            int i = currp;
-            do
-            {
-                ConsumeOneChar(textc, i, out currc, out nextc, out thirdc, out spcCt);
 
-                stop = !char.IsDigit(nextc) && nextc != '.';
-                
-                numbs += currc;
-                offset++;
-                i++;
-            } while (i < textc.Length && !stop);
-
-            return new DocLexElement(DocLexElement.LexTypeEnum.number, numbs, spcCount: spcCt);
-        }
-
-        private bool HaveALineOfThese(char[] textc, int currp, char currc, out int offset)
+        private bool HaveALineOfThese(string textc, int currp, char currc, out int offset)
         {
             offset = 0;
             int idx = currp;
-            while (idx<textc.Length && textc[idx] == currc)
+            while (idx < textc.Length && textc[idx] == currc)
                 idx++;
 
             if (idx > textc.Length)
@@ -286,6 +275,8 @@ namespace JournalWriter
             return false;
         }
 
+
+
         /// <summary>
         /// consume one character from the input text
         /// </summary>
@@ -295,11 +286,11 @@ namespace JournalWriter
         /// <param name="nextc">returns the character following the current character</param>
         /// <param name="thirdc">returns the character following the character after the current character</param>
         /// <param name="spcCount"></param>
-        private void ConsumeOneChar(char[] textc, 
-            int currp, 
-            out char currc, 
-            out char nextc, 
-            out char thirdc, 
+        private void ConsumeOneChar(string textc,
+            int currp,
+            out char currc,
+            out char nextc,
+            out char thirdc,
             out int spcCount)
         {
             currc = textc[currp];
@@ -310,10 +301,9 @@ namespace JournalWriter
 
             while ((i < textc.Length) && (textc[i++] == ' '))
             {
-                    spcCount++;   
+                spcCount++;
             }
         }
-
 
 
         /// <summary>
@@ -322,7 +312,7 @@ namespace JournalWriter
         /// <param name="textc">char array to be used</param>
         /// <param name="currp">current position</param>
         /// <returns></returns>
-        private char GetNextChar(char[] textc, int currp)
+        private char GetNextChar(string textc, int currp)
         {
             return (currp + 1) < Text.Length ? textc[currp + 1] : '\x1A';
         }

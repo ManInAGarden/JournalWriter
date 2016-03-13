@@ -18,6 +18,7 @@ namespace JournalWriter
         public static RoutedUICommand ShowTabs{get; private set;}
         public static RoutedUICommand GotoLine { get; private set; }
         public static RoutedUICommand MarkdownHelp { get; private set; }
+        public static RoutedUICommand SetFileLocation { get; private set; }
 
         static SessionCommands()
         {
@@ -58,6 +59,8 @@ namespace JournalWriter
                     new KeyGesture(Key.G, ModifierKeys.Alt, "Alt+G")
                 }
               );
+
+            SetFileLocation = new RoutedUICommand("_JournalDatei", "SetFileLocation", typeof(SessionCommands));
 
         }   
         

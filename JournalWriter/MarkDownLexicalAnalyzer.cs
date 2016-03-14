@@ -46,7 +46,7 @@ namespace JournalWriter
             char currc, nextc, thirdc;
             string currw = "";
             bool incode = false;
-            int spcCt;
+            int spcCt = 0;
             int offset;
 
             while (currp < max)
@@ -73,23 +73,23 @@ namespace JournalWriter
                         if (nextc == '\n' || nextc == '\x1A') //parabreak when another newline or document end follows
                         {
                             answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak, posi: currp));
-                            ConsumeOneChar(txt, currp++, out currc, out nextc, out thirdc, out spcCt);
+                            ConsumeOneChar(txt, ++currp, out currc, out nextc, out thirdc, out spcCt);
                         }
                         else
                         {
                             if (nextc == '=' && HaveALineOfThese(txt, currp + 1, nextc, out offset))
                             {
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, level:1, spcCount: 0));
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, level:1, spcCount: 0, posi: currp));
                                 currp += offset;
                             }
                             else if (nextc == '-' && HaveALineOfThese(txt, currp + 1, nextc, out offset))
                             {
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, level: 2, spcCount: 0));
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.headafter, level: 2, spcCount: 0, posi: currp));
                                 currp += offset;
                             }
                             else
                             {
-                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.linebreak));
+                                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.linebreak, posi: currp));
                             }
                         }
                         break;
@@ -171,7 +171,7 @@ namespace JournalWriter
                             else
                                 state = true;
 
-                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.todo, 
+                            DocLexElement newl = new DocLexElement(DocLexElement.LexTypeEnum.todo,
                                 state: state,
                                 posi: currp,
                                 spcCount: spcCt);
@@ -179,17 +179,20 @@ namespace JournalWriter
                             newl.Text = currc.ToString();
                             ConsumeOneChar(txt, ++currp, out currc, out nextc, out thirdc, out spcCt);
                             newl.SpaceCountAtEnd = spcCt;
-                            
+
                             answ.Add(newl);
-                            
+
                         }
+                        else
+                            currw += '[';
+
                         break;
 
                     case '<':
                         if (nowords.Contains(nextc))
                         {
                             currw += "&lt;";
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt, posi: currp));
+                            answ.Add(GetWordLexElement(ref currw, spcCt, currp));
                             currw = "";
                         }
                         else
@@ -200,8 +203,7 @@ namespace JournalWriter
                         if (nowords.Contains(nextc))
                         {
                             currw += "&amp;";
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt, posi: currp));
-                            currw = "";
+                            answ.Add(GetWordLexElement(ref currw, spcCt, currp));
                         }
                         else
                             currw += "&amp;";
@@ -211,8 +213,7 @@ namespace JournalWriter
                         if (nowords.Contains(nextc))
                         {
                             currw += currc;
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw, spcCount: spcCt, posi: currp));
-                            currw = "";
+                            answ.Add(GetWordLexElement(ref currw, spcCt, currp));
                         }
                         else if (string.IsNullOrEmpty(currw) && IsEnumStartChar(currc) && nextc == '.' && thirdc==' ')
                         {
@@ -233,7 +234,48 @@ namespace JournalWriter
             }
 
             if (!string.IsNullOrWhiteSpace(currw))
-                answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, currw));
+                answ.Add(GetWordLexElement(ref currw, spcCt, currp));
+
+            return answ;
+        }
+
+        private DocLexElement GetWordLexElement(ref string currw, int spcCt, int currp)
+        {
+            int additchars = CalcAdditChars(currw);
+            DocLexElement answ = new DocLexElement(DocLexElement.LexTypeEnum.word,
+                text: currw,
+                spcCount: spcCt,
+                posi: currp - additchars - currw.Length + 1);
+
+            currw = "";
+
+            return answ;
+        }
+
+        private int CalcAdditChars(string currw)
+        {
+            int answ = 0;
+            string[] searchfors = new string[] { "&amp;", "&gt;", "&lt;" };
+
+            foreach (string searchfor in searchfors)
+            {
+                answ += CountOccurences(currw, searchfor) * (searchfor.Length-1);
+            }
+
+            return answ;
+        }
+
+        private int CountOccurences(string tststr, string sfor)
+        {
+            int answ = 0;
+
+            if (sfor.Length < tststr.Length)
+                return answ;
+
+            int idx = tststr.IndexOf(sfor);
+
+            if (idx >= 0)
+                answ = 1 + CountOccurences(tststr.Substring(idx+tststr.Length), sfor);
 
             return answ;
         }
@@ -293,7 +335,7 @@ namespace JournalWriter
             out char thirdc,
             out int spcCount)
         {
-            currc = textc[currp];
+            currc = currp < Text.Length ? textc[currp] : '\x1A';
             nextc = GetNextChar(textc, currp);
             thirdc = GetNextChar(textc, currp + 1);
             spcCount = 0;

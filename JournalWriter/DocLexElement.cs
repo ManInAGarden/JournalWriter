@@ -22,7 +22,7 @@ namespace JournalWriter
         public int Level { get; set; }
         public int SpaceCountAtEnd { get; set; }
         public bool? State { get; set; }
-        public long Position { get; set; }
+        public int Position { get; set; }
 
         /// <summary>
         /// Contructor for lexical element with a level. Used for headings and list elements
@@ -42,16 +42,23 @@ namespace JournalWriter
             Position = CorrectPosi(posi);
         }
 
-        private long CorrectPosi(int posi)
+        /// <summary>
+        /// Correct an element's position by calculating how many ommited chars
+        /// (like \r) have to be added.
+        /// </summary>
+        /// <param name="posi">Position to be recalculated</param>
+        /// <returns>The corrected position</returns>
+        private int CorrectPosi(int posi)
         {
             int idx = 0;
-
+            
             while (idx < JumpPositions.Count && posi >= JumpPositions[idx])
             {
                 idx++;
+                posi++; //this is correct! We have to go even further in the jump list for any single previously omitted char
             }
 
-            return posi + idx;
+            return posi;
         }
 
         public override string ToString()

@@ -16,8 +16,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-
-
 namespace JournalWriter
 {
     /// <summary>
@@ -352,6 +350,36 @@ namespace JournalWriter
 
                 firstTB.CaretIndex = CalcStartOfLineIdx(firstTB, linenum);
             }
+        }
+
+
+        /// <summary>
+        /// Can we execute? Produce a debug Info for the markdown elements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DebugMarkdown_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !firstTB.IsVisible;
+        }
+
+        /// <summary>
+        /// Produce a debug Info for the markdown elements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DebugMarkdown_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            TreeViewItem selo = dateTreeView.SelectedItem as TreeViewItem;
+
+            if ((selo == null) || (selo.Tag == null) || !(selo.Tag is string))
+                return;
+
+            FlowDocument fdoc = mdwn.DebugDocument(this, selo.Tag as string);
+
+            ShowDebugInfoWindow dbgw = new ShowDebugInfoWindow();
+
+            dbgw.Show(this, fdoc);
         }
 
         /// <summary>
@@ -809,6 +837,11 @@ namespace JournalWriter
             WriteCBToText(cb.Tag as string, "x");
         }
 
+        /// <summary>
+        /// Write the contents of a combo box to the text
+        /// </summary>
+        /// <param name="poss">String containig a number which is the position of the todo list markdown element</param>
+        /// <param name="todovalue">The value to store in the middle of []</param>
         private void WriteCBToText(string poss, string todovalue)
         {
             int pos = 0;
@@ -818,6 +851,7 @@ namespace JournalWriter
                 string fulltxt = CurrentTiToFill.Tag as string;
                 string txt = fulltxt.Substring(0, pos+1) + todovalue + fulltxt.Substring(pos + 2);
                 CurrentTiToFill.Tag = txt;
+                HaveChange = true;
             }
         }
 

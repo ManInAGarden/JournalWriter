@@ -51,6 +51,7 @@
         <CommandBinding Command="cmds:SessionCommands.GotoLine" Executed="GotoLine_Executed" CanExecute="GotoLine_CanExecute"/>
         <CommandBinding Command="cmds:SessionCommands.MarkdownHelp" Executed="MarkdownHelp_Executed" CanExecute="MarkdownHelp_CanExecute" />
         <CommandBinding Command="cmds:SessionCommands.SetFileLocation" Executed="SetFileLocation_Executed" CanExecute="SetFileLocation_CanExecute" />
+        <CommandBinding Command="cmds:SessionCommands.DebugMarkdown" Executed="DebugMarkdown_Executed" CanExecute="DebugMarkdown_CanExecute" />
     </Window.CommandBindings>
     
     <Grid Background="{StaticResource TransparentBackground}">
@@ -76,6 +77,7 @@
                 <MenuItem Command="cmds:SessionCommands.GotoLine" Header="Gehe zu Zeile"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.ShowSource" Header="Quelltext (Flow Document) zeigen"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.ShowTabs" Header="TAB Anzeige ein/aus"></MenuItem>
+                <MenuItem Command="cmds:SessionCommands.DebugMarkdown" Header="Markdown Debug"></MenuItem>
             </MenuItem>
             <MenuItem Header="Hilfe">
                 <MenuItem Header="Markdown Hilfe" Command="cmds:SessionCommands.MarkdownHelp" />

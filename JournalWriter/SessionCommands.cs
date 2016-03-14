@@ -19,6 +19,7 @@ namespace JournalWriter
         public static RoutedUICommand GotoLine { get; private set; }
         public static RoutedUICommand MarkdownHelp { get; private set; }
         public static RoutedUICommand SetFileLocation { get; private set; }
+        public static RoutedCommand DebugMarkdown { get; private set; }
 
         static SessionCommands()
         {
@@ -61,6 +62,8 @@ namespace JournalWriter
               );
 
             SetFileLocation = new RoutedUICommand("_JournalDatei", "SetFileLocation", typeof(SessionCommands));
+
+            DebugMarkdown = new RoutedUICommand("_JournalDatei", "DebugMarkDown", typeof(SessionCommands));
 
         }   
         

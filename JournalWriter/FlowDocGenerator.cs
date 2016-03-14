@@ -301,7 +301,7 @@ namespace JournalWriter
                         else
                         {
                             answ += string.Format("<ListItem><BlockUIContainer><CheckBox Tag=\"{2}\" IsThreeState=\"True\" IsChecked=\"{1}\"><TextBlock TextWrapping=\"Wrap\" Text=\"{0}\"/></CheckBox></BlockUIContainer></ListItem>",
-                                 subtxt,
+                                 CleanTextForCombo(subtxt),
                                  StateString(currState),
                                  currlexpos);
                             subtxt = "";
@@ -314,7 +314,7 @@ namespace JournalWriter
                         else
                         {
                             answ += string.Format("<ListItem><BlockUIContainer><CheckBox Tag=\"{2}\" IsThreeState=\"True\" IsChecked=\"{1}\"><TextBlock TextWrapping=\"Wrap\" Text=\"{0}\"/></CheckBox></BlockUIContainer></ListItem>",
-                                   subtxt,
+                                  CleanTextForCombo(subtxt),
                                   StateString(currState),
                                   currlexpos);
                             subtxt = "";
@@ -381,13 +381,20 @@ namespace JournalWriter
             if (!string.IsNullOrEmpty(subtxt))
             {
                 answ += string.Format("<ListItem><BlockUIContainer><CheckBox Tag=\"{2}\" IsThreeState=\"True\" IsChecked=\"{1}\"><TextBlock TextWrapping=\"Wrap\" Text=\"{0}\"/></CheckBox></BlockUIContainer></ListItem>",
-                                 subtxt,
+                                 CleanTextForCombo(subtxt),
                                  StateString(currState),
                                  currlexpos);
             }
 
             if (offset > 0)
                 offset--;
+
+            return answ;
+        }
+
+        private object CleanTextForCombo(string subtxt)
+        {
+            string answ = subtxt.Replace("\"", "&quot;");
 
             return answ;
         }
@@ -1296,6 +1303,10 @@ namespace JournalWriter
                             answ += GetStringOf("#", lex.Level);
                             break;
 
+                        case DocLexElement.LexTypeEnum.todo:
+                            answ += "[" + lex.Text + "]";
+                            break;
+
                         case DocLexElement.LexTypeEnum.headafter:
                             switch (lex.Level)
                             {
@@ -1510,6 +1521,87 @@ namespace JournalWriter
             }
 
             return answ;
+        }
+
+        internal string DebugDoc(string markdwntext, List<DocLexElement> lexes)
+        {
+            const string start = "<FlowDocument xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\""
+               + " xmlns:sys=\"clr-namespace:System;assembly=mscorlib\""
+               + " xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">\n";
+
+            string answ = "";
+            int pos=0, prevPos=0;
+            answ += "<Table>\n";
+            answ += "<TableRowGroup>\n";
+            answ += "<TableRow><TableCell><Paragraph><Bold>Element</Bold></Paragraph></TableCell><TableCell><Paragraph><Bold>Textauszug</Bold></Paragraph></TableCell></TableRow>\n";
+            foreach (DocLexElement lex in lexes)
+            {
+                
+                pos = lex.Position;
+
+                answ += string.Format("<TableRow><TableCell><Paragraph>{0}</Paragraph></TableCell><TableCell><Paragraph FontFamily=\"{2}\">{1}</Paragraph></TableCell></TableRow>",
+                    lex.Position.ToString() + ":" + lex.ToString(), 
+                    GetTextPart(markdwntext, pos),
+                    CodingFontFamily);   
+
+                prevPos = pos;
+            }
+
+            answ += "</TableRowGroup>\n";
+            answ += "</Table>\n";
+
+            return start + answ + "</FlowDocument>";
+        }
+
+        private string GetTextPart(string markdwntext, int pos)
+        {
+            string answ;
+            int maxl = markdwntext.Length - pos;
+
+            if (maxl > 10)
+                maxl = 10;
+
+            string pretxt = "";
+            if (pos >= 0 && pos < (markdwntext.Length - maxl))
+            {
+                if (pos > 10)
+                    pretxt = markdwntext.Substring(pos - 10, 10);
+
+                answ = string.Format("{0}<Bold>{1}</Bold>{2}",
+                    MakeVisible(pretxt),
+                    MakeVisible(markdwntext[pos]),
+                    MakeVisible(markdwntext.Substring(pos + 1, maxl)));
+            }
+            else
+                answ = "?";
+
+            return answ;
+        }
+
+        private string MakeVisible(string vs)
+        {
+            string answ = "";
+            foreach (char v in vs)
+                answ += MakeVisible(v);
+
+            return answ;
+        }
+
+        private string MakeVisible(char v)
+        {
+            switch (v)
+            {
+                case '\n':
+                    return "\\n";
+                case '\r':
+                    return "\\r";
+                case '\t':
+                    return "\\t";
+                case ' ':
+                    return ".";
+                default:
+                    return v.ToString();
+            }
         }
     }
 }

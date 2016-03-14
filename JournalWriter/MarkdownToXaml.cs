@@ -48,8 +48,6 @@ namespace JournalWriter
             MarkDownLexicalAnalyzer ana = new MarkDownLexicalAnalyzer(text + "\n\n");
 
             List<DocLexElement> lex = ana.GetDocLexList();
-           
-
 
             FlowDocGenerator fdg = new FlowDocGenerator();
             fdg.DocumentFontFamily = DocumentFontFamily;
@@ -65,6 +63,39 @@ namespace JournalWriter
 
             return fdg.ProduceDoc(lex);
 
+        }
+
+
+        public FlowDocument DebugDocument(Window parent, string text)
+        {
+            MarkDownLexicalAnalyzer ana = new MarkDownLexicalAnalyzer(text + "\n\n");
+
+            List<DocLexElement> lex = ana.GetDocLexList();
+
+            FlowDocGenerator fdg = new FlowDocGenerator();
+            fdg.DocumentFontFamily = DocumentFontFamily;
+            fdg.DocumentNormalFontSize = DocumentNormalFontSize;
+            fdg.DocumentHeadline1FontSize = DocumentHeadline1FontSize;
+            fdg.DocumentHeadline2FontSize = DocumentHeadline2FontSize;
+            fdg.DocumentHeadline3FontSize = DocumentHeadline3FontSize;
+            fdg.DocumentHeadline4FontSize = DocumentHeadline4FontSize;
+            fdg.DocumentHeadline5FontSize = DocumentHeadline5FontSize;
+            fdg.CodingFontSize = CodingFontSize;
+            fdg.CodingFontFamily = CodingFontFamily;
+            fdg.TextAlignment = TextAlignment;
+
+            FlowDocument doc = null;
+            try
+            {
+                string xamlstr = fdg.DebugDoc(text, lex);
+                doc = LoadXaml(xamlstr);
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(parent, "Text kann nicht formatiert werden. Origaltext der Meldung:\n" + exc.Message);
+            }
+
+            return doc;
         }
 
 
@@ -111,7 +142,7 @@ namespace JournalWriter
 
                 doc = new FlowDocument(paragraph);
 
-                MessageBox.Show(parent, "Text kann nicht formatiert werden. Origaltext der Meldung:\n" + exc.Message);
+                MessageBox.Show(parent, "Text kann nicht formatiert werden. Originaltext der Meldung:\n" + exc.Message);
             }
 
             return doc;

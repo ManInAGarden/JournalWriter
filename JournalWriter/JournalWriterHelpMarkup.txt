@@ -77,9 +77,9 @@ So hier beginnt nun ein neuer Absatz. Geht doch!
 Will man im Fließtext kursiven, fetten oder unterstrichenen Text haben geschieht dies indem man den Text in bestimmte steuernde Zeichen einschließt. Beispiele:
 
 ```
-	*kursiv* - In Sternchen eingeschlossen
-	**fett** - in Sternchenpaare eingeschlossen
-	_unterstrichen_ - in Unterstrichzeichen eingeschlossen
+*kursiv* - In Sternchen eingeschlossen
+**fett** - in Sternchenpaare eingeschlossen
+_unterstrichen_ - in Unterstrichzeichen eingeschlossen
 ```
 
 Sieht so aus: *kursiv*, **fett**, _unterstrichen_

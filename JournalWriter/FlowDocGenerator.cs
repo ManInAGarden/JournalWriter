@@ -289,6 +289,7 @@ namespace JournalWriter
             long currlexpos = 0;
             string subtxt = "";
             offset = 0;
+            //InParamodeEnum inpm = InParamodeEnum.none;
 
             for (int i = pos-1; i < lexes.Count && !stop; i++)
             {
@@ -331,6 +332,7 @@ namespace JournalWriter
                         break;
 
                     case DocLexElement.LexTypeEnum.emphasize:
+                        //subtxt += GetInlineFormat(lex, ref inpm, lexes, i); currently does not work
                         subtxt += GetTextAndSpaces("*", lex.SpaceCountAtEnd);
                         break;
 
@@ -867,6 +869,19 @@ namespace JournalWriter
                         subtxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
                         break;
 
+                    case DocLexElement.LexTypeEnum.enumeration:
+                        if (!AtBeginningOfLine(lexes, i))
+                            subtxt += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.minus:
+                        subtxt += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.plus:
+                        subtxt += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
+                        break;
+
                 }
 
                 offset++;
@@ -945,15 +960,17 @@ namespace JournalWriter
                         break;
 
                     case DocLexElement.LexTypeEnum.emphasize:
-                        if(!string.IsNullOrEmpty(subtxt))
+                        if (listc != '*')
                             subtxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
-
+                        else
+                        {
+                            if(!AtBeginningOfLine(lexes, i))
+                                subtxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
+                        }
                         break;
 
                     case DocLexElement.LexTypeEnum.boldemphasize:
-                        if (!string.IsNullOrEmpty(subtxt))
-                            subtxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
-
+                        subtxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
                         break;
 
                     case DocLexElement.LexTypeEnum.bold:
@@ -962,6 +979,26 @@ namespace JournalWriter
 
                     case DocLexElement.LexTypeEnum.underline:
                         subtxt += GetInlineFormat(lex, ref ipm, lexes, i + 1);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.minus:
+                        if (listc == '-')
+                        {
+                            if (!AtBeginningOfLine(lexes, i))
+                                subtxt += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
+                        }
+                        else
+                            subtxt += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.plus:
+                        if (listc == '+')
+                        {
+                            if (!AtBeginningOfLine(lexes, i))
+                                subtxt += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
+                        }
+                        else
+                            subtxt += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
                         break;
 
                 }
@@ -977,6 +1014,21 @@ namespace JournalWriter
                                         TextAlignment);
 
             return answ;
+        }
+
+
+        /// <summary>
+        /// Get the previous lexical element in the list as seen from a current position
+        /// </summary>
+        /// <param name="lexes">The list of lexical elements</param>
+        /// <param name="pos">The current position</param>
+        /// <returns>The next lexical element if there's any, otherwiese a fake parabreak element is returned</returns>
+        private DocLexElement GetPrevLex(List<DocLexElement> lexes, int pos)
+        {
+            if (pos-1 >= 0)
+                return lexes[pos-1];
+            else
+                return new DocLexElement(DocLexElement.LexTypeEnum.parabreak);
         }
 
 
@@ -1167,6 +1219,9 @@ namespace JournalWriter
                         break;
                     case DocLexElement.LexTypeEnum.bold:
                         answ += "**";
+                        break;
+                    case DocLexElement.LexTypeEnum.underline:
+                        answ += "_";
                         break;
                     case DocLexElement.LexTypeEnum.boldemphasize:
                         answ += "***";
@@ -1409,6 +1464,7 @@ namespace JournalWriter
 
             string answ = "";
             bool stop = false;
+            InParamodeEnum inpm = InParamodeEnum.none;
 
             DocLexElement lex;
             for(int i=start+1; i<lexes.Count; i++)
@@ -1429,16 +1485,19 @@ namespace JournalWriter
                         answ += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.emphasize:
+                        //answ += GetInlineFormat(lex, ref inpm, lexes, i); makes no sense here because heading is already bold
                         answ += GetTextAndSpaces("*", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.bold:
-                        answ += GetTextAndSpaces("**", lex.SpaceCountAtEnd);
+                        answ += GetInlineFormat(lex, ref inpm, lexes, i);
+                        //answ += GetTextAndSpaces("**", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.boldemphasize:
                         answ += GetTextAndSpaces("***", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.underline:
-                        answ += GetTextAndSpaces("_", lex.SpaceCountAtEnd);
+                        answ += GetInlineFormat(lex, ref inpm, lexes, i);
+                        //answ += GetTextAndSpaces("_", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.codeinline:
                         answ += GetTextAndSpaces("`", lex.SpaceCountAtEnd);

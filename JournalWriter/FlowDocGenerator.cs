@@ -1485,12 +1485,11 @@ namespace JournalWriter
                         answ += GetTextAndSpaces("-", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.emphasize:
-                        //answ += GetInlineFormat(lex, ref inpm, lexes, i); makes no sense here because heading is already bold
-                        answ += GetTextAndSpaces("*", lex.SpaceCountAtEnd);
+                        answ += GetInlineFormat(lex, ref inpm, lexes, i);
                         break;
                     case DocLexElement.LexTypeEnum.bold:
-                        answ += GetInlineFormat(lex, ref inpm, lexes, i);
-                        //answ += GetTextAndSpaces("**", lex.SpaceCountAtEnd);
+                        // answ += GetInlineFormat(lex, ref inpm, lexes, i);  makes no sense here because heading is already bold
+                        answ += GetTextAndSpaces("**", lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.boldemphasize:
                         answ += GetTextAndSpaces("***", lex.SpaceCountAtEnd);

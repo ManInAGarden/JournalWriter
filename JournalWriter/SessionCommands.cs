@@ -20,6 +20,7 @@ namespace JournalWriter
         public static RoutedUICommand MarkdownHelp { get; private set; }
         public static RoutedUICommand SetFileLocation { get; private set; }
         public static RoutedCommand DebugMarkdown { get; private set; }
+        public static RoutedCommand GlobalSearch { get; private set; }
 
         static SessionCommands()
         {
@@ -64,6 +65,13 @@ namespace JournalWriter
             SetFileLocation = new RoutedUICommand("_JournalDatei", "SetFileLocation", typeof(SessionCommands));
 
             DebugMarkdown = new RoutedUICommand("_JournalDatei", "DebugMarkDown", typeof(SessionCommands));
+
+            GlobalSearch = new RoutedUICommand("_Global Suchen", "GlobalSearch", typeof(SessionCommands),
+               new InputGestureCollection
+               {
+                    new KeyGesture(Key.F, ModifierKeys.Control, "Strg+F")
+               }
+             );
 
         }   
         

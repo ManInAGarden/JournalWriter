@@ -16,6 +16,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using TextFinder;
+
 namespace JournalWriter
 {
     /// <summary>
@@ -35,8 +37,7 @@ namespace JournalWriter
 
         public bool HaveChange {
             private set
-            {
-                
+            {         
                 if(value==true)
                     changeIndicator.Visibility = System.Windows.Visibility.Visible;
                 else
@@ -380,6 +381,29 @@ namespace JournalWriter
             ShowDebugInfoWindow dbgw = new ShowDebugInfoWindow();
 
             dbgw.Show(this, fdoc);
+        }
+
+
+        /// <summary>
+        /// Can we execute? Produce a debug Info for the markdown elements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GlobalSearch_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !firstTB.IsVisible;
+        }
+
+        /// <summary>
+        /// Start a global search (inclding the whole journal an not just the current day)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GlobalSearch_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            globalSearchSBI.Visibility = Visibility.Visible;
+            globalSearchTB.IsEnabled = true;
+            globalSearchTB.Focus();
         }
 
         /// <summary>
@@ -1159,9 +1183,9 @@ namespace JournalWriter
             Point pt = e.GetPosition(dateTreeView);
 
             if (pt.Y < maxY)
-                mainMenu.Visibility = System.Windows.Visibility.Visible;
+                mainMenu.Visibility = Visibility.Visible;
             else
-                mainMenu.Visibility = System.Windows.Visibility.Collapsed;
+                mainMenu.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
@@ -1171,7 +1195,7 @@ namespace JournalWriter
         /// <param name="e"></param>
         private void firstTB_GotFocus(object sender, RoutedEventArgs e)
         {
-            editModeStatusbarItem.Visibility = System.Windows.Visibility.Visible;
+            editModeStatusbarItem.Visibility = Visibility.Visible;
         }
 
 
@@ -1242,6 +1266,75 @@ namespace JournalWriter
         private void SetFileLocation_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = !firstTB.IsVisible;
+        }
+
+        private void xBU_Click(object sender, RoutedEventArgs e)
+        {
+            globalSearchSBI.Visibility = Visibility.Collapsed;
+        }
+
+        private void xBU_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+                globalSearchSBI.Visibility = Visibility.Collapsed;
+            else if (e.Key == Key.Return)
+                DoSearch(globalSearchTB.Text);
+        }
+
+        /// <summary>
+        /// Start a global search with the given text
+        /// </summary>
+        /// <param name="text"></param>
+        private void DoSearch(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return;
+
+            MultipleTextFinder mtf = new MultipleTextFinder() { MinimumMatchGrade=0.5 };
+
+            mtf.TextsToBeSearched = GetAllJournalTexts();
+            List<SearchResultEntry> results = mtf.DoSearch(text);
+
+        }
+
+        private List<TaggedText> GetAllJournalTexts()
+        {
+            List<TaggedText> answ = new List<TaggedText>();
+
+            
+            foreach (TreeViewItem item in dateTreeView.Items)
+            {
+                AddItemTexts(answ, item);
+            }
+
+            return answ;
+        }
+
+        private void AddItemTexts(List<TaggedText> answ, TreeViewItem paritem)
+        {
+            TaggedText curtt;
+            DateTime currtag;
+
+            if (paritem.Name.StartsWith("D_"))
+            {
+                if (paritem.Tag != null)
+                {
+                    if (DateTime.TryParseExact(paritem.Name.Substring(2),
+                        "yyyyMMdd", 
+                        System.Globalization.CultureInfo.InvariantCulture, 
+                        System.Globalization.DateTimeStyles.None, 
+                        out currtag))
+                    {
+                        curtt = new TaggedText() { Text = paritem.Tag as string, Tag = currtag };
+                        answ.Add(curtt);
+                    }
+                }
+            }
+
+            foreach (TreeViewItem childitem in paritem.Items)
+            {
+                AddItemTexts(answ, childitem);
+            }
         }
 
         private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)

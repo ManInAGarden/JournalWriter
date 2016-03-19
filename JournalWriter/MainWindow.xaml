@@ -52,10 +52,11 @@
         <CommandBinding Command="cmds:SessionCommands.MarkdownHelp" Executed="MarkdownHelp_Executed" CanExecute="MarkdownHelp_CanExecute" />
         <CommandBinding Command="cmds:SessionCommands.SetFileLocation" Executed="SetFileLocation_Executed" CanExecute="SetFileLocation_CanExecute" />
         <CommandBinding Command="cmds:SessionCommands.DebugMarkdown" Executed="DebugMarkdown_Executed" CanExecute="DebugMarkdown_CanExecute" />
+        <CommandBinding Command="cmds:SessionCommands.GlobalSearch" Executed="GlobalSearch_Executed" CanExecute="GlobalSearch_CanExecute" />
     </Window.CommandBindings>
-    
+
     <Grid Background="{StaticResource TransparentBackground}">
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="293*" />
@@ -75,6 +76,7 @@
             </MenuItem>
             <MenuItem Header="Bearbeiten">
                 <MenuItem Command="cmds:SessionCommands.GotoLine" Header="Gehe zu Zeile"></MenuItem>
+                <MenuItem Command="cmds:SessionCommands.GlobalSearch" Header="Globale Suche"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.ShowSource" Header="Quelltext (Flow Document) zeigen"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.ShowTabs" Header="TAB Anzeige ein/aus"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.DebugMarkdown" Header="Markdown Debug"></MenuItem>
@@ -84,7 +86,7 @@
                 <MenuItem Header="Über Journal-Writer" Command="cmds:SessionCommands.About"/>
             </MenuItem>
         </Menu>
-        
+
 
         <TreeView Grid.Row="1" HorizontalAlignment="Stretch" Margin="5" Name="dateTreeView" VerticalAlignment="Stretch" 
                   Background="{StaticResource TransparentBackground}" 
@@ -101,26 +103,27 @@
                       Color="SkyBlue" />
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}"
                       Color="Black" />
+
             </TreeView.Resources>
             <TreeView.ItemContainerStyle>
-                
+
 
                 <Style TargetType="TreeViewItem">
                     <Setter Property="Foreground" Value="Black"></Setter>
                     <!-- <Setter Property="Foreground" Value="{StaticResource ForegroundOnTransparentBackground}"/> -->
-                    <Setter Property="FontFamily" Value="{StaticResource ReadableTextFontFamily}"/> 
+                    <Setter Property="FontFamily" Value="{StaticResource ReadableTextFontFamily}"/>
                 </Style>
             </TreeView.ItemContainerStyle>
-            
+
         </TreeView>
 
         <GridSplitter Grid.Column="1" Grid.RowSpan="1" Grid.Row="1" HorizontalAlignment="Right" 
                       Name="treeViewTextGSP" VerticalAlignment="Stretch" Width="1" 
                       ResizeBehavior="PreviousAndNext" ShowsPreview="True" 
                       Background="SkyBlue" />
-
-
-        <FlowDocumentReader Grid.Column="2" Grid.Row="1" Name="firstDV" HorizontalAlignment="Stretch" 
+            <FlowDocumentReader 
+                            Grid.Column="2" Grid.Row="0"
+                            Name="firstDV" HorizontalAlignment="Stretch" 
                             VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" 
                             Background="{StaticResource TransparentBackground}" 
                             Foreground="{StaticResource ForegroundOnTransparentBackground}" Visibility="Visible" 
@@ -128,8 +131,9 @@
                             FontFamily="{StaticResource ReadableTextFontFamily}" 
                             MouseDoubleClick="firstDV_MouseDoubleClick" IsTwoPageViewEnabled="True" 
                             FontSize="{StaticResource ReadableFontSize}" 
-                            SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="dateTreeView_MouseMove"/>
-        <TextBox Grid.Column="2" Grid.Row="1" Name="firstTB" HorizontalAlignment="Stretch" 
+                            SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="dateTreeView_MouseMove" Grid.RowSpan="2"/>
+            <TextBox Grid.Column="2" Grid.Row="0"
+                 Name="firstTB" HorizontalAlignment="Stretch" 
                  VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" 
                  Background="{StaticResource TransparentBackground}" 
                  Foreground="{StaticResource ForegroundOnTransparentBackground}" 
@@ -142,8 +146,7 @@
                  MouseMove="dateTreeView_MouseMove" 
                  GotFocus="firstTB_GotFocus" 
                  MouseWheel="firstTB_MouseWheel" 
-                 CaretBrush="Black"/>
-
+                 CaretBrush="Black" Grid.RowSpan="2"/>
         <StatusBar Grid.ColumnSpan="3" Grid.Row="2" HorizontalAlignment="Center" Name="mainStatusBar" VerticalAlignment="Stretch" Background="{DynamicResource TransparentBackground}">
             <Border BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8">
                 <StatusBarItem Name="dateTimeStatusbarItem" Content="01.01.2013 00:00" BorderBrush="{StaticResource BorderOnTransparentBackground}"  Foreground="{StaticResource ForegroundOnTransparentBackground}"  FontFamily="{StaticResource ReadableTextFontFamily}" ToolTip="Aktuelles Datum und Uhrzeit" />
@@ -159,9 +162,16 @@
                     <SolidColorBrush />
                 </Border.Background>
                 <StatusBarItem Name="editModeStatusbarItem" Content="E" FontWeight="Bold" Visibility="Collapsed" Margin="5,0,5,0" BorderBrush="{StaticResource EditTBBorderOnTransparentBackground}"  Foreground="{StaticResource EditTBForegroundOnTransparentBackground}"  FontFamily="{StaticResource EditTBReadableTextFontFamily}" ToolTip="Edit Modus" IsVisibleChanged="editModeStatusbarItem_IsVisibleChanged" Background="Transparent"/>
-                
+            </Border>
+            <Border Name="searchBorder" BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8">
+                <StatusBarItem Name="globalSearchSBI" FontWeight="Bold"  Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" Visibility="Collapsed" >
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Width="200" IsEnabled="False" KeyDown="xBU_KeyDown" Name="globalSearchTB" BorderBrush="{x:Null}" ToolTip="Hier einen Suchtext eingeben und mit Enter die Suche starten" BorderThickness="0" FontFamily="Trebuchet MS" FontSize="13.333" >Suchtext</TextBox>
+                    <Button Name="xBU" Background="{x:Null}" BorderBrush="{x:Null}" Click="xBU_Click" >X</Button>
+                    </StackPanel>
+                </StatusBarItem>
             </Border>
         </StatusBar>
-        
+
     </Grid>
 </Window>

@@ -35,24 +35,17 @@ namespace TextFinder
             WordSet searchWordSet = new WordSet(searchTxt);
             List<SearchResultEntry> answ = new List<SearchResultEntry>();
             WordSetPerTag = new Dictionary<object, WordSet>();
-            double grade;
+
             WordSet currTextWs;
             SearchResultEntry se;
             foreach (TaggedText ttxt in TextsToBeSearched)
             {
                 currTextWs = new WordSet(ttxt.Text);
                 WordSetPerTag.Add(ttxt.Tag, currTextWs);
-                grade = CalculateGrade(currTextWs, searchWordSet);
-                if (grade >= MinimumMatchGrade)
-                {
-                    se = new SearchResultEntry()
-                    {
-                        MatchGrade = grade
-                    };
-
+                se = CalculateGrade(currTextWs, searchWordSet);
+                se.TagMark = ttxt.Tag;
+                if(se.MatchGrade>MinimumMatchGrade)
                     answ.Add(se);
-                }
-                
             }
 
 
@@ -64,17 +57,28 @@ namespace TextFinder
         /// </summary>
         /// <param name="currTextWs"></param>
         /// <param name="searchWordSet"></param>
-        /// <returns></returns>
-        private double CalculateGrade(WordSet ws1, WordSet ws2)
+        /// <returns>A search result entry containing information about the found elements</returns>
+        private SearchResultEntry CalculateGrade(WordSet ws1, WordSet ws2)
         {
-            int finds = 0;
+            SearchResultEntry answ = new SearchResultEntry();
+
+            answ.MatchedTexts = new List<string>();
+            answ.MatchGrades = new List<double>();
+            double gradeSum = 0.0;
+
             foreach (string w2 in ws2.Words)
             {
                 if (ws1.Words.Contains(w2))
-                    finds++;
+                {
+                    answ.MatchedTexts.Add(w2);
+                    answ.MatchGrades.Add(1.0);
+                    gradeSum += 1.0;
+                }
             }
 
-            return (double)finds / (double)ws2.Words.Count;
+            answ.MatchGrade = gradeSum / (double)ws2.Words.Count;
+            
+            return answ;
         }
     }
 }

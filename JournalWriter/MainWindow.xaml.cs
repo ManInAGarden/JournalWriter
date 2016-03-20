@@ -391,7 +391,7 @@ namespace JournalWriter
         /// <param name="e"></param>
         private void GlobalSearch_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = !firstTB.IsVisible;
+            e.CanExecute = !firstTB.IsVisible && !globalSearchTB.IsVisible;
         }
 
         /// <summary>
@@ -403,7 +403,15 @@ namespace JournalWriter
         {
             globalSearchSBI.Visibility = Visibility.Visible;
             globalSearchTB.IsEnabled = true;
-            globalSearchTB.Focus();
+        }
+
+        private void globalSearchTB_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue)
+            {
+                object focelem = Keyboard.Focus(globalSearchTB);
+                globalSearchTB.SelectAll();
+            }
         }
 
         /// <summary>
@@ -1270,13 +1278,22 @@ namespace JournalWriter
 
         private void xBU_Click(object sender, RoutedEventArgs e)
         {
+            CloseDownSearchElements();
+        }
+
+        /// <summary>
+        /// Clear the screen from all search elements produced by a preceding global search
+        /// </summary>
+        private void CloseDownSearchElements()
+        {
             globalSearchSBI.Visibility = Visibility.Collapsed;
+            globalSearchResultsLB.Visibility = Visibility.Collapsed;
         }
 
         private void xBU_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
-                globalSearchSBI.Visibility = Visibility.Collapsed;
+                CloseDownSearchElements();
             else if (e.Key == Key.Return)
                 DoSearch(globalSearchTB.Text);
         }
@@ -1294,8 +1311,49 @@ namespace JournalWriter
 
             mtf.TextsToBeSearched = GetAllJournalTexts();
             List<SearchResultEntry> results = mtf.DoSearch(text);
+            globalSearchResultsLB.Items.Clear();
 
+            if (results.Count>0)
+            {
+                
+                foreach (SearchResultEntry sre in results)
+                {
+                    globalSearchResultsLB.Items.Add(GetSearchTextBlock(sre));
+                }
+
+                globalSearchResultsLB.IsEnabled = true;
+            }
+            else
+            {
+                globalSearchResultsLB.Items.Add(new TextBlock() { TextWrapping = TextWrapping.Wrap, Text="Es konnten keine Textstellen gefunden werden."});
+                globalSearchResultsLB.IsEnabled = false;
+            }
+
+            globalSearchResultsLB.MaxHeight = dateTreeView.ActualHeight / 2;
+            globalSearchResultsLB.Visibility = Visibility.Visible;
         }
+
+        private TextBlock GetSearchTextBlock(SearchResultEntry sre)
+        {
+            string contents = string.Format("{0}:{1:0.0}\n",
+                ((DateTime)sre.TagMark).ToString("dd.MM.yyyy"),
+                sre.MatchGrade);
+
+            bool first = true;
+            foreach (string word in sre.MatchedTexts)
+            {
+                if(!first)
+                    contents += " " + word;
+                else
+                {
+                    first = false;
+                    contents += word;
+                }
+            }
+
+            return new TextBlock() { Text = contents, TextWrapping = TextWrapping.Wrap };
+        }
+
 
         private List<TaggedText> GetAllJournalTexts()
         {
@@ -1336,6 +1394,8 @@ namespace JournalWriter
                 AddItemTexts(answ, childitem);
             }
         }
+
+       
 
         private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)
         {

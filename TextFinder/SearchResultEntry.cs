@@ -8,8 +8,9 @@ namespace TextFinder
 {
     public class SearchResultEntry
     {
-        public string FoundText { get; set; }
         public double MatchGrade { get; set; }
-        public int FoundPosition { get; set; }
+        public object TagMark { get; set; }
+        public List<string> MatchedTexts { get; set; }
+        public List<double> MatchGrades { get; set; }
     }
 }

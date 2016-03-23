@@ -12,17 +12,48 @@ namespace TextFinder
     public class WordSet
     {
         public List<string> Words { private set; get; }
+        public List<int> Positions { get; set; }
 
         public WordSet(string words)
         {
-            string[] parts = words.Split(new char[] { ' ', '\t', '\r', '\n', '.', ',', '"', '\'',
+            char[] seps = new char[] { ' ', '\t', '\r', '\n', '.', ',', '"', '\'',
                 ':', '!', ';', '-', '+', '*', '?', '(', ')', '{', '}', '&', '|', '<', '>',
-                '[', '[', '=', '#','`'}, 
-                StringSplitOptions.RemoveEmptyEntries);
+                '[', '[', '=', '#','`'};
+            //string[] parts = words.Split(seps, StringSplitOptions.RemoveEmptyEntries);
 
+            string currw = "";
+            int pos = 0;
             Words = new List<string>();
-            foreach (string part in parts)
-                Words.Add(part.ToUpper());
+            Positions = new List<int>();
+            foreach (char c in words)
+            {
+                if (seps.Contains(c))
+                {
+                    if (!string.IsNullOrEmpty(currw))
+                    {
+                        Words.Add(currw.ToUpper());
+                        Positions.Add(pos);
+                        pos += currw.Length;
+                        currw = "";
+                    }
+                    else
+                        pos++;
+                }
+                else
+                {
+                    currw += c;
+                }
+            }
+
+            if(!string.IsNullOrEmpty(currw))
+            {
+                Words.Add(currw.ToUpper());
+                Positions.Add(pos);
+            }
+
+            //Words = new List<string>();
+            //foreach (string part in parts)
+            //    Words.Add(part.ToUpper());
         }
     }
 }

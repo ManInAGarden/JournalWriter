@@ -1335,25 +1335,45 @@ namespace JournalWriter
 
         private TextBlock GetSearchTextBlock(SearchResultEntry sre)
         {
-            string contents = string.Format("{0}:{1:0.0}\n",
-                ((DateTime)sre.TagMark).ToString("dd.MM.yyyy"),
-                sre.MatchGrade);
-
-            bool first = true;
-            foreach (string word in sre.MatchedTexts)
+            TextBlock answ = new TextBlock() { TextWrapping = TextWrapping.Wrap };
+            answ.Inlines.Add(new Bold(new Run(((DateTime)sre.TagMark).ToString("dd.MM.yyyy"))));
+            answ.Inlines.Add(" " + sre.MatchGrade + "\n");
+            
+            int minpos = sre.MatchPositions.Min();
+            string displayedPart = GetPart((DateTime)sre.TagMark, minpos, 40).ToUpper();
+            answ.Inlines.Add(displayedPart + "\n");
+            int idx;
+            foreach (string word in sre.MatchTexts)
             {
-                if(!first)
-                    contents += " " + word;
-                else
+                idx = displayedPart.IndexOf(word);
+                if (idx >= 0)
                 {
-                    first = false;
-                    contents += word;
+                    answ.Inlines.Add(new Bold(new Run(word)));
                 }
             }
 
-            return new TextBlock() { Text = contents, TextWrapping = TextWrapping.Wrap };
+            return answ;
         }
 
+        private string GetPart(DateTime day, int minpos, int v)
+        {
+            string name = "D_" + day.ToString("yyyyMMdd");
+
+            TreeViewItem it = FindTreeViewItem(dateTreeView, name);
+
+            if (it != null)
+            {
+                string txt = it.Tag as string;
+                if (txt.Length > minpos + 40)
+                {
+                    return txt.Substring(minpos, 40);
+                }
+                else
+                    return txt.Substring(minpos);
+            }
+            else
+                throw new ApplicationException("Häh!");
+        }
 
         private List<TaggedText> GetAllJournalTexts()
         {

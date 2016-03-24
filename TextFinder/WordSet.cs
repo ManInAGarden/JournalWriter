@@ -33,7 +33,7 @@ namespace TextFinder
                     {
                         Words.Add(currw.ToUpper());
                         Positions.Add(pos);
-                        pos += currw.Length;
+                        pos += currw.Length + 1;
                         currw = "";
                     }
                     else
@@ -51,9 +51,6 @@ namespace TextFinder
                 Positions.Add(pos);
             }
 
-            //Words = new List<string>();
-            //foreach (string part in parts)
-            //    Words.Add(part.ToUpper());
         }
     }
 }

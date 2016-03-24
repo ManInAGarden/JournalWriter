@@ -124,6 +124,7 @@
     <Compile Include="ShowDebugInfoWindow.xaml.cs">
       <DependentUpon>ShowDebugInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WordPositionInfo.cs" />
     <Page Include="MarkdownHelpWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

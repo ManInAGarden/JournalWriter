@@ -117,7 +117,8 @@
 
         </TreeView>
         <ListBox Grid.Column="0" Grid.Row="2" Visibility="Collapsed"
-                 Name="globalSearchResultsLB" BorderBrush="SkyBlue">
+                 Name="globalSearchResultsLB" BorderBrush="SkyBlue" SelectionChanged="globalSearchResultsLB_SelectionChanged"
+                 >
             Keine Ergebnisse
         </ListBox>
 

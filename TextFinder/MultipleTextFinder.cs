@@ -11,6 +11,7 @@ namespace TextFinder
     /// </summary>
     public class MultipleTextFinder
     {
+
         /// <summary>
         /// The text we try to find (my consist of many words)
         /// </summary>
@@ -44,7 +45,7 @@ namespace TextFinder
                 WordSetPerTag.Add(ttxt.Tag, currTextWs);
                 se = CalculateGrade(currTextWs, searchWordSet);
                 se.TagMark = ttxt.Tag;
-                if(se.MatchGrade>MinimumMatchGrade)
+                if(se.MatchGrade>=MinimumMatchGrade)
                     answ.Add(se);
             }
 
@@ -98,11 +99,15 @@ namespace TextFinder
                     }
 
                     currGrade = (double)(w2.Length - minldist) / w2.Length;
-                    answ.MatchTexts.Add(w2);
-                    answ.MatchGrades.Add(currGrade);
-                    answ.MatchPositions.Add(ws1.Positions[minidx]);
-                    
-                    gradeSum += currGrade;
+
+                    if (currGrade >= MinimumMatchGrade)
+                    {
+                        answ.MatchTexts.Add(w2);
+                        answ.MatchGrades.Add(currGrade);
+                        answ.MatchPositions.Add(ws1.Positions[minidx]);
+
+                        gradeSum += currGrade;
+                    }
                 }
             }
 

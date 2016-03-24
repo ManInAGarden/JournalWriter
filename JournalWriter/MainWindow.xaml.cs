@@ -1307,7 +1307,7 @@ namespace JournalWriter
             if (string.IsNullOrEmpty(text))
                 return;
 
-            MultipleTextFinder mtf = new MultipleTextFinder() { MinimumMatchGrade=0.5 };
+            MultipleTextFinder mtf = new MultipleTextFinder() { MinimumMatchGrade=0.6 };
 
             mtf.TextsToBeSearched = GetAllJournalTexts();
             List<SearchResultEntry> results = mtf.DoSearch(text);
@@ -1325,7 +1325,10 @@ namespace JournalWriter
             }
             else
             {
-                globalSearchResultsLB.Items.Add(new TextBlock() { TextWrapping = TextWrapping.Wrap, Text="Es konnten keine Textstellen gefunden werden."});
+                TextBlock tb = new TextBlock() { TextWrapping = TextWrapping.Wrap};
+                tb.Inlines.Add(new Italic(new Run("Es konnten keine Textstellen für die Suchbegriffe gefunden werden.")));
+
+                globalSearchResultsLB.Items.Add(tb);
                 globalSearchResultsLB.IsEnabled = false;
             }
 
@@ -1335,22 +1338,39 @@ namespace JournalWriter
 
         private TextBlock GetSearchTextBlock(SearchResultEntry sre)
         {
-            TextBlock answ = new TextBlock() { TextWrapping = TextWrapping.Wrap };
+            TextBlock answ = new TextBlock() { TextWrapping = TextWrapping.Wrap, Tag=sre };
             answ.Inlines.Add(new Bold(new Run(((DateTime)sre.TagMark).ToString("dd.MM.yyyy"))));
-            answ.Inlines.Add(" " + sre.MatchGrade + "\n");
+            answ.Inlines.Add(" - " + (sre.MatchGrade * 100).ToString("0.") + "%\n");
             
             int minpos = sre.MatchPositions.Min();
-            string displayedPart = GetPart((DateTime)sre.TagMark, minpos, 40).ToUpper();
-            answ.Inlines.Add(displayedPart + "\n");
-            int idx;
+            string displayedPart = GetPart((DateTime)sre.TagMark, minpos, 40);
+            string upperCopy = displayedPart.ToUpper();
+
+            //answ.Inlines.Add(displayedPart + "\n");
+            int partidx = 0;
+            List<WordPositionInfo> idxes = new List<WordPositionInfo>();
             foreach (string word in sre.MatchTexts)
             {
-                idx = displayedPart.IndexOf(word);
-                if (idx >= 0)
+                partidx = upperCopy.IndexOf(word);
+                if (partidx >= 0)
                 {
-                    answ.Inlines.Add(new Bold(new Run(word)));
+                    idxes.Add(new WordPositionInfo() { Index = partidx, Text = word });
                 }
             }
+
+            idxes.Sort();
+            int lastidx = 0;
+            foreach (WordPositionInfo idx in idxes)
+            {
+                if (idx.Index > lastidx)
+                    answ.Inlines.Add(displayedPart.Substring(lastidx, (idx.Index - lastidx)));
+
+                answ.Inlines.Add(new Bold(new Run(displayedPart.Substring(idx.Index, idx.Text.Length))));
+                lastidx = idx.Index + idx.Text.Length;
+            }
+
+            if (lastidx < displayedPart.Length)
+                answ.Inlines.Add(displayedPart.Substring(lastidx));
 
             return answ;
         }
@@ -1415,7 +1435,47 @@ namespace JournalWriter
             }
         }
 
-       
+        /// <summary>
+        /// a search result was selected in the list of global search results
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void globalSearchResultsLB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TextBlock tbl = globalSearchResultsLB.SelectedItem as TextBlock;
+
+            if (tbl == null)
+                return;
+
+            SearchResultEntry sre = tbl.Tag as SearchResultEntry;
+
+            if (sre == null)
+                return;
+
+            if (sre.TagMark == null)
+                return;
+
+            DateTime day = (DateTime)sre.TagMark;
+
+            TreeViewItem searchedTvi = FindTreeViewItem(dateTreeView, "D_" + day.ToString("yyyyMMdd"));
+            if (searchedTvi == null)
+                return;
+
+            //dateTreeView.Items.MoveCurrentTo(searchedTvi);
+            searchedTvi.IsSelected = true;
+            ExpandUp(searchedTvi);
+        }
+
+        private void ExpandUp(TreeViewItem searchedTvi)
+        {
+            if (searchedTvi == null)
+                return;
+
+            searchedTvi.IsExpanded = true;
+
+            if (searchedTvi.Parent != null)
+                ExpandUp(searchedTvi.Parent as TreeViewItem);
+        }
 
         private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)
         {

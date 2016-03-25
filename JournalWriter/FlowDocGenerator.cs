@@ -1241,6 +1241,9 @@ namespace JournalWriter
                     case DocLexElement.LexTypeEnum.number:
                         answ += lex.Text;
                         break;
+                    case DocLexElement.LexTypeEnum.enumeration:
+                        answ += lex.Text;
+                        break;
                     case DocLexElement.LexTypeEnum.hashes:
                         answ += GetStringOf("#", lex.Level);
                         break;
@@ -1511,6 +1514,9 @@ namespace JournalWriter
                         answ += GetTextAndSpaces(GetStringOf("#", lex.Level), lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.number:
+                        answ += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
+                        break;
+                    case DocLexElement.LexTypeEnum.enumeration:
                         answ += GetTextAndSpaces(lex.Text, lex.SpaceCountAtEnd);
                         break;
                     case DocLexElement.LexTypeEnum.linebreak:

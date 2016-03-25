@@ -21,6 +21,8 @@ namespace JournalWriter
         public static RoutedUICommand SetFileLocation { get; private set; }
         public static RoutedCommand DebugMarkdown { get; private set; }
         public static RoutedCommand GlobalSearch { get; private set; }
+        public static RoutedCommand PrintDay { get; private set; }
+
 
         static SessionCommands()
         {
@@ -70,6 +72,13 @@ namespace JournalWriter
                new InputGestureCollection
                {
                     new KeyGesture(Key.F, ModifierKeys.Control, "Strg+F")
+               }
+             );
+
+            PrintDay = new RoutedUICommand("_Tag drucken", "PrintDay", typeof(SessionCommands),
+               new InputGestureCollection
+               {
+                    new KeyGesture(Key.P, ModifierKeys.Control, "Strg+p")
                }
              );
 

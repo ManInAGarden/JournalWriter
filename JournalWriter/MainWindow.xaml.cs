@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using TextFinder;
+using System.Reflection;
 
 namespace JournalWriter
 {
@@ -1461,21 +1462,89 @@ namespace JournalWriter
             if (searchedTvi == null)
                 return;
 
-            //dateTreeView.Items.MoveCurrentTo(searchedTvi);
             searchedTvi.IsSelected = true;
             ExpandUp(searchedTvi);
         }
 
-        private void ExpandUp(TreeViewItem searchedTvi)
+        //private void FindTextInDocReader(FlowDocumentReader docViewer, string searchs)
+        //{
+        //    docViewer.Find();
+        //    object findToolbar = docViewer.Template.FindName("PART_FindToolBarHost", docViewer);
+
+        //    // Set Text
+        //    FieldInfo findTextBoxFieldInfo = findToolbar.GetType().GetField("FindTextBox", BindingFlags.NonPublic | BindingFlags.Instance);
+        //    TextBox findTextBox = (TextBox)findTextBoxFieldInfo.GetValue(findToolbar);
+        //    findTextBox.Text = searchs;
+
+        //    // Raise ClickEvent for Highlighting
+        //    FieldInfo findNextButtonFieldInfo = findToolbar.GetType().GetField("FindNextButton", BindingFlags.NonPublic | BindingFlags.Instance);
+        //    Button findNextButton = (Button)findNextButtonFieldInfo.GetValue(findToolbar);
+        //    findNextButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+        //}
+
+
+        /// <summary>
+        /// Expand the given item and all the items up to the root item
+        /// </summary>
+        /// <param name="startFromTvi">The tree view item to start the expansion from</param>
+        private void ExpandUp(TreeViewItem startFromTvi)
         {
-            if (searchedTvi == null)
+            if (startFromTvi == null)
                 return;
 
-            searchedTvi.IsExpanded = true;
+            startFromTvi.IsExpanded = true;
 
-            if (searchedTvi.Parent != null)
-                ExpandUp(searchedTvi.Parent as TreeViewItem);
+            if (startFromTvi.Parent != null)
+                ExpandUp(startFromTvi.Parent as TreeViewItem);
         }
+
+
+        private void PrintDay_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            PrintDialog pd = new PrintDialog();
+            if (pd.ShowDialog() == true)
+            {
+                FlowDocument fd = CloneFlowDocument(firstDV.Document);
+                fd.PageHeight = pd.PrintableAreaHeight;
+                fd.PageWidth = pd.PrintableAreaWidth;
+                fd.PagePadding = new Thickness(50);
+                fd.ColumnGap = 0;
+                fd.ColumnWidth = pd.PrintableAreaWidth;
+
+                IDocumentPaginatorSource dps = fd;
+                pd.PrintDocument(dps.DocumentPaginator, "flow doc");
+            }
+        }
+
+        private void PrintDay_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = firstDV.IsVisible;
+        }
+
+
+
+        /// <summary>
+        /// Creates a new flow document as a clone of another
+        /// </summary>
+        /// <param name="from">a flow document to be cloned</param>
+        /// <returns>a flow document as a clone of the given flow document</returns>
+        public FlowDocument CloneFlowDocument(FlowDocument from)
+        {
+            FlowDocument to = new FlowDocument();
+            TextRange rangefrom = new TextRange(from.ContentStart, from.ContentEnd);
+            MemoryStream mems = new MemoryStream();
+
+            System.Windows.Markup.XamlWriter.Save(rangefrom, mems);
+            rangefrom.Save(mems, DataFormats.XamlPackage);
+
+            TextRange rangeto = new TextRange(to.ContentEnd, to.ContentEnd);
+            rangeto.Load(mems, DataFormats.XamlPackage);
+
+            return to;
+        }
+
+        
 
         private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)
         {

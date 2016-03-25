@@ -157,7 +157,7 @@ namespace JournalWriter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Left")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Justify")]
         public string ReaderTextAlignment {
             get {
                 return ((string)(this["ReaderTextAlignment"]));

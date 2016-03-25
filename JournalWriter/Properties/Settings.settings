@@ -36,7 +36,7 @@
       <Value Profile="(Default)">16</Value>
     </Setting>
     <Setting Name="ReaderTextAlignment" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Left</Value>
+      <Value Profile="(Default)">Justify</Value>
     </Setting>
   </Settings>
 </SettingsFile>

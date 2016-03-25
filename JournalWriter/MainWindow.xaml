@@ -53,6 +53,7 @@
         <CommandBinding Command="cmds:SessionCommands.SetFileLocation" Executed="SetFileLocation_Executed" CanExecute="SetFileLocation_CanExecute" />
         <CommandBinding Command="cmds:SessionCommands.DebugMarkdown" Executed="DebugMarkdown_Executed" CanExecute="DebugMarkdown_CanExecute" />
         <CommandBinding Command="cmds:SessionCommands.GlobalSearch" Executed="GlobalSearch_Executed" CanExecute="GlobalSearch_CanExecute" />
+        <CommandBinding Command="cmds:SessionCommands.PrintDay" Executed="PrintDay_Executed" CanExecute="PrintDay_CanExecute" />
     </Window.CommandBindings>
 
     <Grid Background="{StaticResource TransparentBackground}">
@@ -72,7 +73,7 @@
             <MenuItem Header="Datei">
                 <MenuItem Header="Speichern" Command="cmds:SessionCommands.Save" />
                 <MenuItem Header="Journal Datei festlegen" Command="cmds:SessionCommands.SetFileLocation" />
-                <MenuItem Header="Speichern unter" Visibility="Collapsed" />
+                <MenuItem Header="Tag drucken" Command="cmds:SessionCommands.PrintDay" />
                 <MenuItem Command="cmds:SessionCommands.Exit" Header="Beenden" />
             </MenuItem>
             <MenuItem Header="Bearbeiten">

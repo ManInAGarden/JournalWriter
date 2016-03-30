@@ -1344,13 +1344,19 @@ namespace JournalWriter
             answ.Inlines.Add(" - " + (sre.MatchGrade * 100).ToString("0.") + "%\n");
             
             int minpos = sre.MatchPositions.Min();
+
+            if (minpos - 10 >= 0)
+                minpos -= 10;
+            else
+                minpos = 0;
+
             string displayedPart = GetPart((DateTime)sre.TagMark, minpos, 40);
             string upperCopy = displayedPart.ToUpper();
 
             //answ.Inlines.Add(displayedPart + "\n");
             int partidx = 0;
             List<WordPositionInfo> idxes = new List<WordPositionInfo>();
-            foreach (string word in sre.MatchTexts)
+            foreach (string word in sre.CounterMatchTexts)
             {
                 partidx = upperCopy.IndexOf(word);
                 if (partidx >= 0)
@@ -1379,6 +1385,7 @@ namespace JournalWriter
         private string GetPart(DateTime day, int minpos, int v)
         {
             string name = "D_" + day.ToString("yyyyMMdd");
+            string answ;
 
             TreeViewItem it = FindTreeViewItem(dateTreeView, name);
 
@@ -1387,13 +1394,18 @@ namespace JournalWriter
                 string txt = it.Tag as string;
                 if (txt.Length > minpos + 40)
                 {
-                    return txt.Substring(minpos, 40);
+                    answ = txt.Substring(minpos, 40);
                 }
                 else
-                    return txt.Substring(minpos);
+                    answ = txt.Substring(minpos);
             }
             else
                 throw new ApplicationException("Häh!");
+
+            answ = answ.Replace("\r", "");
+            answ = answ.Replace('\n', ' ');
+            answ = answ.Replace('\t', ' ');
+            return answ;
         }
 
         private List<TaggedText> GetAllJournalTexts()
@@ -1464,6 +1476,42 @@ namespace JournalWriter
 
             searchedTvi.IsSelected = true;
             ExpandUp(searchedTvi);
+            SelectTextInFlowDoc(firstDV.Document, sre.CounterMatchTexts);
+        }
+
+
+        private void SelectTextInFlowDoc(FlowDocument newDocument, List<string> searches)
+        {
+            StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase;
+            string textRun;
+            int indexInRun;
+
+            foreach (string search in searches)
+            {
+                for (TextPointer position = newDocument.ContentStart;
+                    position != null && position.CompareTo(newDocument.ContentEnd) <= 0;
+                    position = position.GetNextContextPosition(LogicalDirection.Forward))
+                {
+                    if (position.CompareTo(newDocument.ContentEnd) == 0)
+                    {
+                        break;
+                    }
+
+                    textRun = position.GetTextInRun(LogicalDirection.Forward);
+                    indexInRun = textRun.IndexOf(search, stringComparison);
+                    if (indexInRun >= 0)
+                    {
+                        position = position.GetPositionAtOffset(indexInRun);
+                        if (position != null)
+                        {
+                            TextPointer nextPointer = position.GetPositionAtOffset(search.Length);
+                            TextRange textRange = new TextRange(position, nextPointer);
+                            textRange.ApplyPropertyValue(TextElement.BackgroundProperty,
+                                          new SolidColorBrush(Colors.SkyBlue));
+                        }
+                    }
+                }
+            }
         }
 
         //private void FindTextInDocReader(FlowDocumentReader docViewer, string searchs)

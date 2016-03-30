@@ -11,6 +11,7 @@ namespace TextFinder
         public double MatchGrade { get; set; }
         public object TagMark { get; set; }
         public List<string> MatchTexts { get; set; }
+        public List<string> CounterMatchTexts { get; set; }
         public List<double> MatchGrades { get; set; }
         public List<int> MatchPositions { get; set; }
 

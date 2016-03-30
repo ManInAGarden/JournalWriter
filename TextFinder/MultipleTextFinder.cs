@@ -65,12 +65,13 @@ namespace TextFinder
             SearchResultEntry answ = new SearchResultEntry();
 
             answ.MatchTexts = new List<string>();
+            answ.CounterMatchTexts = new List<string>();
             answ.MatchGrades = new List<double>();
             answ.MatchPositions = new List<int>();
             double gradeSum = 0.0;
             int minldist, currldist, minidx;
             int matchIdx;
-            string w1;
+            string w1, minCounterMatch;
             double currGrade;
 
             foreach (string w2 in ws2.Words)
@@ -79,6 +80,7 @@ namespace TextFinder
                 if (matchIdx>=0)
                 {
                     answ.MatchTexts.Add(w2);
+                    answ.CounterMatchTexts.Add(w2);
                     answ.MatchGrades.Add(1.0);
                     answ.MatchPositions.Add(ws1.Positions[matchIdx]);
                     gradeSum += 1.0;
@@ -86,6 +88,7 @@ namespace TextFinder
                 else
                 {
                     minldist = int.MaxValue;
+                    minCounterMatch = null;
                     minidx = 0;
                     for (int i=0; i<ws1.Words.Count; i++)
                     {
@@ -95,6 +98,7 @@ namespace TextFinder
                         {
                             minldist = currldist;
                             minidx = i;
+                            minCounterMatch = w1;
                         }
                     }
 
@@ -104,6 +108,7 @@ namespace TextFinder
                     {
                         answ.MatchTexts.Add(w2);
                         answ.MatchGrades.Add(currGrade);
+                        answ.CounterMatchTexts.Add(minCounterMatch);
                         answ.MatchPositions.Add(ws1.Positions[minidx]);
 
                         gradeSum += currGrade;

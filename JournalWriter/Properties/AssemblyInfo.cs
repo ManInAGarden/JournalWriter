@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("JournalWriter")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("RWE")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("JournalWriter")]
 [assembly: AssemblyCopyright("Copyright © HSP 2013/16")]
 [assembly: AssemblyTrademark("")]
@@ -51,5 +51,5 @@ using System.Windows;
 // Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.2.0.9")]
-[assembly: AssemblyFileVersion("2.2.0.9")]
+[assembly: AssemblyVersion("2.2.*")]
+[assembly: AssemblyFileVersion("2.2.0.10")]

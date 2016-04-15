@@ -882,6 +882,20 @@ namespace JournalWriter
                         subtxt += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
                         break;
 
+                    case DocLexElement.LexTypeEnum.codeinline:
+                        if (!ipm.HasFlag(InParamodeEnum.inlinecode))
+                        {
+                            ipm |= InParamodeEnum.inlinecode;
+                            subtxt += string.Format("<Span  xml:space=\"preserve\" FontFamily=\"{0}\">",
+                                CodingFontFamily);
+                        }
+                        else
+                        {
+                            subtxt += "</Span>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            ipm &= ~InParamodeEnum.inlinecode;
+                        }
+                        break;
+
                 }
 
                 offset++;
@@ -999,6 +1013,20 @@ namespace JournalWriter
                         }
                         else
                             subtxt += GetTextAndSpaces("+", lex.SpaceCountAtEnd);
+                        break;
+
+                    case DocLexElement.LexTypeEnum.codeinline:
+                        if (!ipm.HasFlag(InParamodeEnum.inlinecode))
+                        {
+                            ipm |= InParamodeEnum.inlinecode;
+                            subtxt += string.Format("<Span  xml:space=\"preserve\" FontFamily=\"{0}\">",
+                                CodingFontFamily);
+                        }
+                        else
+                        {
+                            subtxt += "</Span>" + GetStringOf(" ", lex.SpaceCountAtEnd);
+                            ipm &= ~InParamodeEnum.inlinecode;
+                        }
                         break;
 
                 }

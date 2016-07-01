@@ -21,6 +21,7 @@ namespace JournalWriter
         public string CodingFontSize { set; get; }
         public string CodingFontFamily { set; get; }
         public string TextAlignment { get; set; }
+        public string HeadingTextAlignment { get; set; }
 
 
         /// <summary>
@@ -216,7 +217,7 @@ namespace JournalWriter
                                 GetFontSizeFromHeadLevel(lex.Level),
                                 subtxt,
                                 DocumentFontFamily,
-                                TextAlignment);
+                                HeadingTextAlignment);
                         }
                         subtxt = "";
                         break;
@@ -232,7 +233,7 @@ namespace JournalWriter
                                     GetFontSizeFromHeadLevel(lex.Level),
                                     subtxt,
                                     DocumentFontFamily,
-                                    TextAlignment);
+                                    HeadingTextAlignment);
                             }
                             subtxt = "";
                             i += offset;
@@ -828,7 +829,7 @@ namespace JournalWriter
                         {
                             answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
                                         subtxt,
-                                        TextAlignment);
+                                        HeadingTextAlignment);
                             subtxt = "";
                         }
                         break;
@@ -840,7 +841,7 @@ namespace JournalWriter
                         {
                             answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
                                         subtxt,
-                                        TextAlignment);
+                                        HeadingTextAlignment);
                             subtxt = "";
                         }
                         break;
@@ -906,7 +907,7 @@ namespace JournalWriter
             if (!string.IsNullOrEmpty(subtxt))
                 answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
                                         subtxt,
-                                        TextAlignment);
+                                        HeadingTextAlignment);
 
             return answ;
         }
@@ -940,7 +941,7 @@ namespace JournalWriter
                         {
                             answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
                                         subtxt,
-                                        TextAlignment);
+                                        HeadingTextAlignment);
                             subtxt = "";
                         }
                         break;
@@ -952,7 +953,7 @@ namespace JournalWriter
                         {
                             answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
                                         subtxt,
-                                        TextAlignment);
+                                        HeadingTextAlignment);
                             subtxt = "";
                         }
                         break;
@@ -1039,7 +1040,7 @@ namespace JournalWriter
             if(!string.IsNullOrEmpty(subtxt))
                 answ += string.Format("<ListItem><Paragraph TextAlignment=\"{1}\">{0}</Paragraph></ListItem>",
                                         subtxt,
-                                        TextAlignment);
+                                        HeadingTextAlignment);
 
             return answ;
         }

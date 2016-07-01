@@ -38,5 +38,8 @@
     <Setting Name="ReaderTextAlignment" Type="System.String" Scope="User">
       <Value Profile="(Default)">Justify</Value>
     </Setting>
+    <Setting Name="ReaderHeadlineTextAlignment" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

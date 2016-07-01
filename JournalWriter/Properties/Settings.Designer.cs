@@ -166,5 +166,17 @@ namespace JournalWriter.Properties {
                 this["ReaderTextAlignment"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Left")]
+        public string ReaderHeadlineTextAlignment {
+            get {
+                return ((string)(this["ReaderHeadlineTextAlignment"]));
+            }
+            set {
+                this["ReaderHeadlineTextAlignment"] = value;
+            }
+        }
     }
 }

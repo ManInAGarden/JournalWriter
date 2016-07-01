@@ -31,7 +31,8 @@ namespace JournalWriter
         public string CodingFontSize { set; get; }
         public string CodingFontFamily { set; get; }
         public string TextAlignment { get; set; }
-        
+        public string HeadingTextAlignment { get; set; }
+
 
         public MarkdownToXaml()
         {            
@@ -60,6 +61,7 @@ namespace JournalWriter
             fdg.CodingFontSize = CodingFontSize;
             fdg.CodingFontFamily = CodingFontFamily;
             fdg.TextAlignment = TextAlignment;
+            fdg.HeadingTextAlignment = HeadingTextAlignment;
 
             return fdg.ProduceDoc(lex);
 
@@ -83,6 +85,7 @@ namespace JournalWriter
             fdg.CodingFontSize = CodingFontSize;
             fdg.CodingFontFamily = CodingFontFamily;
             fdg.TextAlignment = TextAlignment;
+            fdg.HeadingTextAlignment = HeadingTextAlignment;
 
             FlowDocument doc = null;
             try
@@ -126,6 +129,8 @@ namespace JournalWriter
                 CodingFontSize = "12";
             if (TextAlignment == null)
                 TextAlignment = "Left";
+            if (HeadingTextAlignment == null)
+                HeadingTextAlignment = "Left";
 
             FlowDocument doc = null;
             try

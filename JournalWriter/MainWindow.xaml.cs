@@ -796,6 +796,7 @@ namespace JournalWriter
             mdwn.CodingFontFamily = Properties.Settings.Default.ReaderCodingFont;
             mdwn.CodingFontSize = Properties.Settings.Default.ReaderCodingFontSize.ToString();
             mdwn.TextAlignment = Properties.Settings.Default.ReaderTextAlignment;
+            mdwn.HeadingTextAlignment = Properties.Settings.Default.ReaderHeadlineTextAlignment;
         }
 
       

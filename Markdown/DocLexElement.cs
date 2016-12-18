@@ -11,7 +11,8 @@ namespace Markdown
             linebreak, parabreak,
             hashes, headafter,
             bold, emphasize, boldemphasize, underline, codeinline,
-            code, greaterthan,
+            code, codeblock,
+            greaterthan,
             number, minus, plus, enumeration,
             cellstart, todo};
 
@@ -79,10 +80,20 @@ namespace Markdown
                 case LexTypeEnum.todo:
                     answ += "(" + Position + "," + State + ")";
                     break;
+                case LexTypeEnum.codeblock:
+                    answ += "(" + ResrtictToMax(Text,20) + ")";
+                    break;
             }
 
             return answ;
         }
 
+        private string ResrtictToMax(string text, int max)
+        {
+            if (text.Length <= max)
+                return text;
+
+            return text.Substring(0, max) + "...";
+        }
     }
 }

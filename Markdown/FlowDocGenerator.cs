@@ -23,6 +23,8 @@ namespace Markdown
         public string TextAlignment { get; set; }
         public string HeadingTextAlignment { get; set; }
 
+        private const string stdinsetmargins = "20,0,20,0";
+
 
         /// <summary>
         /// Produce a flow document by parsing over a list of lexical elementes provided by the Markdown 
@@ -252,6 +254,12 @@ namespace Markdown
                     case DocLexElement.LexTypeEnum.code:
                         answ += EndCurrentParagraph(ref subtxt);
                         answ += GetCodeText(lexes, ++i, out offset);
+                        i += offset;
+                        break;
+
+                    case DocLexElement.LexTypeEnum.codeblock:
+                        answ += EndCurrentParagraph(ref subtxt);
+                        answ += GetCodeBlockText(lex, out offset);
                         i += offset;
                         break;
 
@@ -1191,11 +1199,12 @@ namespace Markdown
             }
 
             if (!string.IsNullOrEmpty(answ))
-                return string.Format("<Paragraph Margin=\"50,0,30,0\" FontSize=\"{1}\" FontFamily=\"{2}\" FontStyle=\"Italic\" TextAlignment=\"{3}\">{0}</Paragraph>",
+                return string.Format("<Paragraph Margin=\"{4}\" FontSize=\"{1}\" FontFamily=\"{2}\" FontStyle=\"Italic\" TextAlignment=\"{3}\">{0}</Paragraph>",
                     answ,
                     DocumentNormalFontSize,
                     DocumentFontFamily,
-                    TextAlignment);
+                    TextAlignment,
+                    stdinsetmargins);
             else
                 return "";
         }
@@ -1211,6 +1220,22 @@ namespace Markdown
             return text + GetStringOf(" ", ct);
         }
 
+
+        private string GetCodeBlockText(DocLexElement lex, out int offset)
+        {
+            offset = 1;
+
+            if (!string.IsNullOrEmpty(lex.Text))
+                return string.Format("<Paragraph xml:space=\"preserve\" TextAlignment=\"Left\" Margin=\"{3}\" FontSize=\"{1}\" FontFamily=\"{2}\">{0}</Paragraph>",
+                    lex.Text,
+                    CodingFontSize,
+                    CodingFontFamily,
+                    stdinsetmargins);
+            else
+                return "";
+
+  
+        }
 
         /// <summary>
         /// Get all the coding from a coding blog
@@ -1305,10 +1330,11 @@ namespace Markdown
             }
 
             if (!string.IsNullOrEmpty(answ))
-                return string.Format("<Paragraph xml:space=\"preserve\" TextAlignment=\"Left\" Margin=\"50,0,0,0\" FontSize=\"{1}\" FontFamily=\"{2}\">{0}</Paragraph>",
+                return string.Format("<Paragraph xml:space=\"preserve\" TextAlignment=\"Left\" Margin=\"{3}\" FontSize=\"{1}\" FontFamily=\"{2}\">{0}</Paragraph>",
                     answ,
                     CodingFontSize,
-                    CodingFontFamily);
+                    CodingFontFamily,
+                    stdinsetmargins);
             else
                 return "";
                 
@@ -1432,10 +1458,11 @@ namespace Markdown
             }
 
             if (!string.IsNullOrEmpty(answ))
-                return string.Format("<Paragraph xml:space=\"preserve\" TextAlignment=\"Left\" Margin=\"50,0,0,0\" FontSize=\"{1}\" FontFamily=\"{2}\">{0}</Paragraph>",
+                return string.Format("<Paragraph xml:space=\"preserve\" TextAlignment=\"Left\" Margin=\"{3}\" FontSize=\"{1}\" FontFamily=\"{2}\">{0}</Paragraph>",
                     answ,
                     CodingFontSize,
-                    CodingFontFamily);
+                    CodingFontFamily,
+                    stdinsetmargins);
             else
                 return "";
         }

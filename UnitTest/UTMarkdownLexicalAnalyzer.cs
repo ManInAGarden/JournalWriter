@@ -25,11 +25,8 @@ namespace UnitTest
             analyzer.Text = "```\nHallo Welt\nIch bin dann mal weg.\n```";
             reslts = analyzer.GetDocLexList();
      
-            Assert.IsTrue(reslts[0].Type == DocLexElement.LexTypeEnum.code);
-            Assert.IsTrue(reslts[1].Type == DocLexElement.LexTypeEnum.linebreak);
-            Assert.IsTrue(reslts[2].Type == DocLexElement.LexTypeEnum.word && reslts[2].Text.Equals("Hallo"));
-            Assert.IsTrue(reslts[2].Type == DocLexElement.LexTypeEnum.word && reslts[2].Text.Equals("Hallo"));
-            Assert.IsTrue(reslts[4].Type == DocLexElement.LexTypeEnum.word && reslts[4].Text.Equals("Welt"));
+            Assert.IsTrue(reslts[0].Type == DocLexElement.LexTypeEnum.codeblock);
+            
         }
 
         [TestMethod]
@@ -49,7 +46,28 @@ namespace UnitTest
             List<DocLexElement> ergs = an.GetDocLexList();
             string ress = GetAsString(ergs);
             Assert.AreEqual(ress,
-                "code(x = y*3.0 + 12\n)\nword(Hier),word(gehts),word(weiter");
+                "codeblock(x = y*3.0 + 12\n),linebreak,word(Hier),word(gehts),word(weiter)");
+        }
+
+        [TestMethod]
+        public void TestEmphasize()
+        {
+            MarkDownLexicalAnalyzer an = new MarkDownLexicalAnalyzer("Hallo *kursive* Welt");
+            List<DocLexElement> ergs = an.GetDocLexList();
+            string ress = GetAsString(ergs);
+            Assert.AreEqual(ress,
+                "word(Hallo),emphasize,word(kursive),emphasize,word(Welt)");
+        }
+
+
+        [TestMethod]
+        public void TestBold()
+        {
+            MarkDownLexicalAnalyzer an = new MarkDownLexicalAnalyzer("Hallo **fette** Welt");
+            List<DocLexElement> ergs = an.GetDocLexList();
+            string ress = GetAsString(ergs);
+            Assert.AreEqual(ress,
+                "word(Hallo),bold,word(fette),bold,word(Welt)");
         }
 
         private string GetAsString(List<DocLexElement> ergs)

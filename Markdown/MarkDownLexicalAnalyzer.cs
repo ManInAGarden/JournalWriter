@@ -140,9 +140,14 @@ namespace Markdown
                         }
                         else if (thirdc == '`')
                         {
-                            incode = !incode;
-                            currp += 2;
-                            answ.Add(new DocLexElement(DocLexElement.LexTypeEnum.code, posi: currp));
+                            //incode = !incode;
+                            //currp += 2;
+                            //special treatment for code-blocks which may be yuite large and it makes no sens
+                            //to carry out any further lexical analysis in their contents
+                            DocLexElement codel = new DocLexElement(DocLexElement.LexTypeEnum.codeblock, posi: currp,
+                                text: GetTextUpToNext(txt, currp, "```"));
+                            answ.Add(codel);
+                            currp += 5 + codel.Text.Length;
                         }
                         else
                         {
@@ -237,6 +242,16 @@ namespace Markdown
                 answ.Add(GetWordLexElement(ref currw, spcCt, currp));
 
             return answ;
+        }
+
+        private string GetTextUpToNext(string txt, int currp, string findthis)
+        {
+            string potential = txt.Substring(currp + 3);
+            int codeend = potential.IndexOf(findthis);
+            if (codeend < 0)
+                codeend = potential.Length;
+
+            return potential.Substring(0, codeend);
         }
 
         private DocLexElement GetWordLexElement(ref string currw, int spcCt, int currp)

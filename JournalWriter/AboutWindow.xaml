@@ -1,7 +1,7 @@
 ﻿<Window x:Class="JournalWriter.AboutWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Über SJournal" Height="495" Width="640" Background="White" Icon="/JournalWriter;component/Images/bookmark.png" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded" Topmost="True">
+        Title="Über SJournal" Height="495" Width="640" Background="White" Icon="Knob Message.ico" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded" Topmost="True">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />

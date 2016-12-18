@@ -1,7 +1,7 @@
 ﻿<Window x:Class="JournalWriter.MarkdownHelpWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Markdown in SJournal" Height="495" Width="640" Background="White" Icon="/JournalWriter;component/Images/bookmark.png" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded" Topmost="True">
+        Title="Markdown in SJournal" Height="495" Width="640" Background="White" Icon="Knob Message.ico" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded" Topmost="True">
 
     <FlowDocumentReader HorizontalAlignment="Stretch" IsEnabled="True" Margin="5" Name="aboutDocumentViewer" VerticalAlignment="Stretch" Foreground="Black" Background="White" IsManipulationEnabled="True">
     </FlowDocumentReader>

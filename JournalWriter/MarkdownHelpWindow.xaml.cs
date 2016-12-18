@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 using System.IO;
+using Markdown;
 
 namespace JournalWriter
 {
@@ -38,7 +39,14 @@ namespace JournalWriter
                 string txt = sr.ReadToEnd();
                 MarkdownToXaml md2xaml = new MarkdownToXaml();
                 SetDocProps(md2xaml);
-                aboutDocumentViewer.Document = md2xaml.GetDocument(this, txt);
+                try
+                {
+                    aboutDocumentViewer.Document = md2xaml.GetDocument(txt);
+                }
+                catch (DocFormatException docformx)
+                {
+                    MessageBox.Show("Text kann nicht formatiert werden. Origaltext der Meldung:\n" + docformx.Message);
+                }
             }
             
         }

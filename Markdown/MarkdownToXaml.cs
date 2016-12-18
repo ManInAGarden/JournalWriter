@@ -1,23 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xaml;
-using System.IO;
-using System.Xml;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Markup;
 
 
-namespace JournalWriter
+namespace Markdown
 {
     public class MarkdownToXaml
     {
@@ -68,7 +56,7 @@ namespace JournalWriter
         }
 
 
-        public FlowDocument DebugDocument(Window parent, string text)
+        public FlowDocument DebugDocument(string text)
         {
             MarkDownLexicalAnalyzer ana = new MarkDownLexicalAnalyzer(text + "\n\n");
 
@@ -95,7 +83,7 @@ namespace JournalWriter
             }
             catch (Exception exc)
             {
-                MessageBox.Show(parent, "Text kann nicht formatiert werden. Origaltext der Meldung:\n" + exc.Message);
+                throw new DocFormatException(exc.Message);
             }
 
             return doc;
@@ -107,7 +95,7 @@ namespace JournalWriter
         /// </summary>
         /// <param name="text">The markdown text</param>
         /// <returns>The flow document</returns>
-        public FlowDocument GetDocument(Window parent, string text)
+        public FlowDocument GetDocument(string text)
         {
             if (DocumentFontFamily == null)
                 DocumentFontFamily = "Times New Roman";
@@ -147,7 +135,7 @@ namespace JournalWriter
 
                 doc = new FlowDocument(paragraph);
 
-                MessageBox.Show(parent, "Text kann nicht formatiert werden. Originaltext der Meldung:\n" + exc.Message);
+                throw new DocFormatException(exc.Message);
             }
 
             return doc;
@@ -156,7 +144,7 @@ namespace JournalWriter
 
         private FlowDocument LoadXaml(string text)
         { 
-            return System.Windows.Markup.XamlReader.Parse(text) as FlowDocument;
+            return XamlReader.Parse(text) as FlowDocument;
         }
 
         private byte[] StringToByteArray(string str)

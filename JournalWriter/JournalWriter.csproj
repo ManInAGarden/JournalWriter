@@ -105,8 +105,6 @@
     <Compile Include="AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DocLexElement.cs" />
-    <Compile Include="FlowDocGenerator.cs" />
     <Compile Include="FlowDocumentTestWindow.xaml.cs">
       <DependentUpon>FlowDocumentTestWindow.xaml</DependentUpon>
     </Compile>
@@ -114,8 +112,6 @@
       <DependentUpon>GotoLineEntryWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="LogicalTreeHelperHelper.cs" />
-    <Compile Include="MarkDownLexicalAnalyzer.cs" />
-    <Compile Include="MarkdownToXaml.cs" />
     <Compile Include="SessionCommands.cs" />
     <Compile Include="ShowSourceWindow.xaml.cs">
       <DependentUpon>ShowSourceWindow.xaml</DependentUpon>
@@ -181,6 +177,7 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="JournalWriter_TemporaryKey.pfx" />
+    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -232,6 +229,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Markdown\Markdown.csproj">
+      <Project>{e22edb2c-5c10-40a4-a0f7-3a8857fac32d}</Project>
+      <Name>Markdown</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TextFinder\TextFinder.csproj">
       <Project>{1741cb79-5821-42cf-a4c7-31d2948c69af}</Project>
       <Name>TextFinder</Name>

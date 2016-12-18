@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using TextFinder;
 using System.Reflection;
+using Markdown;
 
 namespace JournalWriter
 {
@@ -377,11 +378,17 @@ namespace JournalWriter
             if ((selo == null) || (selo.Tag == null) || !(selo.Tag is string))
                 return;
 
-            FlowDocument fdoc = mdwn.DebugDocument(this, selo.Tag as string);
+            try
+            {
+                FlowDocument fdoc = mdwn.DebugDocument(selo.Tag as string);
 
-            ShowDebugInfoWindow dbgw = new ShowDebugInfoWindow();
-
-            dbgw.Show(this, fdoc);
+                ShowDebugInfoWindow dbgw = new ShowDebugInfoWindow();
+                dbgw.Show(this, fdoc);
+            }
+            catch (DocFormatException dfxc)
+            {
+                MessageBox.Show(this, "Text kann nicht formatiert werden. Origaltext der Meldung:\n" + dfxc.Message);
+            }
         }
 
 
@@ -823,7 +830,15 @@ namespace JournalWriter
             if (text == null)
                 text = "";
 
-            firstDV.Document = mdwn.GetDocument(this, text);
+            try
+            {
+                firstDV.Document = mdwn.GetDocument(text);
+            }
+            catch (DocFormatException dfxc)
+            {
+                MessageBox.Show(this, "Text kann nicht formatiert werden. Origaltext der Meldung:\n" + dfxc.Message);
+            }
+
             SetEventsOnDocument(firstDV.Document);
 
             firstDV.Visibility = System.Windows.Visibility.Visible;

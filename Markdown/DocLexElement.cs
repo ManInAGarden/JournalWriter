@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace JournalWriter
+namespace Markdown
 {
     public class DocLexElement
     {
@@ -80,6 +80,7 @@ namespace JournalWriter
                     answ += "(" + Position + "," + State + ")";
                     break;
             }
+
             return answ;
         }
 

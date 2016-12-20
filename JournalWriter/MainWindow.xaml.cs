@@ -830,6 +830,11 @@ namespace JournalWriter
             if (text == null)
                 text = "";
 
+            DisplayDocument(text);
+        }
+
+        private void DisplayDocument(string text)
+        {
             try
             {
                 firstDV.Document = mdwn.GetDocument(text);
@@ -848,7 +853,6 @@ namespace JournalWriter
 
             wordCountStatusBarItem.Content = wcount.ToString();
         }
-
 
         private void SetEventsOnDocument(FlowDocument fdoc)
         {
@@ -1298,6 +1302,45 @@ namespace JournalWriter
             CloseDownSearchElements();
         }
 
+        private void CodeBlock_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = firstTB.IsVisible;
+        }
+
+
+        private void Bold_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = firstTB.IsVisible && !string.IsNullOrEmpty(firstTB.SelectedText);
+        }
+
+        private void Bold_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            firstTB.SelectedText = "**" + firstTB.SelectedText + "**";
+        }
+
+        private void Italics_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = firstTB.IsVisible && !string.IsNullOrEmpty(firstTB.SelectedText);
+        }
+
+        private void Italics_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            firstTB.SelectedText = "*" + firstTB.SelectedText + "*";
+        }
+
+
+        private void CodeBlock_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            string sel = firstTB.SelectedText;
+
+            if(!string.IsNullOrEmpty(sel))
+                firstTB.SelectedText = "\n```\n" + sel + "\n```\n";
+            else
+                firstTB.SelectedText = "\n```\nProgrammcode hier einfügen\n```\n";
+
+        }
+
+
         /// <summary>
         /// Clear the screen from all search elements produced by a preceding global search
         /// </summary>
@@ -1608,7 +1651,11 @@ namespace JournalWriter
             return to;
         }
 
-        
+        private void editModeStatusbarItem_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (firstTB.IsVisible)
+                DisplayDocument(firstTB.Text);
+        }
 
         private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)
         {

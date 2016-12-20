@@ -1224,17 +1224,18 @@ namespace Markdown
         private string GetCodeBlockText(DocLexElement lex, out int offset)
         {
             offset = 1;
-
+            string answ;
+            
             if (!string.IsNullOrEmpty(lex.Text))
-                return string.Format("<Paragraph xml:space=\"preserve\" TextAlignment=\"Left\" Margin=\"{3}\" FontSize=\"{1}\" FontFamily=\"{2}\">{0}</Paragraph>",
-                    lex.Text,
+                answ = string.Format("<Paragraph xml:space=\"preserve\" TextAlignment=\"Left\" Margin=\"{3}\" FontSize=\"{1}\" FontFamily=\"{2}\">{0}</Paragraph>",
+                    System.Security.SecurityElement.Escape(lex.Text),
                     CodingFontSize,
                     CodingFontFamily,
                     stdinsetmargins);
             else
-                return "";
+                answ = "";
 
-  
+            return answ + GetStringOf(" ", lex.SpaceCountAtEnd);
         }
 
         /// <summary>

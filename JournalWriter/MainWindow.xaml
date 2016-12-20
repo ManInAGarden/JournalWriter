@@ -54,6 +54,9 @@
         <CommandBinding Command="cmds:SessionCommands.DebugMarkdown" Executed="DebugMarkdown_Executed" CanExecute="DebugMarkdown_CanExecute" />
         <CommandBinding Command="cmds:SessionCommands.GlobalSearch" Executed="GlobalSearch_Executed" CanExecute="GlobalSearch_CanExecute" />
         <CommandBinding Command="cmds:SessionCommands.PrintDay" Executed="PrintDay_Executed" CanExecute="PrintDay_CanExecute" />
+        <CommandBinding Command="cmds:SessionCommands.CodeBlock" Executed="CodeBlock_Executed" CanExecute="CodeBlock_CanExecute"/>
+        <CommandBinding Command="cmds:SessionCommands.Bold" Executed="Bold_Executed" CanExecute="Bold_CanExecute"/>
+        <CommandBinding Command="cmds:SessionCommands.Italics" Executed="Italics_Executed" CanExecute="Italics_CanExecute"/>
     </Window.CommandBindings>
 
     <Grid Background="{StaticResource TransparentBackground}">
@@ -83,6 +86,11 @@
                 <MenuItem Command="cmds:SessionCommands.ShowSource" Header="Quelltext (Flow Document) zeigen"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.ShowTabs" Header="TAB Anzeige ein/aus"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.DebugMarkdown" Header="Markdown Debug"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Formatieren">
+                <MenuItem Command="cmds:SessionCommands.Bold" Header="Text fett"></MenuItem>
+                <MenuItem Command="cmds:SessionCommands.Italics" Header="Text kursiv"></MenuItem>
+                <MenuItem Command="cmds:SessionCommands.CodeBlock" Header="Code-Block"></MenuItem>
             </MenuItem>
             <MenuItem Header="Hilfe">
                 <MenuItem Header="Markdown Hilfe" Command="cmds:SessionCommands.MarkdownHelp" />
@@ -139,7 +147,7 @@
                             MouseDoubleClick="firstDV_MouseDoubleClick" IsTwoPageViewEnabled="True" 
                             FontSize="{StaticResource ReadableFontSize}" 
                             SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="dateTreeView_MouseMove" />
-        <TextBox Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
+        <TextBox Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"
                  Name="firstTB" HorizontalAlignment="Stretch" 
                  VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" 
                  Background="{StaticResource TransparentBackground}" 
@@ -153,7 +161,7 @@
                  MouseMove="dateTreeView_MouseMove" 
                  GotFocus="firstTB_GotFocus" 
                  MouseWheel="firstTB_MouseWheel" 
-                 CaretBrush="Black" />
+                 CaretBrush="Black" RenderTransformOrigin="0.5,0.5" />
         <StatusBar Grid.Row="3" HorizontalAlignment="Center" 
                    Name="mainStatusBar" VerticalAlignment="Stretch" 
                    Background="{DynamicResource TransparentBackground}" 
@@ -171,7 +179,7 @@
                 <Border.Background>
                     <SolidColorBrush />
                 </Border.Background>
-                <StatusBarItem Name="editModeStatusbarItem" Content="E" FontWeight="Bold" Visibility="Collapsed" Margin="5,0,5,0" BorderBrush="{StaticResource EditTBBorderOnTransparentBackground}"  Foreground="{StaticResource EditTBForegroundOnTransparentBackground}"  FontFamily="{StaticResource EditTBReadableTextFontFamily}" ToolTip="Edit Modus" IsVisibleChanged="editModeStatusbarItem_IsVisibleChanged" Background="Transparent"/>
+                <StatusBarItem Name="editModeStatusbarItem" Content="E" FontWeight="Bold" Visibility="Collapsed" Margin="5,0,5,0" BorderBrush="{StaticResource EditTBBorderOnTransparentBackground}"  Foreground="{StaticResource EditTBForegroundOnTransparentBackground}"  FontFamily="{StaticResource EditTBReadableTextFontFamily}" ToolTip="Edit Modus" IsVisibleChanged="editModeStatusbarItem_IsVisibleChanged" Background="Transparent" MouseDown="editModeStatusbarItem_MouseDown"/>
             </Border>
             <Border Name="searchBorder" BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8">
                 <StatusBarItem Name="globalSearchSBI" FontWeight="Bold"  Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" Visibility="Collapsed" >

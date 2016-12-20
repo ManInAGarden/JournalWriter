@@ -15,14 +15,16 @@ namespace JournalWriter
         public static RoutedUICommand Save { get; private set; }
         public static RoutedUICommand About { get; private set; }
         public static RoutedUICommand ShowSource { get; private set; }
-        public static RoutedUICommand ShowTabs{get; private set;}
+        public static RoutedUICommand ShowTabs { get; private set; }
         public static RoutedUICommand GotoLine { get; private set; }
         public static RoutedUICommand MarkdownHelp { get; private set; }
         public static RoutedUICommand SetFileLocation { get; private set; }
         public static RoutedCommand DebugMarkdown { get; private set; }
         public static RoutedCommand GlobalSearch { get; private set; }
         public static RoutedCommand PrintDay { get; private set; }
-
+        public static RoutedCommand CodeBlock { get; private set; }
+        public static RoutedCommand Bold {get; private set;}
+        public static RoutedCommand Italics { get; private set; }
 
         static SessionCommands()
         {
@@ -78,9 +80,30 @@ namespace JournalWriter
             PrintDay = new RoutedUICommand("_Tag drucken", "PrintDay", typeof(SessionCommands),
                new InputGestureCollection
                {
-                    new KeyGesture(Key.P, ModifierKeys.Control, "Strg+p")
+                    new KeyGesture(Key.P, ModifierKeys.Control, "Strg+P")
                }
              );
+
+            CodeBlock = new RoutedUICommand("_Code-Block", "CodeBlock", typeof(SessionCommands),
+               new InputGestureCollection
+               {
+                    new KeyGesture(Key.C, ModifierKeys.Alt, "Alt+C")
+               }
+             );
+
+            Bold = new RoutedUICommand("_Fett", "Bold", typeof(SessionCommands),
+              new InputGestureCollection
+              {
+                    new KeyGesture(Key.B, ModifierKeys.Alt, "Alt+F")
+              }
+            );
+
+            Italics = new RoutedUICommand("_Kursiv", "Italics", typeof(SessionCommands),
+              new InputGestureCollection
+              {
+                    new KeyGesture(Key.K, ModifierKeys.Alt, "Alt+K")
+              }
+            );
 
         }   
         

@@ -26,5 +26,30 @@ namespace UnitTest
             Assert.IsTrue(answ.Contains("Hallo <Bold>fett</Bold>"));
             Assert.IsTrue(answ.EndsWith("</FlowDocument>"));
         }
+
+        [TestMethod]
+        public void TestFlowDocListGen()
+        {
+            DocLexElement.JumpPositions = new List<int>();
+
+            FlowDocGenerator gen = new FlowDocGenerator();
+            List<DocLexElement> lexes = new List<DocLexElement>();
+            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, text: "Vortext", spcCount: 1));
+            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak));
+            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: 1));
+            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, text: "Hallo", spcCount: 1));
+            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.linebreak));
+            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: 1));
+            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, text: "fett", spcCount: 1));
+            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.linebreak));
+            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak));
+           string answ = gen.ProduceDoc(lexes);
+
+            Assert.IsTrue(answ.StartsWith("<FlowDocument"));
+            Assert.IsTrue(answ.Contains("<List FontSize=\"\" FontFamily=\"\" MarkerStyle=\"Disc\">"));
+            Assert.IsTrue(answ.Contains("<ListItem><Paragraph TextAlignment=\"\">Hallo")); 
+            Assert.IsTrue(answ.EndsWith("</FlowDocument>"));
+        }
+
     }
 }

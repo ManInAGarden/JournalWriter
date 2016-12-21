@@ -70,6 +70,16 @@ namespace UnitTest
                 "word(Hallo),bold,word(fette),bold,word(Welt)");
         }
 
+        [TestMethod]
+        public void TestList()
+        {
+            MarkDownLexicalAnalyzer an = new MarkDownLexicalAnalyzer("Irgendein doofer Text\n* erster Punkt\n* zweiter Punkt");
+            List<DocLexElement> ergs = an.GetDocLexList();
+            string ress = GetAsString(ergs);
+            Assert.AreEqual(ress,
+                "word(Irgendein),word(doofer),word(Text),linebreak,emphasize,word(erster),word(Punkt),linebreak,emphasize,word(zweiter),word(Punkt)");
+        }
+
         private string GetAsString(List<DocLexElement> ergs)
         {
             string answ = null;

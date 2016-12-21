@@ -55,8 +55,10 @@
         <CommandBinding Command="cmds:SessionCommands.GlobalSearch" Executed="GlobalSearch_Executed" CanExecute="GlobalSearch_CanExecute" />
         <CommandBinding Command="cmds:SessionCommands.PrintDay" Executed="PrintDay_Executed" CanExecute="PrintDay_CanExecute" />
         <CommandBinding Command="cmds:SessionCommands.CodeBlock" Executed="CodeBlock_Executed" CanExecute="CodeBlock_CanExecute"/>
+        <CommandBinding Command="cmds:SessionCommands.CodeInline" Executed="CodeInline_Executed" CanExecute="CodeInline_CanExecute"/>
         <CommandBinding Command="cmds:SessionCommands.Bold" Executed="Bold_Executed" CanExecute="Bold_CanExecute"/>
         <CommandBinding Command="cmds:SessionCommands.Italics" Executed="Italics_Executed" CanExecute="Italics_CanExecute"/>
+        <CommandBinding Command="cmds:SessionCommands.Underline" Executed="Underline_Executed" CanExecute="Underline_CanExecute"/>
     </Window.CommandBindings>
 
     <Grid Background="{StaticResource TransparentBackground}">
@@ -179,7 +181,7 @@
                 <Border.Background>
                     <SolidColorBrush />
                 </Border.Background>
-                <StatusBarItem Name="editModeStatusbarItem" Content="E" FontWeight="Bold" Visibility="Collapsed" Margin="5,0,5,0" BorderBrush="{StaticResource EditTBBorderOnTransparentBackground}"  Foreground="{StaticResource EditTBForegroundOnTransparentBackground}"  FontFamily="{StaticResource EditTBReadableTextFontFamily}" ToolTip="Edit Modus" IsVisibleChanged="editModeStatusbarItem_IsVisibleChanged" Background="Transparent" MouseDown="editModeStatusbarItem_MouseDown"/>
+                <StatusBarItem Name="editModeStatusbarItem" Content="E" FontWeight="Bold" Visibility="Collapsed" Margin="5,0,5,0" BorderBrush="{StaticResource EditTBBorderOnTransparentBackground}"  Foreground="{StaticResource EditTBForegroundOnTransparentBackground}"  FontFamily="{StaticResource EditTBReadableTextFontFamily}" ToolTip="Edit Modus" Background="Transparent" MouseDown="editModeStatusbarItem_MouseDown"/>
             </Border>
             <Border Name="searchBorder" BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8">
                 <StatusBarItem Name="globalSearchSBI" FontWeight="Bold"  Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" Visibility="Collapsed" >

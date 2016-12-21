@@ -21,21 +21,23 @@ namespace Markdown
             //ommited chars for late rcorrection of text positions
             //for the lexical elements
 
-            //Text = txt.Replace("\r", ""); 
-            DocLexElement.JumpPositions = new List<int>();
-            Text = "";
-            char currc;
-            for (int i = 0; i < txt.Length; i++)
-            {
-                currc = txt[i];
-                if (currc != '\r')
-                    Text += currc;
-                else
-                    DocLexElement.JumpPositions.Add(i);
-            }
-
+            Text = txt.Replace("\r", "");
+            DocLexElement.JumpPositions = AllIndexesOf(txt, '\r');
         }
-    
+
+        private List<int> AllIndexesOf(string str, char c)
+        {
+            List<int> indexes = new List<int>();
+            for (int index = 0; ; index++)
+            {
+                index = str.IndexOf(c, index);
+                if (index == -1)
+                    return indexes;
+
+                indexes.Add(index);
+            }
+        }
+
 
         public List<DocLexElement> GetDocLexList()
         {

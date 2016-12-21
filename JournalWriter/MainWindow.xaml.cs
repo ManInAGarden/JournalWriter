@@ -1227,12 +1227,6 @@ namespace JournalWriter
             editModeStatusbarItem.Visibility = Visibility.Visible;
         }
 
-
-        private void editModeStatusbarItem_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-
-        }
-
         private void MarkdownHelp_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             MarkdownHelpWindow mdh = new MarkdownHelpWindow();
@@ -1307,6 +1301,15 @@ namespace JournalWriter
             e.CanExecute = firstTB.IsVisible;
         }
 
+        private void CodeInline_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = firstTB.IsVisible && !string.IsNullOrEmpty(firstTB.SelectedText);
+        }
+
+        private void CodeInline_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            firstTB.SelectedText = "`" + firstTB.SelectedText + "`";
+        }
 
         private void Bold_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -1326,6 +1329,16 @@ namespace JournalWriter
         private void Italics_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             firstTB.SelectedText = "*" + firstTB.SelectedText + "*";
+        }
+
+        private void Underline_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = firstTB.IsVisible && !string.IsNullOrEmpty(firstTB.SelectedText);
+        }
+
+        private void Underline_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            firstTB.SelectedText = "_" + firstTB.SelectedText + "_";
         }
 
 
@@ -1654,7 +1667,10 @@ namespace JournalWriter
         private void editModeStatusbarItem_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (firstTB.IsVisible)
+            {
                 DisplayDocument(firstTB.Text);
+                editModeStatusbarItem.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)

@@ -23,8 +23,10 @@ namespace JournalWriter
         public static RoutedCommand GlobalSearch { get; private set; }
         public static RoutedCommand PrintDay { get; private set; }
         public static RoutedCommand CodeBlock { get; private set; }
+        public static RoutedCommand CodeInline { get; private set; }
         public static RoutedCommand Bold {get; private set;}
         public static RoutedCommand Italics { get; private set; }
+        public static RoutedCommand Underline { get; private set; }
 
         static SessionCommands()
         {
@@ -91,17 +93,31 @@ namespace JournalWriter
                }
              );
 
+            CodeInline = new RoutedUICommand("_Inlinecode", "CodeInline", typeof(SessionCommands),
+              new InputGestureCollection
+              {
+                    new KeyGesture(Key.C, ModifierKeys.Control | ModifierKeys.Shift, "Shift+Ctlr+C")
+              }
+            );
+
             Bold = new RoutedUICommand("_Fett", "Bold", typeof(SessionCommands),
               new InputGestureCollection
               {
-                    new KeyGesture(Key.B, ModifierKeys.Alt, "Alt+F")
+                    new KeyGesture(Key.F, ModifierKeys.Control | ModifierKeys.Shift, "Shift+Ctrl+F")
               }
             );
 
             Italics = new RoutedUICommand("_Kursiv", "Italics", typeof(SessionCommands),
               new InputGestureCollection
               {
-                    new KeyGesture(Key.K, ModifierKeys.Alt, "Alt+K")
+                    new KeyGesture(Key.K, ModifierKeys.Control | ModifierKeys.Shift, "Shift+Ctlr+K")
+              }
+            );
+
+            Underline = new RoutedUICommand("_Unterstrichen", "Underline", typeof(SessionCommands),
+              new InputGestureCollection
+              {
+                    new KeyGesture(Key.U, ModifierKeys.Control | ModifierKeys.Shift, "Shift+Ctlr+U")
               }
             );
 

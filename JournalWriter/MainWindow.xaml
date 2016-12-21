@@ -92,6 +92,7 @@
             <MenuItem Header="Formatieren">
                 <MenuItem Command="cmds:SessionCommands.Bold" Header="Text fett"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.Italics" Header="Text kursiv"></MenuItem>
+                <MenuItem Command="cmds:SessionCommands.CodeInline" Header="Inline-Code"></MenuItem>
                 <MenuItem Command="cmds:SessionCommands.CodeBlock" Header="Code-Block"></MenuItem>
             </MenuItem>
             <MenuItem Header="Hilfe">

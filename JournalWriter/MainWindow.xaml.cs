@@ -1196,7 +1196,12 @@ namespace JournalWriter
             if (HaveChange)
                 return;
 
-            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
+            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl || e.Key == Key.LeftShift || e.Key == Key.RightShift
+                || e.Key == Key.LeftAlt || e.Key == Key.RightAlt || e.Key == Key.System)
+                return;
+
+            if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Down || e.Key == Key.Up
+                || e.Key == Key.PageUp || e.Key == Key.PageDown || e.Key == Key.End)
                 return;
 
             if (!(((e.Key==Key.S) || (e.Key == Key.T)) && ((Keyboard.Modifiers & ModifierKeys.Control)==ModifierKeys.Control)))
@@ -1668,6 +1673,8 @@ namespace JournalWriter
         {
             if (firstTB.IsVisible)
             {
+                CurrentTiToFill.Tag = RemoveTabReplacements(firstTB.Text);
+
                 DisplayDocument(firstTB.Text);
                 editModeStatusbarItem.Visibility = Visibility.Collapsed;
             }

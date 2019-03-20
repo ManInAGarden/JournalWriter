@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using TextFinder;
 using System.Reflection;
 using Markdown;
+using System.Threading;
 
 namespace JournalWriter
 {
@@ -60,6 +61,20 @@ namespace JournalWriter
             dateTimeStatusbarItem.Content = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
         }
 
+        private void OnCopy(object sender, DataObjectCopyingEventArgs e)
+        {
+            e.Handled = DoCtrlC(sender as TextBox);
+        }
+
+        private void OnPaste(object sender, DataObjectPastingEventArgs e)
+        {
+            TextBox senderTB = sender as TextBox;
+            var isText = e.SourceDataObject.GetDataPresent(DataFormats.UnicodeText, true);
+            if (!isText) return;
+
+            var text = e.SourceDataObject.GetData(DataFormats.UnicodeText) as string;
+            e.Handled = DoCtrlV(senderTB);
+        }
 
         /// <summary>
         /// Wird aufgerufen wenn das Fenster geladen ist, alle Controls sind jetzt da
@@ -1192,6 +1207,20 @@ namespace JournalWriter
         /// <param name="e"></param>
         private void firstTB_KeyUp(object sender, KeyEventArgs e)
         {
+            //TextBox senderTB = sender as TextBox;
+
+            //My own ctrl+c handling
+            //if ((Keyboard.Modifiers & ModifierKeys.Control)==ModifierKeys.Control &&  e.Key == Key.C)
+            //{
+            //    e.Handled = DoCtrlC(senderTB);
+            //} else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && e.Key == Key.X)
+            //{
+            //    e.Handled = DoCtrlX(senderTB);
+            //}
+            //else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && e.Key == Key.V)
+            //{
+            //    e.Handled = DoCtrlV(senderTB);
+            //}
 
             if (HaveChange)
                 return;
@@ -1209,7 +1238,94 @@ namespace JournalWriter
 
         }
 
+        private bool DoCtrlV(TextBox senderTB)
+        {
+            string txt = Clipboard.GetText();
 
+            if (txt.Length == 0)
+                return true;
+
+            int oldCaretIndex = senderTB.CaretIndex;
+
+            if (txt.StartsWith("\n") && txt.EndsWith("\n") && !txt.Substring(1, txt.Length - 2).Contains("\n"))
+            {
+                int lidx = senderTB.GetLineIndexFromCharacterIndex(senderTB.CaretIndex);
+                int cidx = senderTB.GetCharacterIndexFromLineIndex(lidx);
+
+                senderTB.Text = senderTB.Text.Insert(cidx, txt.Substring(1));
+                senderTB.CaretIndex = oldCaretIndex + txt.Length - 1;
+
+                return true;
+            }
+            else
+            {
+                senderTB.Text = senderTB.Text.Insert(senderTB.CaretIndex, txt);
+                senderTB.CaretIndex = oldCaretIndex + txt.Length;
+                return true;
+            }
+        }
+
+        private bool DoCtrlX(TextBox senderTB)
+        {
+            if (senderTB.SelectionLength > 0)
+            {
+                bool done = CopyTextToClipBoard(senderTB.SelectedText);
+                if(done)
+                    senderTB.Text.Remove(senderTB.SelectionStart, senderTB.SelectionLength);
+                return true;
+            }
+            else //Copy current Line to ClipBoard and remove text from textbox
+            {
+                int lidx = senderTB.GetLineIndexFromCharacterIndex(senderTB.CaretIndex);
+                bool done = CopyTextToClipBoard("\n" + senderTB.GetLineText(lidx) + "\n");
+                if (done)
+                {
+                    int lineStartAt = senderTB.GetCharacterIndexFromLineIndex(lidx);
+                    int lengthOfLine = senderTB.GetLineLength(lidx);
+                    senderTB.Text = senderTB.Text.Remove(lineStartAt, lengthOfLine);
+                }
+                return true;
+            }
+        }
+
+        private bool DoCtrlC(TextBox senderTB)
+        {
+            if (senderTB.SelectionLength > 0)
+            {
+                CopyTextToClipBoard(senderTB.SelectedText);
+                return true;
+            }
+            else //Copy current Line to ClipBoard
+            {
+                int lidx = senderTB.GetLineIndexFromCharacterIndex(senderTB.CaretIndex);
+                CopyTextToClipBoard("\n" + senderTB.GetLineText(lidx));
+                return true;
+            }
+        }
+
+        private bool CopyTextToClipBoard(string txt)
+        {
+            int ct = 10;
+            bool done = false;
+            while (ct > 0 && !done)
+            {
+                try
+                {
+                    Clipboard.SetText(txt);
+                    done = true;
+                }
+                catch
+                {
+                    ct--;
+                    Thread.Sleep(100);
+                }
+            }
+
+            if (!done)
+                MessageBox.Show("Irgendwas blockiert das Clip-Board");
+
+            return done;
+        }
 
         private void dateTreeView_MouseMove(object sender, MouseEventArgs e)
         {
@@ -1678,6 +1794,21 @@ namespace JournalWriter
                 DisplayDocument(firstTB.Text);
                 editModeStatusbarItem.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void CommandBinding_CutExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = DoCtrlX(sender as TextBox);
+        }
+
+        private void CommandBinding_CopyExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = DoCtrlC(sender as TextBox);
+        }
+
+        private void CommandBinding_PasteExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = DoCtrlV(sender as TextBox);
         }
 
         private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)

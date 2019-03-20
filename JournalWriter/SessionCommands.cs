@@ -19,14 +19,14 @@ namespace JournalWriter
         public static RoutedUICommand GotoLine { get; private set; }
         public static RoutedUICommand MarkdownHelp { get; private set; }
         public static RoutedUICommand SetFileLocation { get; private set; }
-        public static RoutedCommand DebugMarkdown { get; private set; }
-        public static RoutedCommand GlobalSearch { get; private set; }
-        public static RoutedCommand PrintDay { get; private set; }
-        public static RoutedCommand CodeBlock { get; private set; }
-        public static RoutedCommand CodeInline { get; private set; }
-        public static RoutedCommand Bold {get; private set;}
-        public static RoutedCommand Italics { get; private set; }
-        public static RoutedCommand Underline { get; private set; }
+        public static RoutedUICommand DebugMarkdown { get; private set; }
+        public static RoutedUICommand GlobalSearch { get; private set; }
+        public static RoutedUICommand PrintDay { get; private set; }
+        public static RoutedUICommand CodeBlock { get; private set; }
+        public static RoutedUICommand CodeInline { get; private set; }
+        public static RoutedUICommand Bold {get; private set;}
+        public static RoutedUICommand Italics { get; private set; }
+        public static RoutedUICommand Underline { get; private set; }
 
         static SessionCommands()
         {
@@ -120,7 +120,6 @@ namespace JournalWriter
                     new KeyGesture(Key.U, ModifierKeys.Control | ModifierKeys.Shift, "Shift+Ctlr+U")
               }
             );
-
         }   
         
     }

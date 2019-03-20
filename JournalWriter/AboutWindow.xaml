@@ -34,7 +34,7 @@
             SJournal
         </Label>
         <Label Margin="5" Foreground="Black">
-            (c) Heinrich Speich 2013/2016
+            (c) Heinrich Speich 2013/2019
         </Label>
             
         <Label Margin="5" Name="versionLabel" Foreground="Black">

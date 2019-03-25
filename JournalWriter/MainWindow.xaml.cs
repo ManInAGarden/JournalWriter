@@ -1207,21 +1207,6 @@ namespace JournalWriter
         /// <param name="e"></param>
         private void firstTB_KeyUp(object sender, KeyEventArgs e)
         {
-            //TextBox senderTB = sender as TextBox;
-
-            //My own ctrl+c handling
-            //if ((Keyboard.Modifiers & ModifierKeys.Control)==ModifierKeys.Control &&  e.Key == Key.C)
-            //{
-            //    e.Handled = DoCtrlC(senderTB);
-            //} else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && e.Key == Key.X)
-            //{
-            //    e.Handled = DoCtrlX(senderTB);
-            //}
-            //else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && e.Key == Key.V)
-            //{
-            //    e.Handled = DoCtrlV(senderTB);
-            //}
-
             if (HaveChange)
                 return;
 
@@ -1240,70 +1225,94 @@ namespace JournalWriter
 
         private bool DoCtrlV(TextBox senderTB)
         {
-            string txt = Clipboard.GetText();
+            bool answ = false;
+            IDataObject cd = Clipboard.GetDataObject();
 
-            if (txt.Length == 0)
-                return true;
+            string[] availFormats = cd.GetFormats();
+            ClipboardDataElement cdael = null;
+            if (availFormats.Contains("JournalWriter.ClipboardDataElement"))
+                cdael = cd.GetData("JournalWriter.ClipboardDataElement") as ClipboardDataElement;
+            else if (availFormats.Contains("System.String"))
+            {
+                string txt = cd.GetData("System.String") as string;
+                cdael = new ClipboardDataElement(ClipTypeEnum.Block, txt);
+            }
+
+            if (cdael==null)
+                return answ;
 
             int oldCaretIndex = senderTB.CaretIndex;
 
-            if (txt.StartsWith("\n") && txt.EndsWith("\n") && !txt.Substring(1, txt.Length - 2).Contains("\n"))
+            switch(cdael.ClipType)
             {
-                int lidx = senderTB.GetLineIndexFromCharacterIndex(senderTB.CaretIndex);
-                int cidx = senderTB.GetCharacterIndexFromLineIndex(lidx);
+                case ClipTypeEnum.Line:
+                    int lidx = senderTB.GetLineIndexFromCharacterIndex(senderTB.CaretIndex);
+                    int cidx = senderTB.GetCharacterIndexFromLineIndex(lidx);
 
-                senderTB.Text = senderTB.Text.Insert(cidx, txt.Substring(1));
-                senderTB.CaretIndex = oldCaretIndex + txt.Length - 1;
+                    senderTB.Text = senderTB.Text.Insert(cidx, cdael.Text);
+                    senderTB.CaretIndex = oldCaretIndex + cdael.Text.Length;
+                    answ = true;
+                    break;
+                case ClipTypeEnum.Block:
+                   senderTB.Text = senderTB.Text.Insert(senderTB.CaretIndex, cdael.Text);
+                    senderTB.CaretIndex = oldCaretIndex + cdael.Text.Length;
+                    answ = true;
+                    break;
+                default:
+                    throw new NotSupportedException("Unbekannter ClipTyp in DoCtrlV");
+            }
 
-                return true;
-            }
-            else
-            {
-                senderTB.Text = senderTB.Text.Insert(senderTB.CaretIndex, txt);
-                senderTB.CaretIndex = oldCaretIndex + txt.Length;
-                return true;
-            }
+            return answ;
         }
 
         private bool DoCtrlX(TextBox senderTB)
         {
+            int oldCaret = senderTB.CaretIndex;
+            bool answ = false;
+
             if (senderTB.SelectionLength > 0)
             {
-                bool done = CopyTextToClipBoard(senderTB.SelectedText);
+                bool done = CopyTextToClipBoard(ClipTypeEnum.Block, senderTB.SelectedText);
                 if(done)
-                    senderTB.Text.Remove(senderTB.SelectionStart, senderTB.SelectionLength);
-                return true;
+                    senderTB.Text = senderTB.Text.Remove(senderTB.SelectionStart, senderTB.SelectionLength);
+
+                answ = true;
             }
             else //Copy current Line to ClipBoard and remove text from textbox
             {
                 int lidx = senderTB.GetLineIndexFromCharacterIndex(senderTB.CaretIndex);
-                bool done = CopyTextToClipBoard("\n" + senderTB.GetLineText(lidx) + "\n");
+                bool done = CopyTextToClipBoard(ClipTypeEnum.Line, senderTB.GetLineText(lidx));
                 if (done)
                 {
                     int lineStartAt = senderTB.GetCharacterIndexFromLineIndex(lidx);
                     int lengthOfLine = senderTB.GetLineLength(lidx);
                     senderTB.Text = senderTB.Text.Remove(lineStartAt, lengthOfLine);
+
+                    answ = true;
                 }
-                return true;
             }
+
+            senderTB.CaretIndex = oldCaret;
+
+            return answ;
         }
 
         private bool DoCtrlC(TextBox senderTB)
         {
             if (senderTB.SelectionLength > 0)
             {
-                CopyTextToClipBoard(senderTB.SelectedText);
+                CopyTextToClipBoard(ClipTypeEnum.Block, senderTB.SelectedText);
                 return true;
             }
             else //Copy current Line to ClipBoard
             {
                 int lidx = senderTB.GetLineIndexFromCharacterIndex(senderTB.CaretIndex);
-                CopyTextToClipBoard("\n" + senderTB.GetLineText(lidx));
+                CopyTextToClipBoard(ClipTypeEnum.Line, senderTB.GetLineText(lidx));
                 return true;
             }
         }
 
-        private bool CopyTextToClipBoard(string txt)
+        private bool CopyTextToClipBoard(ClipTypeEnum clipt, string txt)
         {
             int ct = 10;
             bool done = false;
@@ -1311,7 +1320,9 @@ namespace JournalWriter
             {
                 try
                 {
-                    Clipboard.SetText(txt);
+                    ClipboardDataElement cdael = new ClipboardDataElement(clipt, txt);
+                    DataObject dao = new DataObject(cdael);
+                    Clipboard.SetDataObject(dao, true);
                     done = true;
                 }
                 catch

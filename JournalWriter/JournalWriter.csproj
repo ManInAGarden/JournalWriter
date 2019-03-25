@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JournalWriter</RootNamespace>
     <AssemblyName>JournalWriter</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -99,6 +99,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ClipboardDataElement.cs" />
     <Compile Include="MarkdownHelpWindow.xaml.cs">
       <DependentUpon>MarkdownHelpWindow.xaml</DependentUpon>
     </Compile>

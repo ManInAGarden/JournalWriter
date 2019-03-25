@@ -1435,12 +1435,21 @@ namespace JournalWriter
 
         private void CodeInline_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = firstTB.IsVisible && !string.IsNullOrEmpty(firstTB.SelectedText);
+            e.CanExecute = firstTB.IsVisible;
         }
 
         private void CodeInline_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            firstTB.SelectedText = "`" + firstTB.SelectedText + "`";
+            if (!string.IsNullOrEmpty(firstTB.SelectedText))
+                firstTB.SelectedText = "`" + firstTB.SelectedText + "`";
+            else
+            {
+                string txt = "`<hier Inline-Code entragen>`";
+                int pos = firstTB.CaretIndex;
+                firstTB.Text = firstTB.Text.Insert(pos, txt);
+                firstTB.Select(pos+1, txt.Length-2);
+            }
+
         }
 
         private void Bold_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1478,10 +1487,16 @@ namespace JournalWriter
         {
             string sel = firstTB.SelectedText;
 
-            if(!string.IsNullOrEmpty(sel))
+            if (!string.IsNullOrEmpty(sel))
                 firstTB.SelectedText = "\n```\n" + sel + "\n```\n";
             else
-                firstTB.SelectedText = "\n```\nProgrammcode hier einfügen\n```\n";
+            {
+                string txt = "\n```\n<Programmcode hier einfügen>\n```\n";
+                int pos = firstTB.CaretIndex;
+
+                firstTB.Text = firstTB.Text.Insert(pos, txt);
+                firstTB.Select(pos + 5, txt.Length - 10);
+            }
 
         }
 

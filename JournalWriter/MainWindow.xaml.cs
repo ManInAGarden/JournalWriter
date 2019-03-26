@@ -61,21 +61,6 @@ namespace JournalWriter
             dateTimeStatusbarItem.Content = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
         }
 
-        //private void OnCopy(object sender, DataObjectCopyingEventArgs e)
-        //{
-        //    e.Handled = DoCtrlC(sender as TextBox);
-        //}
-
-        //private void OnPaste(object sender, DataObjectPastingEventArgs e)
-        //{
-        //    TextBox senderTB = sender as TextBox;
-        //    var isText = e.SourceDataObject.GetDataPresent(DataFormats.UnicodeText, true);
-        //    if (!isText) return;
-
-        //    var text = e.SourceDataObject.GetData(DataFormats.UnicodeText) as string;
-        //    e.Handled = DoCtrlV(senderTB);
-        //}
-
         /// <summary>
         /// Wird aufgerufen wenn das Fenster geladen ist, alle Controls sind jetzt da
         /// </summary>
@@ -942,9 +927,12 @@ namespace JournalWriter
             if (tpt != null)
             {
                 TextRange beginning = new TextRange(firstDV.Document.ContentStart, tpt);
-                int inspos = GetRawTextCharacterPosition(CurrentTiToFill.Tag as string, 
-                    beginning.Text.Length, 
-                    CountReturns(beginning.Text));
+                //int inspos = GetRawTextCharacterPosition(CurrentTiToFill.Tag as string, 
+                //    beginning.Text.Length, 
+                //    CountReturns(beginning.Text));
+
+                int inspos = GetRawTextCharacterPosition(CurrentTiToFill.Tag as string,
+                    beginning.Text);
 
                 ShowTextBox(inspos);
 
@@ -965,140 +953,180 @@ namespace JournalWriter
             return ct;
         }
 
-        private int GetRawTextCharacterPosition(string instr, int maxrealc, int incrcorr)
+        private int GetRawTextCharacterPosition(string raw, string refined)
         {
-            int nettoPos = 0, bruttoPos = 0, oldNettoPos=0;
-            bool hadspace = false;
-            bool hadbreak = false;
-            int starct = 0;
-            int starctdir = 1;
-            char headsign = 'X';
-            string counted = "", notcounted = "";
+            int answ = 0;
+            char rc;
+            string notinraw = "";
 
-            foreach (char c in instr)
+            foreach (char c in refined.Replace("\t", ""))
             {
-                oldNettoPos = nettoPos;
-
-                switch (c)
+                if (raw.Substring(answ).Contains(c))
                 {
-                    case '\r':
-                        starctdir = 1;
-                        starct = 0;
-                        hadspace = false;
-                        hadbreak = false;
-                        headsign = 'X';
-                        break;
-                    case '\n':
-                        starctdir = 1;
-                        starct = 0;
-                        hadspace = false;
-                        hadbreak = true;
-                        headsign = 'X';
-                        break;
-                    case '=':
-                        if (hadbreak)
-                            headsign = c;
-                        else if (headsign!=c)
-                            nettoPos++;
+                    rc = raw[answ];
 
-                        starctdir = -1;
-                        hadspace = false;
-                        hadbreak = false;
+                    while (!AreEqualEnough(c,raw[answ]))
+                    {
+                        answ++;
+                        rc = raw[answ];
+                    }
 
-                        break;
-                    case '-':
-                        if(hadbreak)
-                            headsign = c;
-                        else if (headsign!=c)
-                            nettoPos++;
-
-                        starctdir = -1;
-                        hadspace = false;
-                        hadbreak = false;
-                        break;
-                    case '*':
-                        if (!hadspace && (starct == 0))
-                        {
-                            nettoPos++;
-                        }
-                        else if (!hadspace && (starct > 0))
-                        {
-                            starct += starctdir;
-                        }
-                        else if (hadspace)
-                        {
-                            starctdir = 1;
-                            starct = 1;
-                        }
-                        
-                        hadspace = false;
-                        hadbreak = false;
-                        headsign = 'X';
-                        break;
-                    case '_':
-                        if (!hadspace)
-                            nettoPos++;
-
-                        starctdir = -1;
-                        hadspace = false;
-                        hadbreak = false;
-                        headsign = 'X';
-                        break;
-
-                    case ' ':
-                        starctdir = -1;
-                        hadspace = true;
-                        hadbreak = false;
-                        headsign = 'X';
-                        nettoPos++;
-                        break;
-
-                    case '\t':
-                        if (!hadbreak)
-                        {
-                            hadspace = true;
-                            nettoPos++;
-                        }
-
-                        starctdir = -1;
-                        hadbreak = false;
-                        headsign = 'X';
-                        break;
-
-                    case '>':
-                        if (!hadbreak)
-                        {
-                            nettoPos++;
-                        }
-
-                        starctdir = -1;
-                        hadspace = false;
-                        hadbreak = false;
-                        headsign = 'X';
-                        break;
-
-                    default:
-                        starctdir = -1;
-                        hadspace = false;
-                        hadbreak = false;
-                        headsign = 'X';
-                        nettoPos++;
-                        break;
+                    answ++;
                 }
-
-                bruttoPos++;
-
-                if (oldNettoPos != nettoPos)
-                    counted += c;
                 else
-                    notcounted += c;
-
-                if (nettoPos >= (maxrealc-incrcorr))
-                    break;
+                    notinraw += c;
             }
 
-            return bruttoPos + 1;
+            return answ;
         }
+
+        private bool AreEqualEnough(char c1, char c2)
+        {
+            if (c1 == c2)
+                return true;
+            else if (c1 == '\r' && c2 == '\n')
+                return true;
+            else if (c1 == '\n' && c2 == '\r')
+                return true;
+            else
+                return false;
+
+        }
+
+        //private int GetRawTextCharacterPosition(string instr, int maxrealc, int incrcorr)
+        //{
+        //    int nettoPos = 0, bruttoPos = 0, oldNettoPos=0;
+        //    bool hadspace = false;
+        //    bool hadbreak = false;
+        //    int starct = 0;
+        //    int starctdir = 1;
+        //    char headsign = 'X';
+        //    string counted = "", notcounted = "";
+
+        //    foreach (char c in instr)
+        //    {
+        //        oldNettoPos = nettoPos;
+
+        //        switch (c)
+        //        {
+        //            case '\r':
+        //                starctdir = 1;
+        //                starct = 0;
+        //                hadspace = false;
+        //                hadbreak = false;
+        //                headsign = 'X';
+        //                break;
+        //            case '\n':
+        //                starctdir = 1;
+        //                starct = 0;
+        //                hadspace = false;
+        //                hadbreak = true;
+        //                headsign = 'X';
+        //                break;
+        //            case '=':
+        //                if (hadbreak)
+        //                    headsign = c;
+        //                else if (headsign!=c)
+        //                    nettoPos++;
+
+        //                starctdir = -1;
+        //                hadspace = false;
+        //                hadbreak = false;
+
+        //                break;
+        //            case '-':
+        //                if(hadbreak)
+        //                    headsign = c;
+        //                else if (headsign!=c)
+        //                    nettoPos++;
+
+        //                starctdir = -1;
+        //                hadspace = false;
+        //                hadbreak = false;
+        //                break;
+        //            case '*':
+        //                if (!hadspace && (starct == 0))
+        //                {
+        //                    nettoPos++;
+        //                }
+        //                else if (!hadspace && (starct > 0))
+        //                {
+        //                    starct += starctdir;
+        //                }
+        //                else if (hadspace)
+        //                {
+        //                    starctdir = 1;
+        //                    starct = 1;
+        //                }
+
+        //                hadspace = false;
+        //                hadbreak = false;
+        //                headsign = 'X';
+        //                break;
+        //            case '_':
+        //                if (!hadspace)
+        //                    nettoPos++;
+
+        //                starctdir = -1;
+        //                hadspace = false;
+        //                hadbreak = false;
+        //                headsign = 'X';
+        //                break;
+
+        //            case ' ':
+        //                starctdir = -1;
+        //                hadspace = true;
+        //                hadbreak = false;
+        //                headsign = 'X';
+        //                nettoPos++;
+        //                break;
+
+        //            case '\t':
+        //                if (!hadbreak)
+        //                {
+        //                    hadspace = true;
+        //                    nettoPos++;
+        //                }
+
+        //                starctdir = -1;
+        //                hadbreak = false;
+        //                headsign = 'X';
+        //                break;
+
+        //            case '>':
+        //                if (!hadbreak)
+        //                {
+        //                    nettoPos++;
+        //                }
+
+        //                starctdir = -1;
+        //                hadspace = false;
+        //                hadbreak = false;
+        //                headsign = 'X';
+        //                break;
+
+        //            default:
+        //                starctdir = -1;
+        //                hadspace = false;
+        //                hadbreak = false;
+        //                headsign = 'X';
+        //                nettoPos++;
+        //                break;
+        //        }
+
+        //        bruttoPos++;
+
+        //        if (oldNettoPos != nettoPos)
+        //            counted += c;
+        //        else
+        //            notcounted += c;
+
+        //        if (nettoPos >= (maxrealc-incrcorr))
+        //            break;
+        //    }
+
+        //    return bruttoPos + 1;
+        //}
 
 
         public static TextPointer GetPositionFromPoint(/* this */ Run _this, Point searchForPoint)
@@ -1323,7 +1351,7 @@ namespace JournalWriter
                 {
                     ClipboardDataElement cdael = new ClipboardDataElement(clipt, txt);
                     DataObject dao = new DataObject();
-                    dao.SetData(ClipboardDataElement.Format, dao);
+                    dao.SetData(ClipboardDataElement.Format, cdael);
                     dao.SetData(DataFormats.StringFormat, txt);
                     Clipboard.SetDataObject(dao);
                     done = true;
@@ -1734,23 +1762,6 @@ namespace JournalWriter
                 }
             }
         }
-
-        //private void FindTextInDocReader(FlowDocumentReader docViewer, string searchs)
-        //{
-        //    docViewer.Find();
-        //    object findToolbar = docViewer.Template.FindName("PART_FindToolBarHost", docViewer);
-
-        //    // Set Text
-        //    FieldInfo findTextBoxFieldInfo = findToolbar.GetType().GetField("FindTextBox", BindingFlags.NonPublic | BindingFlags.Instance);
-        //    TextBox findTextBox = (TextBox)findTextBoxFieldInfo.GetValue(findToolbar);
-        //    findTextBox.Text = searchs;
-
-        //    // Raise ClickEvent for Highlighting
-        //    FieldInfo findNextButtonFieldInfo = findToolbar.GetType().GetField("FindNextButton", BindingFlags.NonPublic | BindingFlags.Instance);
-        //    Button findNextButton = (Button)findNextButtonFieldInfo.GetValue(findToolbar);
-        //    findNextButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-
-        //}
 
 
         /// <summary>

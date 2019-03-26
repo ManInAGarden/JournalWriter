@@ -11,7 +11,7 @@ namespace JournalWriter
     [Serializable]
     public class ClipboardDataElement
     {
-        public static string Format = "SJournalClipboardDataElement";
+        public static string Format = "SJournal.ClipboardDataElement";
 
         public ClipTypeEnum  ClipType { get; set; }
 

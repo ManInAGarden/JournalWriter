@@ -14,12 +14,14 @@ namespace UnitTest
             DocLexElement.JumpPositions = new List<int>();
 
             FlowDocGenerator gen = new FlowDocGenerator();
-            List<DocLexElement> lexes = new List<DocLexElement>();
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, text: "Hallo", spcCount: 1));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.bold));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, text:"fett"));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.bold));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak));
+            List<DocLexElement> lexes = new List<DocLexElement>()
+            {
+                new DocLexElement(DocLexElement.LexTypeEnum.word, text: "Hallo", spcCount: 1),
+                new DocLexElement(DocLexElement.LexTypeEnum.bold),
+                new DocLexElement(DocLexElement.LexTypeEnum.word, text: "fett"),
+                new DocLexElement(DocLexElement.LexTypeEnum.bold),
+                new DocLexElement(DocLexElement.LexTypeEnum.parabreak)
+            };
             string answ = gen.ProduceDoc(lexes);
 
             Assert.IsTrue(answ.StartsWith("<FlowDocument"));
@@ -33,17 +35,20 @@ namespace UnitTest
             DocLexElement.JumpPositions = new List<int>();
 
             FlowDocGenerator gen = new FlowDocGenerator();
-            List<DocLexElement> lexes = new List<DocLexElement>();
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, text: "Vortext", spcCount: 1));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: 1));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, text: "Hallo", spcCount: 1));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.linebreak));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: 1));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.word, text: "fett", spcCount: 1));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.linebreak));
-            lexes.Add(new DocLexElement(DocLexElement.LexTypeEnum.parabreak));
-           string answ = gen.ProduceDoc(lexes);
+            List<DocLexElement> lexes = new List<DocLexElement>()
+            {
+                new DocLexElement(DocLexElement.LexTypeEnum.word, text: "Vortext", spcCount: 1),
+                new DocLexElement(DocLexElement.LexTypeEnum.parabreak),
+                new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: 1),
+                new DocLexElement(DocLexElement.LexTypeEnum.word, text: "Hallo", spcCount: 1),
+                new DocLexElement(DocLexElement.LexTypeEnum.linebreak),
+                new DocLexElement(DocLexElement.LexTypeEnum.emphasize, spcCount: 1),
+                new DocLexElement(DocLexElement.LexTypeEnum.word, text: "fett", spcCount: 1),
+                new DocLexElement(DocLexElement.LexTypeEnum.linebreak),
+                new DocLexElement(DocLexElement.LexTypeEnum.parabreak)
+            };
+
+            string answ = gen.ProduceDoc(lexes);
 
             Assert.IsTrue(answ.StartsWith("<FlowDocument"));
             Assert.IsTrue(answ.Contains("<List FontSize=\"\" FontFamily=\"\" MarkerStyle=\"Disc\">"));

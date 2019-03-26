@@ -111,7 +111,7 @@
                   Background="{StaticResource TransparentBackground}" 
                   BorderBrush="{StaticResource BorderOnTransparentBackground}" 
                   Foreground="{StaticResource ForegroundOnTransparentBackground}" 
-                  BorderThickness="0" MouseMove="dateTreeView_MouseMove" 
+                  BorderThickness="0" MouseMove="DateTreeView_MouseMove" 
                   FontFamily="{StaticResource ReadableTextFontFamily}" FontSize="{StaticResource ReadableFontSize}" >
             <TreeView.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
@@ -134,7 +134,7 @@
 
         </TreeView>
         <ListBox Grid.Column="0" Grid.Row="2" Visibility="Collapsed"
-                 Name="globalSearchResultsLB" BorderBrush="SkyBlue" SelectionChanged="globalSearchResultsLB_SelectionChanged"
+                 Name="globalSearchResultsLB" BorderBrush="SkyBlue" SelectionChanged="GlobalSearchResultsLB_SelectionChanged"
                  >
             Keine Ergebnisse
         </ListBox>
@@ -151,23 +151,23 @@
                             Foreground="{StaticResource ForegroundOnTransparentBackground}" Visibility="Visible" 
                             ToolTip="Hier doppelt klicken um Text zu bearbeiten" 
                             FontFamily="{StaticResource ReadableTextFontFamily}" 
-                            MouseDoubleClick="firstDV_MouseDoubleClick" IsTwoPageViewEnabled="True" 
+                            MouseDoubleClick="FirstDV_MouseDoubleClick" IsTwoPageViewEnabled="True" 
                             FontSize="{StaticResource ReadableFontSize}" 
-                            SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="dateTreeView_MouseMove" />
+                            SelectionBrush="{StaticResource TextSelectionBrush}" MouseMove="DateTreeView_MouseMove" />
         <TextBox Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"
                  Name="firstTB" HorizontalAlignment="Stretch" 
                  VerticalAlignment="Stretch" Margin="0,3,0,3" BorderThickness="0" 
                  Background="{StaticResource TransparentBackground}" 
                  Foreground="{StaticResource ForegroundOnTransparentBackground}" 
                  AcceptsReturn="True" AcceptsTab="True" 
-                 Visibility="Hidden" TextWrapping="Wrap" LostFocus="firstTB_LostFocus" 
-                 KeyUp="firstTB_KeyUp" 
+                 Visibility="Hidden" TextWrapping="Wrap" LostFocus="FirstTB_LostFocus" 
+                 KeyUp="FirstTB_KeyUp" 
                  FontFamily="{StaticResource ReadableTextFontFamily}" 
                  FontSize="{StaticResource ReadableFontSize}" 
                  SelectionBrush="{StaticResource TextSelectionBrush}" 
-                 MouseMove="dateTreeView_MouseMove" 
-                 GotFocus="firstTB_GotFocus" 
-                 MouseWheel="firstTB_MouseWheel" 
+                 MouseMove="DateTreeView_MouseMove" 
+                 GotFocus="FirstTB_GotFocus" 
+                 MouseWheel="FirstTB_MouseWheel" 
                  CaretBrush="Black" RenderTransformOrigin="0.5,0.5" >
             <TextBox.CommandBindings>
                 <CommandBinding Command="Paste" Executed="CommandBinding_PasteExecuted"/>
@@ -183,7 +183,7 @@
                 <StatusBarItem Name="dateTimeStatusbarItem" Content="01.01.2013 00:00" BorderBrush="{StaticResource BorderOnTransparentBackground}"  Foreground="{StaticResource ForegroundOnTransparentBackground}"  FontFamily="{StaticResource ReadableTextFontFamily}" ToolTip="Aktuelles Datum und Uhrzeit" />
             </Border>
             <Border BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8" >
-                <StatusBarItem Name="wordCountStatusBarItem" Content="0" Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" ToolTip="Anzahl der Wörter im ausgewählten Tagesjournal" MouseDown="wordCountStatusBarItem_MouseDown" />
+                <StatusBarItem Name="wordCountStatusBarItem" Content="0" Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" ToolTip="Anzahl der Wörter im ausgewählten Tagesjournal" MouseDown="WordCountStatusBarItem_MouseDown" />
             </Border>
             <Border BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8" >
                 <StatusBarItem Name="changeIndicator" Content="S" FontWeight="Bold"  Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" Visibility="Collapsed" ToolTip="Signal für &quot;Speichern erforderlich&quot;" />
@@ -192,13 +192,13 @@
                 <Border.Background>
                     <SolidColorBrush />
                 </Border.Background>
-                <StatusBarItem Name="editModeStatusbarItem" Content="E" FontWeight="Bold" Visibility="Collapsed" Margin="5,0,5,0" BorderBrush="{StaticResource EditTBBorderOnTransparentBackground}"  Foreground="{StaticResource EditTBForegroundOnTransparentBackground}"  FontFamily="{StaticResource EditTBReadableTextFontFamily}" ToolTip="Edit Modus" Background="Transparent" MouseDown="editModeStatusbarItem_MouseDown"/>
+                <StatusBarItem Name="editModeStatusbarItem" Content="E" FontWeight="Bold" Visibility="Collapsed" Margin="5,0,5,0" BorderBrush="{StaticResource EditTBBorderOnTransparentBackground}"  Foreground="{StaticResource EditTBForegroundOnTransparentBackground}"  FontFamily="{StaticResource EditTBReadableTextFontFamily}" ToolTip="Edit Modus" Background="Transparent" MouseDown="EditModeStatusbarItem_MouseDown"/>
             </Border>
             <Border Name="searchBorder" BorderBrush="{StaticResource BorderOnTransparentBackground}" BorderThickness="1" Margin="5,0,5,0" CornerRadius="8,8,8,8">
                 <StatusBarItem Name="globalSearchSBI" FontWeight="Bold"  Foreground="{StaticResource ForegroundOnTransparentBackground}" Margin="5,0,5,0" FontFamily="{StaticResource ReadableTextFontFamily}" Visibility="Collapsed" >
                     <StackPanel Orientation="Horizontal">
-                        <TextBox Width="200" IsEnabled="False" KeyDown="xBU_KeyDown" Name="globalSearchTB" BorderBrush="{x:Null}" ToolTip="Hier einen Suchtext eingeben und mit Enter die Suche starten" BorderThickness="0" FontFamily="Trebuchet MS" FontSize="13.333" IsVisibleChanged="globalSearchTB_IsVisibleChanged" >Suchtext</TextBox>
-                        <Button Name="xBU" Background="{x:Null}" BorderBrush="{x:Null}" Click="xBU_Click" >X</Button>
+                        <TextBox Width="200" IsEnabled="False" KeyDown="XBU_KeyDown" Name="globalSearchTB" BorderBrush="{x:Null}" ToolTip="Hier einen Suchtext eingeben und mit Enter die Suche starten" BorderThickness="0" FontFamily="Trebuchet MS" FontSize="13.333" IsVisibleChanged="GlobalSearchTB_IsVisibleChanged" >Suchtext</TextBox>
+                        <Button Name="xBU" Background="{x:Null}" BorderBrush="{x:Null}" Click="XBU_Click" >X</Button>
                     </StackPanel>
                 </StatusBarItem>
             </Border>

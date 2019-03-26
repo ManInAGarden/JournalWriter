@@ -56,25 +56,25 @@ namespace JournalWriter
             InitializeComponent();
         }
 
-        void clockDT_Tick(object sender, EventArgs e)
+        void ClockDT_Tick(object sender, EventArgs e)
         {
             dateTimeStatusbarItem.Content = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
         }
 
-        private void OnCopy(object sender, DataObjectCopyingEventArgs e)
-        {
-            e.Handled = DoCtrlC(sender as TextBox);
-        }
+        //private void OnCopy(object sender, DataObjectCopyingEventArgs e)
+        //{
+        //    e.Handled = DoCtrlC(sender as TextBox);
+        //}
 
-        private void OnPaste(object sender, DataObjectPastingEventArgs e)
-        {
-            TextBox senderTB = sender as TextBox;
-            var isText = e.SourceDataObject.GetDataPresent(DataFormats.UnicodeText, true);
-            if (!isText) return;
+        //private void OnPaste(object sender, DataObjectPastingEventArgs e)
+        //{
+        //    TextBox senderTB = sender as TextBox;
+        //    var isText = e.SourceDataObject.GetDataPresent(DataFormats.UnicodeText, true);
+        //    if (!isText) return;
 
-            var text = e.SourceDataObject.GetData(DataFormats.UnicodeText) as string;
-            e.Handled = DoCtrlV(senderTB);
-        }
+        //    var text = e.SourceDataObject.GetData(DataFormats.UnicodeText) as string;
+        //    e.Handled = DoCtrlV(senderTB);
+        //}
 
         /// <summary>
         /// Wird aufgerufen wenn das Fenster geladen ist, alle Controls sind jetzt da
@@ -98,13 +98,13 @@ namespace JournalWriter
 
         private void CreateAllTimers()
         {
-            clockDT.Tick += new EventHandler(clockDT_Tick);
+            clockDT.Tick += new EventHandler(ClockDT_Tick);
             clockDT.Interval = new TimeSpan(0, 1, 0);
 
-            autoSaveDT.Tick += new EventHandler(autoSaveDT_Tick);
+            autoSaveDT.Tick += new EventHandler(AutoSaveDT_Tick);
             autoSaveDT.Interval = new TimeSpan(0, 10, 0);
 
-            wordCountDT.Tick += new EventHandler(wordCountDT_Tick);
+            wordCountDT.Tick += new EventHandler(WordCountDT_Tick);
             wordCountDT.Interval = new TimeSpan(0, 0, 5);
         }
 
@@ -124,7 +124,7 @@ namespace JournalWriter
         }
 
 
-        private void wordCountDT_Tick(object sender, EventArgs e)
+        private void WordCountDT_Tick(object sender, EventArgs e)
         {
             if (!firstTB.IsVisible)
                 return;
@@ -193,13 +193,15 @@ namespace JournalWriter
 
         private TreeViewItem AddDayItemToTree(TreeViewItem parentTi, DateTime currDay, string itemText)
         {
-            TreeViewItem ti = new TreeViewItem();
-            ti.Name = "D_" + currDay.ToString("yyyyMMdd");
-            ti.Tag = itemText;
-            ti.Header = currDay.ToString("dd");
-            ti.Foreground = parentTi.Foreground;
-            ti.FontFamily = parentTi.FontFamily;
-            ti.FontSize = parentTi.FontSize;
+            TreeViewItem ti = new TreeViewItem()
+            {
+                Name = "D_" + currDay.ToString("yyyyMMdd"),
+                Tag = itemText,
+                Header = currDay.ToString("dd"),
+                Foreground = parentTi.Foreground,
+                FontFamily = parentTi.FontFamily,
+                FontSize = parentTi.FontSize
+            };
             parentTi.Items.Add(ti);
 
             return ti;
@@ -207,13 +209,15 @@ namespace JournalWriter
 
         private TreeViewItem AddMonthItemToTree(TreeViewItem parentTI, DateTime currDay, string itemText)
         {
-            TreeViewItem monthTI = new TreeViewItem();
-            monthTI.Name = "M_" + currDay.ToString("yyyyMM");
-            monthTI.Header = currDay.ToString("MM");
-            monthTI.Foreground = parentTI.Foreground;
-            monthTI.FontFamily = parentTI.FontFamily;
-            monthTI.FontSize = parentTI.FontSize;
-            monthTI.Tag = itemText;
+            TreeViewItem monthTI = new TreeViewItem()
+            {
+                Name = "M_" + currDay.ToString("yyyyMM"),
+                Header = currDay.ToString("MM"),
+                Foreground = parentTI.Foreground,
+                FontFamily = parentTI.FontFamily,
+                FontSize = parentTI.FontSize,
+                Tag = itemText
+            };
 
             parentTI.Items.Add(monthTI);
 
@@ -222,13 +226,16 @@ namespace JournalWriter
 
         private TreeViewItem AddYearItemToTree(DateTime currDay, string itemText)
         {
-            TreeViewItem yearTI = new TreeViewItem();
-            yearTI.Name = "Y_" + currDay.ToString("yyyy");
-            yearTI.Header = currDay.Year.ToString();
-            yearTI.Tag = itemText;
-            yearTI.Foreground = dateTreeView.Foreground;
-            yearTI.FontFamily = dateTreeView.FontFamily;
-            yearTI.FontSize = dateTreeView.FontSize;
+            TreeViewItem yearTI = new TreeViewItem()
+            {
+                Name = "Y_" + currDay.ToString("yyyy"),
+                Header = currDay.Year.ToString(),
+                Tag = itemText,
+                Foreground = dateTreeView.Foreground,
+                FontFamily = dateTreeView.FontFamily,
+                FontSize = dateTreeView.FontSize
+            };
+
             dateTreeView.Items.Add(yearTI);
 
             return yearTI;
@@ -329,7 +336,7 @@ namespace JournalWriter
             return answ;
         }
 
-        void autoSaveDT_Tick(object sender, EventArgs e)
+        void AutoSaveDT_Tick(object sender, EventArgs e)
         {
             if (HaveChange)
             {
@@ -359,13 +366,11 @@ namespace JournalWriter
         /// <param name="e"></param>
         private void GotoLine_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            GotoLineEntryWindow goew = new GotoLineEntryWindow();
-            goew.Owner = this;
+            GotoLineEntryWindow goew = new GotoLineEntryWindow() { Owner = this };
 
             if (goew.ShowDialog()==true)
             {
                 int linenum = goew.LineNumber;
-
                 firstTB.CaretIndex = CalcStartOfLineIdx(firstTB, linenum);
             }
         }
@@ -428,7 +433,7 @@ namespace JournalWriter
             globalSearchTB.IsEnabled = true;
         }
 
-        private void globalSearchTB_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void GlobalSearchTB_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if ((bool)e.NewValue)
             {
@@ -587,8 +592,7 @@ namespace JournalWriter
         /// <param name="e"></param>
         private void About_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            AboutWindow aw = new AboutWindow();
-            aw.Owner = this;
+            AboutWindow aw = new AboutWindow() { Owner = this };
             aw.Show();
         }
 
@@ -643,10 +647,13 @@ namespace JournalWriter
                     + Properties.Settings.Default.FileName;
 
             try
+            {
+                XmlWriterSettings settings = new XmlWriterSettings()
                 {
-                XmlWriterSettings settings = new XmlWriterSettings();
-                settings.CloseOutput = true;
-                settings.Indent = true;
+                    CloseOutput = true,
+                    Indent = true
+                };
+                
 
                 StreamWriter sw = new StreamWriter(fileName);
                 XmlWriter xmlw = XmlWriter.Create(sw, settings);
@@ -679,8 +686,7 @@ namespace JournalWriter
 
         private void WriteToWriter(XmlWriter xmlw, TreeViewItem pti)
         {
-            string subElementName;
-            string elementName = GetElementName(pti.Name, out subElementName);
+            string elementName = GetElementName(pti.Name, out string subElementName);
 
             xmlw.WriteStartElement(elementName);
             xmlw.WriteAttributeString("Name", pti.Name);
@@ -745,8 +751,7 @@ namespace JournalWriter
 
             try
             {
-                XmlReaderSettings settings = new XmlReaderSettings();
-                settings.CloseInput = true;
+                XmlReaderSettings settings = new XmlReaderSettings() { CloseInput = true };
 
                 StreamReader sr = new StreamReader(fileName);
                 XmlReader xmlr = XmlReader.Create(sr, settings);
@@ -804,7 +809,7 @@ namespace JournalWriter
 
         private void InitializeMyself()
         {
-            dateTreeView.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(dateTreeView_SelectedItemChanged);
+            dateTreeView.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(DateTreeView_SelectedItemChanged);
 
             dateTimeStatusbarItem.Content = CurrentDate.ToString("dd.MM.yyyy HH:mm");
 
@@ -828,7 +833,7 @@ namespace JournalWriter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void dateTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        void DateTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeViewItem selItem = dateTreeView.SelectedItem as TreeViewItem;
 
@@ -840,9 +845,7 @@ namespace JournalWriter
 
             CurrentTiToFill = selItem;
 
-            string text = selItem.Tag as string;
-
-            if (text == null)
+            if (!(selItem.Tag is string text)) //pattern matching
                 text = "";
 
             DisplayDocument(text);
@@ -875,7 +878,7 @@ namespace JournalWriter
             {
                 if (obi is Run)
                 {
-                    (obi as Run).MouseDown += new MouseButtonEventHandler(fdoc_MouseDown);
+                    (obi as Run).MouseDown += new MouseButtonEventHandler(Fdoc_MouseDown);
                 } else if (obi is CheckBox)
                 {
                     (obi as CheckBox).Checked += FlowDoCB_Checked;
@@ -912,18 +915,16 @@ namespace JournalWriter
         /// <param name="todovalue">The value to store in the middle of []</param>
         private void WriteCBToText(string poss, string todovalue)
         {
-            int pos = 0;
-
-            if (int.TryParse(poss, out pos))
+            if (int.TryParse(poss, out int pos))
             {
                 string fulltxt = CurrentTiToFill.Tag as string;
-                string txt = fulltxt.Substring(0, pos+1) + todovalue + fulltxt.Substring(pos + 2);
+                string txt = fulltxt.Substring(0, pos + 1) + todovalue + fulltxt.Substring(pos + 2);
                 CurrentTiToFill.Tag = txt;
                 HaveChange = true;
             }
         }
 
-        void fdoc_MouseDown(object sender, MouseButtonEventArgs e)
+        void Fdoc_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (CurrentTiToFill == null)
                 return;
@@ -1185,12 +1186,12 @@ namespace JournalWriter
             }
         }
 
-        private void firstDV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void FirstDV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ShowTextBox();
         }
 
-        private void firstTB_LostFocus(object sender, RoutedEventArgs e)
+        private void FirstTB_LostFocus(object sender, RoutedEventArgs e)
         {
             if (CurrentTiToFill == null)
                 return;
@@ -1205,7 +1206,7 @@ namespace JournalWriter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void firstTB_KeyUp(object sender, KeyEventArgs e)
+        private void FirstTB_KeyUp(object sender, KeyEventArgs e)
         {
             if (HaveChange)
                 return;
@@ -1230,11 +1231,11 @@ namespace JournalWriter
 
             string[] availFormats = cd.GetFormats();
             ClipboardDataElement cdael = null;
-            if (availFormats.Contains("JournalWriter.ClipboardDataElement"))
-                cdael = cd.GetData("JournalWriter.ClipboardDataElement") as ClipboardDataElement;
-            else if (availFormats.Contains("System.String"))
+            if (availFormats.Contains(ClipboardDataElement.Format))
+                cdael = cd.GetData(ClipboardDataElement.Format) as ClipboardDataElement;
+            else if (availFormats.Contains(DataFormats.StringFormat))
             {
-                string txt = cd.GetData("System.String") as string;
+                string txt = cd.GetData(DataFormats.StringFormat) as string;
                 cdael = new ClipboardDataElement(ClipTypeEnum.Block, txt);
             }
 
@@ -1321,8 +1322,10 @@ namespace JournalWriter
                 try
                 {
                     ClipboardDataElement cdael = new ClipboardDataElement(clipt, txt);
-                    DataObject dao = new DataObject(cdael);
-                    Clipboard.SetDataObject(dao, true);
+                    DataObject dao = new DataObject();
+                    dao.SetData(ClipboardDataElement.Format, dao);
+                    dao.SetData(DataFormats.StringFormat, txt);
+                    Clipboard.SetDataObject(dao);
                     done = true;
                 }
                 catch
@@ -1338,7 +1341,7 @@ namespace JournalWriter
             return done;
         }
 
-        private void dateTreeView_MouseMove(object sender, MouseEventArgs e)
+        private void DateTreeView_MouseMove(object sender, MouseEventArgs e)
         {
             const int maxY = 5;
             Point pt = e.GetPosition(dateTreeView);
@@ -1354,15 +1357,14 @@ namespace JournalWriter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void firstTB_GotFocus(object sender, RoutedEventArgs e)
+        private void FirstTB_GotFocus(object sender, RoutedEventArgs e)
         {
             editModeStatusbarItem.Visibility = Visibility.Visible;
         }
 
         private void MarkdownHelp_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            MarkdownHelpWindow mdh = new MarkdownHelpWindow();
-            mdh.Owner = this;
+            MarkdownHelpWindow mdh = new MarkdownHelpWindow() { Owner = this };
             mdh.Show();
         }
 
@@ -1379,15 +1381,17 @@ namespace JournalWriter
 
         private void SetFileLocation_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog opfd = new Microsoft.Win32.OpenFileDialog();
-            opfd.AddExtension = true;
-            opfd.CheckPathExists = true;
-            opfd.DefaultExt = "xml";
-            opfd.Multiselect = false;
-            opfd.Filter = "SJournal-Dateien (*.xml) |*.xml| Alle Dateien (*.*) |*.*";
-            opfd.InitialDirectory = Properties.Settings.Default.JournalPath;
-            opfd.Title = "Dateiauswahl für die Journal Datei";
-            opfd.CheckFileExists = true;
+            Microsoft.Win32.OpenFileDialog opfd = new Microsoft.Win32.OpenFileDialog()
+            {
+                AddExtension = true,
+                CheckPathExists = true,
+                DefaultExt = "xml",
+                Multiselect = false,
+                Filter = "SJournal-Dateien (*.xml) |*.xml| Alle Dateien (*.*) |*.*",
+                InitialDirectory = Properties.Settings.Default.JournalPath,
+                Title = "Dateiauswahl für die Journal Datei",
+                CheckFileExists = true
+            };
 
             StopAllTimers();
 
@@ -1423,7 +1427,7 @@ namespace JournalWriter
             e.CanExecute = !firstTB.IsVisible;
         }
 
-        private void xBU_Click(object sender, RoutedEventArgs e)
+        private void XBU_Click(object sender, RoutedEventArgs e)
         {
             CloseDownSearchElements();
         }
@@ -1510,7 +1514,7 @@ namespace JournalWriter
             globalSearchResultsLB.Visibility = Visibility.Collapsed;
         }
 
-        private void xBU_KeyDown(object sender, KeyEventArgs e)
+        private void XBU_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
                 CloseDownSearchElements();
@@ -1643,17 +1647,15 @@ namespace JournalWriter
         private void AddItemTexts(List<TaggedText> answ, TreeViewItem paritem)
         {
             TaggedText curtt;
-            DateTime currtag;
-
             if (paritem.Name.StartsWith("D_"))
             {
                 if (paritem.Tag != null)
                 {
                     if (DateTime.TryParseExact(paritem.Name.Substring(2),
-                        "yyyyMMdd", 
-                        System.Globalization.CultureInfo.InvariantCulture, 
-                        System.Globalization.DateTimeStyles.None, 
-                        out currtag))
+                        "yyyyMMdd",
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None,
+                        out DateTime currtag))
                     {
                         curtt = new TaggedText() { Text = paritem.Tag as string, Tag = currtag };
                         answ.Add(curtt);
@@ -1672,7 +1674,7 @@ namespace JournalWriter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void globalSearchResultsLB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void GlobalSearchResultsLB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             TextBlock tbl = globalSearchResultsLB.SelectedItem as TextBlock;
 
@@ -1811,7 +1813,7 @@ namespace JournalWriter
             return to;
         }
 
-        private void editModeStatusbarItem_MouseDown(object sender, MouseButtonEventArgs e)
+        private void EditModeStatusbarItem_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (firstTB.IsVisible)
             {
@@ -1837,7 +1839,7 @@ namespace JournalWriter
             e.Handled = DoCtrlV(sender as TextBox);
         }
 
-        private void wordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)
+        private void WordCountStatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)
         {
             //Wenn wir nicht gerade editieren, dann lassen wir einfach die alte Zahl stehen
             //denn die wurde ja bei der Selektion des TV-Items erneuert.
@@ -1854,7 +1856,7 @@ namespace JournalWriter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void firstTB_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void FirstTB_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (!Keyboard.IsKeyDown(Key.LeftCtrl) && !Keyboard.IsKeyDown(Key.RightCtrl))
                 return;

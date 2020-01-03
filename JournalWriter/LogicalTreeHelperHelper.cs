@@ -7,6 +7,9 @@ using System.Windows;
 
 namespace JournalWriter
 {
+    /// <summary>
+    /// Helper class for easy access to flow-documents and their hierachies.
+    /// </summary>
     public class LogicalTreeHelperHelper
     {
         public static IEnumerable GetChildren(DependencyObject obj, Boolean AllChildrenInHierachy)

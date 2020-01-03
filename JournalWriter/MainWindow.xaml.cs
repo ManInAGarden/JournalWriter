@@ -1283,8 +1283,13 @@ namespace JournalWriter
                     answ = true;
                     break;
                 case ClipTypeEnum.Block:
-                   senderTB.Text = senderTB.Text.Insert(senderTB.CaretIndex, cdael.Text);
+                    if (senderTB.SelectionLength > 0)
+                    {
+                        senderTB.Text = senderTB.Text.Remove(senderTB.SelectionStart, senderTB.SelectionLength);
+                    }
+                    senderTB.Text = senderTB.Text.Insert(oldCaretIndex, cdael.Text);
                     senderTB.CaretIndex = oldCaretIndex + cdael.Text.Length;
+                    
                     answ = true;
                     break;
                 default:
